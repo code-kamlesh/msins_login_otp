@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState} from 'react'
 import {
   Grid,
   Paper,
@@ -14,7 +14,6 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Buttons from '../../components/shared/Buttons'
 import OTP from '../../components/shared/utils/OTP'
 import AddPrefixToMobile from '../../components/shared/utils/AddPrefixToMobile'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Language from '../../components/language/Language'
 import { login } from '../../utility/Api'
@@ -30,6 +29,7 @@ const LoginUser = ({ handleChange }) => {
   const [disableVerifyOtp, setDisableVerifyOtp] = useState(true);
   const [mobileNoError, setMobileNoError] = useState('');
   const [otpError, setOtpError] = useState('');
+  
 
   const paperStyle = {
     padding: 20,
@@ -85,7 +85,7 @@ const LoginUser = ({ handleChange }) => {
         window.userOTPresult = user;
         alert('User Sucessfully logged in!')
         // setDisableVerifyOTPButton(true)
-        login().then((jsondata)=>{
+        login().then((jsondata)=>{  
           console.log('jsondata ========> ', jsondata?.data)
           let dataFromSucessLogin = JSON.parse(jsondata?.data)
           console.log("data at 0",dataFromSucessLogin)

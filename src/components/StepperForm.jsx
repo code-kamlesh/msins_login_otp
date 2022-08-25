@@ -46,40 +46,81 @@ const useStyles = makeStyles((theme) =>
 );
 
 function getSteps() {
-  return [
-    <b style={{ color: "purple" }}>Basic Details</b>,
-    <b style={{ color: "purple" }}>Socio Economic-Innovator</b>,
-    <b style={{ color: "purple" }}>Socio Economic-Entepreneur</b>,
-    <b style={{ color: "purple" }}>Experience Details</b>,
-    <b style={{ color: "purple" }}>
-      Existing Business Entrepreneurship Details
-    </b>,
-    <b style={{ color: "purple" }}>Business Case Entepreneur</b>,
-    <b style={{ color: "purple" }}>Existing Business Innovator</b>,
-    <b style={{ color: "purple" }}>Upload Documents</b>,
-  ];
+  if(window?.studentType ==="Innovator"){
+    return [
+      <b style={{ color: "purple" }}>Basic Details</b>,
+      <b style={{ color: "purple" }}>Socio Economic-Innovator</b>,
+      // <b style={{ color: "purple" }}>Socio Economic-Entepreneur</b>,
+      <b style={{ color: "purple" }}>Experience Details</b>,
+      // <b style={{ color: "purple" }}>
+      //   Existing Business Entrepreneurship Details
+      // </b>,
+      // <b style={{ color: "purple" }}>Business Case Entepreneur</b>,
+      <b style={{ color: "purple" }}>Existing Business Innovator</b>,
+      <b style={{ color: "purple" }}>Upload Documents</b>,
+    ]
+  }
+  else{
+    return [
+      <b style={{ color: "purple" }}>Basic Details</b>,
+      // <b style={{ color: "purple" }}>Socio Economic-Innovator</b>,
+      <b style={{ color: "purple" }}>Socio Economic-Entepreneur</b>,
+      <b style={{ color: "purple" }}>Experience Details</b>,
+      <b style={{ color: "purple" }}>
+        Existing Business Entrepreneurship Details
+      </b>,
+      <b style={{ color: "purple" }}>Business Case Entepreneur</b>,
+      // <b style={{ color: "purple" }}>Existing Business Innovator</b>,
+      <b style={{ color: "purple" }}>Upload Documents</b>,
+    ];
+  }
+  
 }
 
 function getStepContent(step) {
-  switch (step) {
-    case 0:
-      return <BasicDetailsForm />;
-    case 1:
-      return <SocioEconomicInnovatorForm />;
-    case 2:
-      return <SocioEconomicEntepreneurForm />;
-    case 3:
-      return <ExperienceDetails />;
-    case 4:
-      return <ExistingBusinessEntrepreneurshipForm />;
-    case 5:
-      return <BusinessCaseEntrepreneurForm />;
-    case 6:
-      return <ExistingBusinessInnovator />;
-    case 7:
-      return <UploadDocuments />;
-    default:
-      throw new Error("Unknown step");
+  if(window?.studentType ==="Innovator"){
+    switch (step) {
+      case 0:
+        return <BasicDetailsForm />;
+      case 1:
+        return <SocioEconomicInnovatorForm />;
+      // case 2:
+      //    return <SocioEconomicEntepreneurForm />;
+      case 2:
+        return <ExperienceDetails />;
+      // case 4:
+      //   return <ExistingBusinessEntrepreneurshipForm />;
+      // case 5:
+      //   return <BusinessCaseEntrepreneurForm />;
+      case 3:
+        return <ExistingBusinessInnovator />;
+      case 4:
+        return <UploadDocuments />;
+      default:
+        throw new Error("Unknown step");
+    }
+  }
+  else{
+    switch (step) {
+      case 0:
+        return <BasicDetailsForm />;
+      // case 1:
+      //   return <SocioEconomicInnovatorForm />;
+      case 1:
+         return <SocioEconomicEntepreneurForm />;
+      case 2:
+        return <ExperienceDetails />;
+      case 3:
+        return <ExistingBusinessEntrepreneurshipForm />;
+      // case 5:
+      //   return <BusinessCaseEntrepreneurForm />;
+      case 4:
+        return <ExistingBusinessInnovator />;
+      case 5:
+        return <UploadDocuments />;
+      default:
+        throw new Error("Unknown step");
+    }
   }
 }
 
@@ -90,6 +131,7 @@ export default function StepperForm() {
 
   const steps = getSteps();
 
+  console.log("Steps>>",steps)
   // const handleNext = () => {
   //   setActiveStep((prevActiveStep) => prevActiveStep + 1);
   // };
@@ -181,13 +223,13 @@ export default function StepperForm() {
                     {/* <Button onClick={handleReset} className={classes.button}>
                     Reset
                   </Button> */}
-                    {/* <Button
+                    <Button
                       onClick={handleSave}
                       className={classes.button}
                       //variant="contained"
                     >
                       Save
-                    </Button> */}
+                    </Button>
 
                     {/* <Button
                     variant="contained"

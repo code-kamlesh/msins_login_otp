@@ -24,7 +24,6 @@ export default function DateOfBirthBox({
   return (
     <TextField
       margin={margin}
-      required
       fullWidth={fullWidth}
       name={name}
       label={label}

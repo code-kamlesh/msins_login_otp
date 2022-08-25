@@ -1,4 +1,4 @@
-import React from 'react'
+import React ,{useState}from 'react'
 import RadioOptionButton from '../../components/shared/RadioOptionButton'
 import SelectOption from '../../components/shared/SelectOption'
 
@@ -22,9 +22,12 @@ import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import Checkbox from '@mui/material/Checkbox'
 import TextFields from '../../components/shared/TextFields'
+import { useNavigate } from 'react-router-dom'
 import Buttons from '../../components/shared/Buttons'
 import EligibilityTest from '../eligible/EligibilityTest'
-
+import { useRef } from 'react'
+import { select } from 'underscore'
+import { validatePassingYear} from "./../../utility/Validation"
 const paperStyle = {
   padding: 20,
   minWidth: '450',
@@ -35,7 +38,53 @@ const headerStyle = { margin: 0 }
 const avatarStyle = { backgroundColor: '#62c4e7' }
 const marginTop = { marginTop: 5 }
 
+const collegeNameList = [{value:'College 1' , label:'College 1'},
+                          {value:'College 2' , label:'College 2'},
+                          {value:'College 3' , label:'College 3'},
+                          {value:'College 4' , label:'College 4'},]
 export default function CommonData(props) {
+  const[qualification,setQualification] = useState("")
+  const [qualificationStatus,setQualificationStatus] = useState("")
+  const [collegeName,setCollegeName] = useState("")
+  const [passingYear,setPassingYear] = useState("")
+  const history = useNavigate();
+  const[errors,setErrors] = useState({})
+  // handle Qualification
+  const handleQualification = (event)=>{
+    if(event?.length !==0){
+      setQualification(event)
+    }
+  }
+
+  const handleRadioButton = (event) => {
+    setQualificationStatus(event?.target?.value) // saving in local
+  }
+
+  const handleCollegeName = (event)=>{
+    setCollegeName(event)
+  }
+
+  // handle Passing year
+  const handlePassingYear = (event)=>{
+    console.log(event.target.value)
+    if(event?.target.value.length !==0){
+      const error = validatePassingYear("passingYear",event.target.value,"lng" )
+      setErrors(error)
+      setPassingYear(event?.target?.value)
+    }
+  }
+
+  // save data
+  const handleSubmitData = (e)=>{
+    alert("Hell")
+    console.log(passingYear)
+    if(passingYear>2018){
+    history('/form',{ replace: true });
+  }
+  else{
+    history('/eligibilityTest',{ replace: true });
+  }
+}
   return (
     <>
       <Grid
@@ -64,7 +113,7 @@ export default function CommonData(props) {
                 options={props.qualification}
                 required='required'
                 variant='standard'
-                onChange=''
+                onChange={handleQualification}
               />
             </Box>
 
@@ -82,26 +131,40 @@ export default function CommonData(props) {
                     value='passed'
                     control={<Radio />}
                     label='Passed'
+                    onChange={handleRadioButton}
                   />
                   <FormControlLabel
                     value='pursuing'
                     control={<Radio />}
                     label='Pursuing'
+                    onChange={handleRadioButton}
                   />
                 </RadioGroup>
               </FormControl>
             </Box>
-
+<br/>
             <Box>
-              <Autocomplete
-                disablePortal
+              {/* <Autocomplete
+                // disablePortal
                 id='combo-box-demo'
+                name = "collegeName"
                 options={props.collegeNameList}
                 sx={{ width: 300 }}
                 renderInput={(params) => (
-                  <TextField {...params} label='College' variant='standard' />
+                  <TextField {...params} label='College' variant='standard'  ref={selectCollegeRef} 
+                  onChange={handleCollegeName}/>
                 )}
-              />
+              /> */}
+               <SelectOption
+              // style={{borderColor:"red"}}
+              label="College Name"
+              id="collegename"
+              name="collegename"
+              options={collegeNameList}
+              variant="standard"
+              onChange={(e) => handleCollegeName(e)}
+              
+            />
             </Box>
             <Box>
               <TextFields
@@ -117,23 +180,26 @@ export default function CommonData(props) {
                     .toString()
                     .slice(0, 4)
                 }}
-                helperText=''
+                onChange={(e)=>handlePassingYear(e)}
               />
             </Box>
+            {errors?.passingYear ? (<div style={{ color: "red" }}>{errors?.passingYear}</div>) : null}
             <Box marginTop='20px'>
-              <Link
-                to='/eligibilityTest'
+              {/* <Link
+                to='/form'
                 style={{
                   textDecoration: 'none',
                   color: 'inherit',
                 }}
-              >
+              > */}
                 <Buttons
-                  text='submit'
+                  type='text'
                   variant='contained'
                   fullWidth='fullWidth'
-                />
-              </Link>
+                  disabled={qualification.length ===0 ? true:qualificationStatus ===''? true:collegeName.length ===0 ? true:false}
+                  onClick={handleSubmitData}
+               />
+              {/* </Link> */}
             </Box>
           </form>
         </Paper>

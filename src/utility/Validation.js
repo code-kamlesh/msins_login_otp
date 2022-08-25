@@ -64,18 +64,17 @@ export function validateSelectInput(key, value) {
     return errors;
 }
 // validation pincode
-export function validatePincode(pincode, lng) {
+export function validatePincode(value,pincode, lng) {
     
     if(pincode.length < 6)
     {
          // Commented to support more languages
       //  lng === "bg" ? errors["pincode"] = "* ৬ সংখ্যা" : errors["pincode"] = "* Exactly 6 digits";
-        
         if(lng === "bg") 
-        errors["pincode"] =  "* ৬ সংখ্যা" 
+        errors[value] =  "* ৬ সংখ্যা" 
         else if (lng === "hn") 
-        errors["pincode"] =  "* बिल्कुल 6 अंक"
-        else   errors["pincode"] =  "* Exactly 6 digits";        
+        errors[value] =  "* बिल्कुल 6 अंक"
+        else   errors[value] =  "* Exactly 6 digits";        
         return errors;
     }
     if(!pincode.match(/^[0-9\b]+$/))
@@ -83,15 +82,42 @@ export function validatePincode(pincode, lng) {
       // lng === "bg" ? errors["pincode"] =  "* শুধুমাত্র সংখ্যা" : errors["pincode"] =  "* Only Numbers";
 
        if(lng === "bg") 
-       errors["pincode"] =  "* শুধুমাত্র সংখ্যা" 
+       errors[value] =  "* শুধুমাত্র সংখ্যা" 
        else if (lng === "hn") 
-       errors["pincode"] =  "* केवल नंबर"
-       else   errors["pincode"] =  "* Only Numbers";
-
+       errors[value] =  "* केवल नंबर"
+       else   errors[value] =  "* Only Numbers";
         return errors
     }
-    errors["pincode"] = pincode === "" ?  REQUIRED : "";
+    errors[value] = pincode === "" ?  REQUIRED : "";
+    return errors;
+}
+
+// validation pincode
+export function validatePassingYear(value,pincode, lng) {
     
+    if(pincode.length < 4)
+    {
+         // Commented to support more languages
+      //  lng === "bg" ? errors["pincode"] = "* ৬ সংখ্যা" : errors["pincode"] = "* Exactly 6 digits";
+        if(lng === "bg") 
+        errors[value] =  "* ৬ সংখ্যা" 
+        else if (lng === "hn") 
+        errors[value] =  "* बिल्कुल 4 अंक"
+        else   errors[value] =  "* Exactly 4 digits";        
+        return errors;
+    }
+    if(!pincode.match(/^[0-9\b]+$/))
+    {
+      // lng === "bg" ? errors["pincode"] =  "* শুধুমাত্র সংখ্যা" : errors["pincode"] =  "* Only Numbers";
+
+       if(lng === "bg") 
+       errors[value] =  "* শুধুমাত্র সংখ্যা" 
+       else if (lng === "hn") 
+       errors[value] =  "* केवल नंबर"
+       else   errors[value] =  "* Only Numbers";
+        return errors
+    }
+    errors[value] = pincode === "" ?  REQUIRED : "";
     return errors;
 }
 

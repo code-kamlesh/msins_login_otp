@@ -42,11 +42,17 @@ function Entreprenuer() {
 export default function CandidateType() {
   return (
     <>
-      <Innovator />
-      {/* <Entreprenuer /> */}
+    {window.studentType === 'Innovator' &&
+        <Innovator />
+    }
+     
+     {window.studentType === 'Entrepreneur' &&
+        <Entreprenuer />
+      }
+      
 
       {/* now we will check user is eligible or not */}
-      <EligibilityTest />
+      {/* <EligibilityTest /> */}
     </>
   )
 }

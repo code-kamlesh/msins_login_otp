@@ -61,9 +61,9 @@ export function UserIsNotEligible() {
               <h4 className='modal-title w-100'>Sorry!</h4>
             </Box>
             <Box className='modal-body'>
-              <p className='text-center'>
-                Your are not Eligible for our program.
-              </p>
+              <h1 className='text-center'>
+                You Are Not Eligible
+              </h1>
             </Box>
             <Box className='modal-footer'>
               <Buttons
@@ -101,7 +101,7 @@ export function UserIsNotEligible() {
 function EligibilityTest() {
   return (
     <>
-      <p>make logic: whether user is eligible or not</p>
+      <p>You Are Not Eligible for the Program.</p>
       {/* <UserIsEligible />
       <UserIsNotEligible /> */}
     </>

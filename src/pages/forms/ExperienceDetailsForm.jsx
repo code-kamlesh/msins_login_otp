@@ -32,7 +32,6 @@ export default function ExperienceDetails() {
   const handleEmpName = (event)=>{
     if (event?.target?.value || event?.target?.value.length === 0) {
       const error = validateTextInput1(event?.target.name, event?.target?.value,"lng")
-     
       setErrors(error)
       setExperienceData(preValue=>({...preValue, "employerName":event?.target?.value}))
     }

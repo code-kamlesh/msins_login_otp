@@ -11,9 +11,10 @@ import App from "./App";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "flag-icon-css/css/flag-icons.min.css";
 
-window.name = "John";
+window.studentType = "Innovator";
 window.jwtTokenResult = "";
 window.refreshJwtToken = "";
+
 i18next
   .use(HttpApi)
   .use(LanguageDetector)
