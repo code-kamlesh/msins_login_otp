@@ -16,7 +16,7 @@ import OTP from '../../components/shared/utils/OTP'
 import AddPrefixToMobile from '../../components/shared/utils/AddPrefixToMobile'
 import { useTranslation } from 'react-i18next'
 import Language from '../../components/language/Language'
-import { login } from '../../utility/Api'
+import { login , fetchStduentDataBaisedOnContactNumber,fetchStduentEngagementDataBaisedOnDBUserId} from '../../utility/Api'
  
 // language/Language'
 
@@ -73,29 +73,48 @@ const LoginUser = ({ handleChange }) => {
       } 
   };
 
-  const verifyOTP = () => {
+  const verifyOTP = async () => {
     if(mobileNo?.length<10 || otp?.length<6){
       alert('please click get OTP to reciev the otp')
     }
     else{
       setDisableVerifyOtp(true)
       let confirmationOTP = window.confirmationResult;
-      confirmationOTP.confirm(otp).then((result) => {
+      confirmationOTP.confirm(otp).then( async (result) => {
         const user = result.user;
         window.userOTPresult = user;
         alert('User Sucessfully logged in!')
         // setDisableVerifyOTPButton(true)
-        login().then((jsondata)=>{  
+        await login().then( async(jsondata)=>{  
           console.log('jsondata ========> ', jsondata?.data)
           let dataFromSucessLogin = JSON.parse(jsondata?.data)
-          console.log("data at 0",dataFromSucessLogin)
-          console.log("data at 1", typeof dataFromSucessLogin)
-          console.log("<=======Data from login=======>",dataFromSucessLogin.token)
+          // console.log("data at 0",dataFromSucessLogin)
+          // console.log("data at 1", typeof dataFromSucessLogin)
+          // console.log("<=======Data from login=======>",dataFromSucessLogin.token)
+          window.userId = dataFromSucessLogin[0]?.id;
           window.jwtTokenResult = dataFromSucessLogin[0]?.token;
           window.refreshJwtToken = dataFromSucessLogin[0]?.token;
+          fetchStduentDataBaisedOnContactNumber(mobileNo).then((jsondata)=>{
+            let result =(jsondata.data)
+            if(result.length >2 ){
+              result =JSON.parse(jsondata.data)
+              let dbUserId = result[0].dbUserId;
+              window.dbUserId = dbUserId // setting global variable
+              
+              // Getting the enagagment ID baised on dbuserId
 
-          console.log("token",window.jwtTokenResult)
-          history('../form',{ replace: true },window.jwtTokenResult,window.refreshJwtToken );
+              fetchStduentEngagementDataBaisedOnDBUserId(result[0].dbUserId).then((jsondata)=>{
+                // let res = JSON.parse(jsondata.data)
+                console.log(jsondata)
+              })
+
+              // history('../form',{ replace: true },window.jwtTokenResult,window.refreshJwtToken );
+            }
+            else{
+              alert("User Not Found! Please Sign Up.")
+            }
+          })
+         
         }).catch((error)=>{
           console.log("error========>",error)
         })

@@ -10,10 +10,15 @@ import App from "./App";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "flag-icon-css/css/flag-icons.min.css";
-
-window.studentType = "Innovator";
+window.userId=""
+window.studentType = "";
 window.jwtTokenResult = "";
 window.refreshJwtToken = "";
+window.engagemantId=""
+window.dbUserId=""
+window.dob=""
+window.pincode=""
+window.primaryContactNumber=""
 
 i18next
   .use(HttpApi)

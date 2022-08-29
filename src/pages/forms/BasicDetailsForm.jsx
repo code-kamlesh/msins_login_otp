@@ -64,6 +64,7 @@ export default function BasicDetailsForm() {
   const [address2, setAddress2] = useState("");
   const [emptyState,setEmptyState]= useState("");
 
+  const [basicData, setBasicData] = useState({"mobileNo":"","dob":"","createdBy":7000019, "updatedBy":7000019});
   const handleAadharNumber = (event) => {
     if (event?.target?.value || event?.target?.value?.length === 0) {
       const errors = validateAadharNumber(event?.target?.value, "lng")

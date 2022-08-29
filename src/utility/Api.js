@@ -1,5 +1,5 @@
 import { serviceEndPoint } from './ServiceEndPoint';
-const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJrYW1sZXNoX3NpbmdoIiwiaWF0IjoxNjYxMzM1NDc4LCJleHAiOjE2NjE0MjE4Nzh9.u7Ef4WJ-0_Y2Vn1iiEMdxUW4PruKOZZ0ChJKuvmWZ7boEkdAbgyaQUWOtsMmz9jaJZtD-JjCmhIIylOjsS1HDQ"
+const token = window?.jwtTokenResult;
 /*For logging in the system and generating JWT token */
 export async function login() {
     let requestFormData = new FormData();  
@@ -10,10 +10,11 @@ export async function login() {
     }).then(response => response.json()); 
 }
 
-export async function saveBasicData(action,aadharNo, gender, firstName, middleName, lastName,dob,highestQualification,religion, bloodGroup,incomeStatus,category,passingYear, primaryContactNumber, secondaryContactNumber,primaryEmailId, secondaryEmailId,remarks) {
+// export async function saveBasicData(action,aadharNo, gender, firstName, middleName, lastName,dob,highestQualification,religion, bloodGroup,incomeStatus,category,passingYear, primaryContactNumber, secondaryContactNumber,primaryEmailId, secondaryEmailId,remarks) {
+    export async function saveBasicData(action,data) {
     // if(isSessionValid()){
     let requestFormData = new FormData();  
-    requestFormData.append('data', '{"token" : "1234", "action" : "'+action+'", "data" : [{ "aadharNo" : "'+aadharNo+'","gender" : "'+gender+'", "firstName" : "'+firstName+'", "middleName" : "'+middleName+'", "lastName" : "'+lastName+'", "dob" :"'+dob+'" ,"highestQualification" : "'+highestQualification+'", "religion" : "'+religion+'" ,"bloodGroup":"'+bloodGroup+'","bplStatus":"'+incomeStatus+'","category":"'+category+'","passingYear" : "'+passingYear+'", "primaryContactNumber" : "'+primaryContactNumber+'", "secondaryContactNumber" : "'+secondaryContactNumber+'", "primaryEmailId" : "'+primaryEmailId+'","secondaryEmailId" : "'+secondaryEmailId+'","remarks" : "'+remarks+'" }] }');
+    requestFormData.append('data', '{"token" : "1234", "action" : "'+action+'", "data" : [' + JSON.stringify(data) + ']}');
     // if(!isTokenValid()) 
         // await regenerateToken();
    return await fetch(serviceEndPoint.studentServiceEndPoint,{
@@ -24,7 +25,6 @@ export async function saveBasicData(action,aadharNo, gender, firstName, middleNa
      body: requestFormData,
      }).then(response => response.json());
     // }
-
     // return null;
 }
 
@@ -186,4 +186,43 @@ export async function fetchUserDocumentsByEngagementId(engagementId) {
     }).then(response => response.json());
 // }
 // return null;
+}
+
+// Fetch esiting data baised on Contact number
+// viewAllBeneficiaryDetailsForContact
+
+
+export async function fetchStduentDataBaisedOnContactNumber(primaryContactNumber) {
+    // if(isSessionValid()){
+    let requestFormData = new FormData();
+    requestFormData.append('data', '{"token" : "", "action" : "viewAllBeneficiaryDetailsForContact", "data" : [{"primaryContactNumber":' + primaryContactNumber + '}] }');
+    // if(!isTokenValid()) 
+        // await regenerateToken();
+   return await fetch(serviceEndPoint.studentServiceEndPoint,{
+     method: "POST",
+     headers: {
+        'Authorization': 'Bearer '+token
+    }, 
+     body: requestFormData,
+     }).then(response => response.json());
+    // }
+    // return null;
+}
+
+// fetching studnet engagment data baised on dubuserId
+export async function fetchStduentEngagementDataBaisedOnDBUserId(dbUserId) {
+    // if(isSessionValid()){
+    let requestFormData = new FormData();
+    requestFormData.append('data', '{"token" : "", "action" : "viewAllStudentEngagementForUser", "data" : [{"dbUserId":"' + dbUserId + '"}]}');
+    // if(!isTokenValid()) 
+        // await regenerateToken();
+   return await fetch(serviceEndPoint.engagementServiceEndPoint,{
+     method: "POST",
+     headers: {
+        'Authorization': 'Bearer '+token
+    }, 
+     body: requestFormData,
+     }).then(response => response.json());
+    // }
+    // return null;
 }

@@ -25,7 +25,7 @@ import { authorization } from '../../services/firebase'
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth'
 import { useTranslation } from 'react-i18next'
 import { validateTextInput1,validateEmail, validateContact, isNotEmpty, validateAadharNumber, validatePincode, validateTextInput, validateSelectInput } from "./../../utility/Validation"
-import { login } from '../../utility/Api'
+import { login , saveBasicData,fetchStduentDataBaisedOnContactNumber} from '../../utility/Api'
 
 const Register = () => {
   const paperStyle = { padding: 20, maxWidth: 350, margin: '0 auto' }
@@ -46,8 +46,10 @@ const Register = () => {
   const [errors,setErrors] = useState({})
   const [emptyState,setEmptyState]= useState("");
 
+  const [basicData, setBasicData] = useState({"primaryContactNumber":0,"dob":"","createdBy":7000019, "updatedBy":7000019});
+ 
   const submitData = (e)=>{
-    if(mobileNo?.length<10 || otp?.length<6){
+    if(setBasicData.primaryContactNumber?.length<10 || otp?.length<6){
       alert('please click get OTP to reciev the otp')
     }
     else{
@@ -66,7 +68,27 @@ const Register = () => {
           let dataFromSucessLogin = JSON.parse(jsondata?.data)
           window.jwtTokenResult = dataFromSucessLogin[0]?.token;
           window.refreshJwtToken = dataFromSucessLogin[0]?.token;
-          history('/candidateType',{ replace: true });
+         // checking for user is already exist or not
+          fetchStduentDataBaisedOnContactNumber(basicData.primaryContactNumber).then((jsondata)=>{
+            let result =(jsondata.data)
+            console.log(">>>",result.length)
+            if(result.length <= 2 ){
+              const action = "captureBeneficiaryDetails"
+              saveBasicData(action,basicData ).then((jsondata) => {
+                console.log(jsondata)
+                let result = JSON.parse(jsondata.data);
+                console.log(result);
+                console.log(result[0].dbUserId)
+                window.dbUserId = result[0].dbUserId
+                // if (jsondata.appError == null) {
+                // }
+              })
+              history('/candidateType',{ replace: true });
+            }
+            else{
+              alert("User Already Exist! Please Sign in.")
+            }
+          })
         }).catch((error)=>{
           console.log("error========>",error)
         })
@@ -85,8 +107,8 @@ const Register = () => {
 
   const ValidateForm = (errors) => {
     // Validate('aadharNumber', aadharNumber)
-    Validate("dob", dob)
-    Validate("pincode", pincode)
+    Validate("dob", basicData.dob)
+    Validate("pincode", basicData.pincode)
     let valid = true;
     Object?.values(errors).forEach(
       // if we have an error string set valid to false
@@ -110,8 +132,8 @@ const Register = () => {
 
   const handleMobileNoInput = (event) => {
     // console.log("<=====EVENT VALUE=====>",event?.target?.value);
-    setMobileNo(event?.target?.value);
-    console.log(mobileNo)
+    setBasicData(preValue=>({...preValue, ["primaryContactNumber"]:event?.target?.value}))
+    // console.log(mobileNo)
     if (event?.target?.value?.length > 9) {
       // generateRecaptcha();
       // let appVerifire = window.recaptchaVerifier;
@@ -126,13 +148,13 @@ const Register = () => {
   };
 
   const generateOTP = () => {
-    if (mobileNo?.length < 10) {
+    if (basicData.mobileNo?.length < 10) {
       alert('incorrect mobile number, please try again');
     }
     else {
       generateRecaptcha();
       let appVerifire = window.recaptchaVerifier;
-      signInWithPhoneNumber(authorization, '+91' + mobileNo, appVerifire).then(confirmationResult => {
+      signInWithPhoneNumber(authorization, '+91' + basicData.primaryContactNumber, appVerifire).then(confirmationResult => {
         window.confirmationResult = confirmationResult;
         setDisableVerifyOtp(false);
         setDisableGetOtp(true);
@@ -155,7 +177,8 @@ const Register = () => {
     if (event?.target?.value || event?.length === 0) {
       const errors = validateSelectInput("dob", event?.target?.value)
       setErrors(errors);
-      setDob(event?.target?.value)
+      // setDob(event?.target?.value)
+      setBasicData(preValue=>({...preValue, ["dob"]:event?.target?.value}))
     }
   }
 // Handle pincode
@@ -163,7 +186,9 @@ const hanldePinCode = (event) => {
   if (event || event?.target?.length === 0) {
       const error = validatePincode("pincode",event?.target?.value, "lng");
       setErrors(error)
-      setPincode(event?.target?.value)
+      // setPincode(event?.target?.value)
+      window.studentType=event?.target?.value // setting the global value
+      setBasicData(preValue=>({...preValue, ["pincode"]:event?.target?.value}))
   }
   console.log(errors)
 }
@@ -355,7 +380,7 @@ const hanldePinCode = (event) => {
           {/* <Link
             to='/candidateType'
             style={{ textDecoration: 'none', color: 'inherit' }}> */}
-            <Buttons disabled={otp.length!==6 ? true: pincode.length!==6?true:studentType === '' ? true : (checkBox1 == true) && (checkBox2 == true) ? false : true}
+            <Buttons disabled={otp.length!==6 ? true: basicData.pincode.length!==6?true:studentType === '' ? true : (checkBox1 == true) && (checkBox2 == true) ? false : true}
               onClick={(e)=>submitData(e)} variant='contained' fullWidth='fullWidth' />
           {/* </Link> */}
         </form>

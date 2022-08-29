@@ -94,6 +94,7 @@ export default function ExperienceDetails() {
     <React.Fragment>
       <form method="post" onSubmit={(e)=>handleExperienceData(e)}>
       <Grid container spacing={3}>
+        <Grid></Grid>
         <Grid item xs={12} sm={6} md={6}>
           <DateOfBirthBox
             name="experienceFrom"
