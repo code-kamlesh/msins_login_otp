@@ -1,6 +1,7 @@
 import { serviceEndPoint } from './ServiceEndPoint';
-const token = window?.jwtTokenResult;
-/*For logging in the system and generating JWT token */
+// const token = window?.jwtTokenResult;
+const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJrYW1sZXNoX3NpbmdoIiwiaWF0IjoxNjYyMDA4NjU2LCJleHAiOjE2NjIwOTUwNTZ9.kueoYhiqY3nZY7aEMejS4SPLo3TJTyzVsxrBB1QFdz192Yor46JJsGVRDSrT6Ymg9O1Ie3rkKFCJ0jK4FrJyxA";
+
 export async function login() {
     let requestFormData = new FormData();  
     requestFormData.append('data', '{"token" : "", "action" : "login", "data" : [{"userName":"rahul@CL","password":"Pass@123"}]}');
@@ -42,11 +43,13 @@ export async function fetchAddressDetailsBasedOnPincode(pincode) {
     // return null;    
 }
 // saving aaddress data
-export async function submitAddressData(action,entityId,entityType,addressLine1,addressLine2,pincode,villageName,cityName,district,createdBy,type,isActive)
+// export async function submitAddressData(action,entityId,entityType,addressLine1,addressLine2,pincode,villageName,cityName,district,createdBy,type,isActive)
+export async function submitAddressData(action,data)
 {
+    // {"entityId":'+entityId+', "entityType":"'+entityType+'","addressLine1":"'+addressLine1+'","addressLine2":"'+addressLine2+'","pincode":'+pincode+',"state":"Maharashtra","villageName":"'+villageName+'","cityName":"'+cityName+'","district":"'+district+'","createdBy":'+createdBy+',"type":"'+type+'","isActive":"'+isActive+'"}]
     // if(isSessionValid()){
     let formData = new FormData();
-       formData.append('data','{"token" : "'+ "1234" +'", "action" : "'+  action +'", "data" :[{"entityId":'+entityId+', "entityType":"'+entityType+'","addressLine1":"'+addressLine1+'","addressLine2":"'+addressLine2+'","pincode":'+pincode+',"state":"Maharashtra","villageName":"'+villageName+'","cityName":"'+cityName+'","district":"'+district+'","createdBy":'+createdBy+',"type":"'+type+'","isActive":"'+isActive+'"}]}');
+       formData.append('data','{"token" : "'+ "1234" +'", "action" : "'+  action +'", "data" :[' + JSON.stringify(data) + ']}');
     //    if(!isTokenValid()) 
         // await regenerateToken();
          return await fetch(serviceEndPoint.addressServiceEndPoint, {
@@ -59,10 +62,11 @@ export async function submitAddressData(action,entityId,entityType,addressLine1,
 // }
 // return null;
 }
-export async function captureStudentEngagementDetails(dbUserId,centerId,userId) {
+// export async function captureStudentEngagementDetails(dbUserId,centerId,userId,ideaType,status) {
+    export async function captureStudentEngagementDetails(dbUserId,centerId,userId, studentType) {
     // if(isSessionValid()){
     let requestFormData = new FormData();  
-    requestFormData.append('data','{"token" : "'+ "1234" +'", "action" : "captureStudentEngagement", "data" :[{"dbUserId"  : ' + dbUserId + ' , "centerId" : ' + centerId + ', "createdBy" : ' + userId + ', "remarks" : "","status" : "Dropout"}]}');
+    requestFormData.append('data','{"token" : "'+ "1234" +'", "action" : "captureStudentEngagement", "data" :[{"dbUserId"  : ' + dbUserId + ' , "centerId" : ' + centerId + ', "createdBy" : ' + userId + ', "ideaType": "'+studentType+'", "remarks" : "","status" : "Draft"}]}');
     
     // if(!isTokenValid()) 
         // await regenerateToken();
@@ -74,7 +78,7 @@ export async function captureStudentEngagementDetails(dbUserId,centerId,userId) 
      body: requestFormData,
      }).then(response => response.json());
     // }
-    // return null;  
+    // return null;    "ideaType": "'+ideaType+'",
 }
 
 
@@ -217,6 +221,26 @@ export async function fetchStduentEngagementDataBaisedOnDBUserId(dbUserId) {
     // if(!isTokenValid()) 
         // await regenerateToken();
    return await fetch(serviceEndPoint.engagementServiceEndPoint,{
+     method: "POST",
+     headers: {
+        'Authorization': 'Bearer '+token
+    }, 
+     body: requestFormData,
+     }).then(response => response.json());
+    // }
+    // return null;
+}
+
+
+// fetch existing address if present
+// viewAllAddressForEntity
+export async function fetchExistingAddress(entityId,entityType) {
+    // if(isSessionValid()){
+    let requestFormData = new FormData();
+    requestFormData.append('data', '{"token" : "", "action" : "viewAllAddressForEntity", "data" : [{"entityId":"' + entityId + '", "entityType": "'+entityType+'"}]}');
+    // if(!isTokenValid()) 
+        // await regenerateToken();
+   return await fetch(serviceEndPoint.addressServiceEndPoint,{
      method: "POST",
      headers: {
         'Authorization': 'Bearer '+token

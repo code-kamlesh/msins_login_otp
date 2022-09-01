@@ -40,6 +40,8 @@ function Entreprenuer() {
 //logic to find innovator or entrepreneur
 //logic to find to find eliglible or not
 export default function CandidateType() {
+  console.log("window object>>",window)
+  window.studentType = 'Innovator'
   return (
     <>
     {window.studentType === 'Innovator' &&

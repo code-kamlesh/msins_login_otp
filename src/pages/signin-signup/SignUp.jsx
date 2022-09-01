@@ -24,8 +24,8 @@ import BasicModal from '../../components/shared/utils/BasicModal'
 import { authorization } from '../../services/firebase'
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth'
 import { useTranslation } from 'react-i18next'
-import { validateTextInput1,validateEmail, validateContact, isNotEmpty, validateAadharNumber, validatePincode, validateTextInput, validateSelectInput } from "./../../utility/Validation"
-import { login , saveBasicData,fetchStduentDataBaisedOnContactNumber} from '../../utility/Api'
+import { validateTextInput1, validateEmail, validateContact, isNotEmpty, validateAadharNumber, validatePincode, validateTextInput, validateSelectInput } from "./../../utility/Validation"
+import { login, saveBasicData, fetchStduentDataBaisedOnContactNumber, captureStudentEngagementDetails } from '../../utility/Api'
 
 const Register = () => {
   const paperStyle = { padding: 20, maxWidth: 350, margin: '0 auto' }
@@ -34,81 +34,85 @@ const Register = () => {
   const marginTop = { marginTop: 5 }
   const { t } = useTranslation()
   const history = useNavigate();
-  const [mobileNo, setMobileNo] = useState('');
   const [otp, setOtp] = useState('');
-  const [dob, setDob] = useState()
   const [disableGetOtp, setDisableGetOtp] = useState(false);
   const [disableVerifyOtp, setDisableVerifyOtp] = useState(true);
   const [checkBox1, setCheckBox1] = useState(false)
   const [checkBox2, setCheckBox2] = useState(false)
   const [pincode, setPincode] = useState("");
   const [studentType, setstudentType] = useState("");  // keep local for validation
-  const [errors,setErrors] = useState({})
-  const [emptyState,setEmptyState]= useState("");
+  const [errors, setErrors] = useState({})
+  const [emptyState, setEmptyState] = useState("");
 
-  const [basicData, setBasicData] = useState({"primaryContactNumber":0,"dob":"","createdBy":7000019, "updatedBy":7000019});
- 
-  const submitData = (e)=>{
-    if(setBasicData.primaryContactNumber?.length<10 || otp?.length<6){
+  const [basicData, setBasicData] = useState({ "primaryContactNumber": 0, "dob": "", "createdBy": 7000019, "updatedBy": 7000019 });
+
+  const submitData = (e) => {
+    if (basicData.primaryContactNumber?.length < 10 || otp?.length < 6) {
       alert('please click get OTP to reciev the otp')
     }
-    else{
-      if (ValidateForm(errors)) 
-    {
-      console.log("errors inside>>",errors)
-      setDisableVerifyOtp(true)
-      let confirmationOTP = window.confirmationResult;
-      confirmationOTP.confirm(otp).then((result) => {
-        const user = result.user;
-        window.userOTPresult = user;
-        alert('User Sucessfully logged in!')
-        // setDisableVerifyOTPButton(true)
-        login().then((jsondata)=>{  
-          console.log('jsondata ========> ', jsondata?.data)
-          let dataFromSucessLogin = JSON.parse(jsondata?.data)
-          window.jwtTokenResult = dataFromSucessLogin[0]?.token;
-          window.refreshJwtToken = dataFromSucessLogin[0]?.token;
-         // checking for user is already exist or not
-          fetchStduentDataBaisedOnContactNumber(basicData.primaryContactNumber).then((jsondata)=>{
-            let result =(jsondata.data)
-            console.log(">>>",result.length)
-            if(result.length <= 2 ){
-              const action = "captureBeneficiaryDetails"
-              saveBasicData(action,basicData ).then((jsondata) => {
-                console.log(jsondata)
-                let result = JSON.parse(jsondata.data);
-                console.log(result);
-                console.log(result[0].dbUserId)
-                window.dbUserId = result[0].dbUserId
-                // if (jsondata.appError == null) {
-                // }
-              })
-              history('/candidateType',{ replace: true });
-            }
-            else{
-              alert("User Already Exist! Please Sign in.")
-            }
+    else {
+      if (ValidateForm(errors)) {
+        var userId = 0;
+        console.log("errors inside>>", errors)
+        setDisableVerifyOtp(true)
+        let confirmationOTP = window.confirmationResult;
+        confirmationOTP.confirm(otp).then((result) => {
+          const user = result.user;
+          window.userOTPresult = user;
+          alert('User Sucessfully logged in!')
+          // setDisableVerifyOTPButton(true)
+          login().then(async (jsondata) => {
+            console.log('jsondata ========> ', jsondata?.data)
+            let dataFromSucessLogin = JSON.parse(jsondata?.data)
+            window.jwtTokenResult = dataFromSucessLogin[0]?.token;
+            window.refreshJwtToken = dataFromSucessLogin[0]?.token;
+            userId = dataFromSucessLogin[1]?.id
+            window.userId = userId;
+            // checking for user is already exist or not
+            await fetchStduentDataBaisedOnContactNumber(basicData.primaryContactNumber).then(async (jsondata) => {
+              let result = (jsondata.data)
+              if (result.length <= 2) {
+                const action = "captureBeneficiaryDetails"
+                await saveBasicData(action, basicData).then((jsondata) => {
+                  let result = JSON.parse(jsondata.data);
+                  let dbUserId = result[0].dbUserId
+                  window.dbUserId = dbUserId  // setting global variable
+                  console.log("id>>>", userId)
+                  // capturing engagement details
+                   captureStudentEngagementDetails(dbUserId, 20, userId, studentType).then((jsondata) => {
+                    console.log(">>>>>",jsondata)
+                    let json = JSON.parse(jsondata.data);
+                    console.log(jsondata)
+                    window.engagementId = json[0].engagementId //setting engagementid 
+                    // console.log(eng_id)
+                     history('/candidateType',{ replace: true });
+                  })
+                })
+              }
+              else {
+                alert("User Already Exist! Please Sign in.")
+              }
+            })
+          }).catch((error) => {
+            console.log("error========>", error)
           })
-        }).catch((error)=>{
-          console.log("error========>",error)
-        })
-      }).catch((error) => {
-        // User couldn't sign in (bad verification code?)
-        setDisableVerifyOtp(false)
-        console.log(error)
-      });
-    }
-    else{
-      alert("All Field are Mandatory")
-      console.log(errors)
-    }
+        }).catch((error) => {
+          // User couldn't sign in (bad verification code?)
+          setDisableVerifyOtp(false)
+          console.log(error)
+        });
+      }
+      else {
+        alert("All Field are Mandatory")
+        console.log(errors)
+      }
     }
   }
 
   const ValidateForm = (errors) => {
     // Validate('aadharNumber', aadharNumber)
     Validate("dob", basicData.dob)
-    Validate("pincode", basicData.pincode)
+    Validate("pincode",pincode)
     let valid = true;
     Object?.values(errors).forEach(
       // if we have an error string set valid to false
@@ -116,23 +120,23 @@ const Register = () => {
     );
     return valid;
   }
- const Validate = async(name, value) => {
+  const Validate = async (name, value) => {
     let error = errors
-      switch (name) {
-        case 'dob': error = isNotEmpty(name, value)
-          setErrors(error)
-          setEmptyState("")
-          break;
-      
-        case 'pincode': error = isNotEmpty(name, value)
-          setErrors(error)
-          break;
-      }
+    switch (name) {
+      case 'dob': error = isNotEmpty(name, value)
+        setErrors(error)
+        setEmptyState("")
+        break;
+
+      case 'pincode': error = isNotEmpty(name, value)
+        setErrors(error)
+        break;
+    }
   }
 
   const handleMobileNoInput = (event) => {
     // console.log("<=====EVENT VALUE=====>",event?.target?.value);
-    setBasicData(preValue=>({...preValue, ["primaryContactNumber"]:event?.target?.value}))
+    setBasicData(preValue => ({ ...preValue, ["primaryContactNumber"]: event?.target?.value }))
     // console.log(mobileNo)
     if (event?.target?.value?.length > 9) {
       // generateRecaptcha();
@@ -178,24 +182,24 @@ const Register = () => {
       const errors = validateSelectInput("dob", event?.target?.value)
       setErrors(errors);
       // setDob(event?.target?.value)
-      setBasicData(preValue=>({...preValue, ["dob"]:event?.target?.value}))
+      setBasicData(preValue => ({ ...preValue, ["dob"]: event?.target?.value }))
+      window.dob = event?.target?.value
     }
   }
-// Handle pincode
-const hanldePinCode = (event) => {
-  if (event || event?.target?.length === 0) {
-      const error = validatePincode("pincode",event?.target?.value, "lng");
+  // Handle pincode
+  const hanldePinCode = (event) => {
+    if (event || event?.target?.length === 0) {
+      const error = validatePincode("pincode", event?.target?.value, "lng");
       setErrors(error)
-      // setPincode(event?.target?.value)
-      window.studentType=event?.target?.value // setting the global value
-      setBasicData(preValue=>({...preValue, ["pincode"]:event?.target?.value}))
+      setPincode(event?.target?.value)
+      window.pincode = event?.target?.value
+    }
+    console.log(errors)
   }
-  console.log(errors)
-}
-// handle otp
+  // handle otp
   const handleOtpInput = (event) => {
     // console.log("<=====EVENT VALUE=====>",event?.target?.value);
-    const error = validatePincode("otp",event?.target?.value, "lng");
+    const error = validatePincode("otp", event?.target?.value, "lng");
     setErrors(error)
     setOtp(event?.target?.value);
   };
@@ -226,7 +230,7 @@ const hanldePinCode = (event) => {
           </Typography>
         </Grid>
         <form  >
-        {/* onSubmit={(e)=>submitData(e)} */}
+          {/* onSubmit={(e)=>submitData(e)} */}
 
           <TextField
             label={t('mobile_no')}
@@ -247,60 +251,60 @@ const hanldePinCode = (event) => {
             }}
           />
           <Box>
-          <DateOfBirthBox
-            name="dob"
-            variant='standard'
-            label='Date Of Birth'
-            fullWidth='fullWidth'
-            onChange={(e) => handleDob(e)}
-          />
-          {errors?.dob ? (<div style={{ color: "red" }}>{errors.dob}</div>) : null}
+            <DateOfBirthBox
+              name="dob"
+              variant='standard'
+              label='Date Of Birth'
+              fullWidth='fullWidth'
+              onChange={(e) => handleDob(e)}
+            />
+            {errors?.dob ? (<div style={{ color: "red" }}>{errors.dob}</div>) : null}
           </Box>
-         
-        <Box>
-          <TextFields
-            label='Pincode'
-            placeholder='Enter your pincode'
-            required
-            id='pincode'
-            name='pincode'
-            type="number"
-            fullWidth='fullWidth'
-            variant='standard'
-            onChange={hanldePinCode}
-            // error={(errors?.pincode==='')?true:false}
-            //inputProps={{ minLength: 6, maxLength: 6 }}
-            onInput={(e) => {
-              e.target.value = Math.max(0, parseInt(e.target.value))
-                .toString()
-                .slice(0, 6)
-            }} 
-            
-          />
-          {errors?.pincode ? (<div style={{ color: "red" }}>{errors.pincode}</div>) : null}
+
+          <Box>
+            <TextFields
+              label='Pincode'
+              placeholder='Enter your pincode'
+              required
+              id='pincode'
+              name='pincode'
+              type="number"
+              fullWidth='fullWidth'
+              variant='standard'
+              onChange={hanldePinCode}
+              // error={(errors?.pincode==='')?true:false}
+              //inputProps={{ minLength: 6, maxLength: 6 }}
+              onInput={(e) => {
+                e.target.value = Math.max(0, parseInt(e.target.value))
+                  .toString()
+                  .slice(0, 6)
+              }}
+
+            />
+            {errors?.pincode ? (<div style={{ color: "red" }}>{errors.pincode}</div>) : null}
           </Box>
           <Box>
-           <TextField
-          label={t('otp')}
-          placeholder={t('otp_placeholder')}
-          // required
-          type='number'
-          id='otp'
-          name='otp'
-          fullWidth='fullWidth'
-          variant='standard'
-          helperText=''
-          autoFocus={false}
-          onChange={handleOtpInput}
-          // inputProps={{ maxLength: 5 }}
-          onInput={(e) => {
-            e.target.value = Math.max(0, parseInt(e.target.value))
-              .toString()
-              .slice(0, 6)
-          }}
-        />
-        {errors?.otp ? (<div style={{ color: "red" }}>{errors?.otp}</div>) : null}
-        </Box>
+            <TextField
+              label={t('otp')}
+              placeholder={t('otp_placeholder')}
+              // required
+              type='number'
+              id='otp'
+              name='otp'
+              fullWidth='fullWidth'
+              variant='standard'
+              helperText=''
+              autoFocus={false}
+              onChange={handleOtpInput}
+              // inputProps={{ maxLength: 5 }}
+              onInput={(e) => {
+                e.target.value = Math.max(0, parseInt(e.target.value))
+                  .toString()
+                  .slice(0, 6)
+              }}
+            />
+            {errors?.otp ? (<div style={{ color: "red" }}>{errors?.otp}</div>) : null}
+          </Box>
           <Grid container>
             <Grid item xs>
               <Buttons text='GET OTP' disabled={disableGetOtp} onClick={generateOTP} />
@@ -380,8 +384,8 @@ const hanldePinCode = (event) => {
           {/* <Link
             to='/candidateType'
             style={{ textDecoration: 'none', color: 'inherit' }}> */}
-            <Buttons disabled={otp.length!==6 ? true: basicData.pincode.length!==6?true:studentType === '' ? true : (checkBox1 == true) && (checkBox2 == true) ? false : true}
-              onClick={(e)=>submitData(e)} variant='contained' fullWidth='fullWidth' />
+          <Buttons disabled={otp.length !== 6 ? true :pincode.length !== 6 ? true : studentType === '' ? true : (checkBox1 == true) && (checkBox2 == true) ? false : true}
+            onClick={(e) => submitData(e)} variant='contained' fullWidth='fullWidth' />
           {/* </Link> */}
         </form>
       </Paper>

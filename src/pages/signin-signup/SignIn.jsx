@@ -94,21 +94,23 @@ const LoginUser = ({ handleChange }) => {
           window.userId = dataFromSucessLogin[0]?.id;
           window.jwtTokenResult = dataFromSucessLogin[0]?.token;
           window.refreshJwtToken = dataFromSucessLogin[0]?.token;
-          fetchStduentDataBaisedOnContactNumber(mobileNo).then((jsondata)=>{
+          window.userId = dataFromSucessLogin[1]?.id;
+          await fetchStduentDataBaisedOnContactNumber(mobileNo).then(async (jsondata)=>{
             let result =(jsondata.data)
             if(result.length >2 ){
               result =JSON.parse(jsondata.data)
+              console.log("studne details>>",result)
               let dbUserId = result[0].dbUserId;
               window.dbUserId = dbUserId // setting global variable
-              
+              window.dob= result[0].dob
+              window.primaryContactNumber = result[0].primaryContactNumber
               // Getting the enagagment ID baised on dbuserId
-
-              fetchStduentEngagementDataBaisedOnDBUserId(result[0].dbUserId).then((jsondata)=>{
-                // let res = JSON.parse(jsondata.data)
-                console.log(jsondata)
+              await fetchStduentEngagementDataBaisedOnDBUserId(result[0].dbUserId).then((jsondata)=>{
+                let res = JSON.parse(jsondata.data)
+                console.log(res)
+                window.engagementId = res[0]?.engagementId
               })
-
-              // history('../form',{ replace: true },window.jwtTokenResult,window.refreshJwtToken );
+              history('/form',{state: result });
             }
             else{
               alert("User Not Found! Please Sign Up.")

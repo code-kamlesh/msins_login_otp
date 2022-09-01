@@ -65,6 +65,7 @@ export default function SelectOption({
           options={options}
           onChange={onChange}
           error={error}
+          value={value}
         />
       {/* </FormControl> */}
     </Box>

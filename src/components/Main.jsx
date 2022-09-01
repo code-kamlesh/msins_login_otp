@@ -21,12 +21,14 @@ import Status from '../pages/StatusOfApplication'
 import CandidateType from '../pages/candidate-type/CandidateType'
 import BasicDetailsForm from './../pages/forms/BasicDetailsForm'
 import Header from './Header'
+import { useLocation } from "react-router-dom";
 import EligibilityTest, {
   UserIsEligible,
   UserIsNotEligible,
 } from '../pages/eligible/EligibilityTest'
 
 const Main = () => {
+  // console.log(location.state)
   const [mode, setMode] = useState('light')
   const jwtToken = window?.jwtTokenResult;
   // const isOTPVerified
@@ -90,7 +92,7 @@ const Main = () => {
 
                 <Routes>
                   {/* <Route path="/form2" element={<Steppers />} /> */}
-                  <Route path='/form' element={  <StepperForm />} />
+                  <Route path='/form' element={<StepperForm />} />
                   {/* (window.jwtTokenResult == '' || window.jwtTokenResult == null || window.jwtTokenResult == undefined) ? <Home/> : */}
                   <Route
                     path='/form/uploadDocuments'

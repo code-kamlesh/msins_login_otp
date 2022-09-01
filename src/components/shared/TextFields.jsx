@@ -20,7 +20,8 @@ export default function TextFields({
   helperText,
   inputProps,
   onInput,
-  error
+  error,
+  value
 }) {
   return (
     <>
@@ -30,6 +31,7 @@ export default function TextFields({
         id={id}
         label={label}
         name={name}
+        value={value}
         type={type}
         inputProps={inputProps}
         onFocus={onFocus}

@@ -13,7 +13,9 @@ export default function DateOfBirthBox({
   margin,
   fullWidth,
   inputProps,
-  autoFocus
+  autoFocus,
+  value,
+  disabled
 }) {
   //removing dd-mm-yy of date
   const [focus, setFocused] = useState(false);
@@ -23,11 +25,13 @@ export default function DateOfBirthBox({
 
   return (
     <TextField
+    disabled={disabled}
       margin={margin}
       fullWidth={fullWidth}
       name={name}
       label={label}
       //type="date"
+      value={value}
       id={id}
       error={error}
       helperText={helperText}

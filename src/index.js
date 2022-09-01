@@ -5,17 +5,18 @@ import { initReactI18next } from "react-i18next";
 import HttpApi from "i18next-http-backend";
 import LanguageDetector from "i18next-browser-languagedetector";
 import "bootstrap/dist/js/bootstrap.js";
-
+import Main from "./components/Main";
 import App from "./App";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "flag-icon-css/css/flag-icons.min.css";
-window.userId=""
+window.userId=1
 window.studentType = "";
 window.jwtTokenResult = "";
 window.refreshJwtToken = "";
-window.engagemantId=""
-window.dbUserId=""
+window.engagementId=10
+window.dbUserId=10
+window.engagementId = ""
 window.dob=""
 window.pincode=""
 window.primaryContactNumber=""
@@ -53,5 +54,6 @@ const root = createRoot(rootElement);
 root.render(
   <Suspense fallback={loadingMarkup}>
     <App />
+
   </Suspense>,
 );

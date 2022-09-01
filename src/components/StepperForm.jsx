@@ -223,13 +223,13 @@ export default function StepperForm() {
                     {/* <Button onClick={handleReset} className={classes.button}>
                     Reset
                   </Button> */}
-                    <Button
+                    {/* <Button
                       onClick={handleSave}
                       className={classes.button}
                       //variant="contained"
                     >
                       Save
-                    </Button>
+                    </Button> */}
 
                     {/* <Button
                     variant="contained"
