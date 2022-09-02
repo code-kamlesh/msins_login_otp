@@ -17,6 +17,7 @@ import AddPrefixToMobile from '../../components/shared/utils/AddPrefixToMobile'
 import { useTranslation } from 'react-i18next'
 import Language from '../../components/language/Language'
 import { login , fetchStduentDataBaisedOnContactNumber,fetchStduentEngagementDataBaisedOnDBUserId} from '../../utility/Api'
+import Dashboard from '../../components/Dashboard'
  
 // language/Language'
 
@@ -79,6 +80,7 @@ const LoginUser = ({ handleChange }) => {
     }
     else{
       setDisableVerifyOtp(true)
+      
       let confirmationOTP = window.confirmationResult;
       confirmationOTP.confirm(otp).then( async (result) => {
         const user = result.user;
@@ -104,13 +106,16 @@ const LoginUser = ({ handleChange }) => {
               window.dbUserId = dbUserId // setting global variable
               window.dob= result[0].dob
               window.primaryContactNumber = result[0].primaryContactNumber
+              // window.loginType = "SignIn"
+              window.loginType = "SignUp"
               // Getting the enagagment ID baised on dbuserId
               await fetchStduentEngagementDataBaisedOnDBUserId(result[0].dbUserId).then((jsondata)=>{
                 let res = JSON.parse(jsondata.data)
                 console.log(res)
                 window.engagementId = res[0]?.engagementId
               })
-              history('/form',{state: result });
+              // {state: {state: result , token : dataFromSucessLogin[0]?.token, "loginType": "SignIn"},
+              history('/home' ,{replace:true});
             }
             else{
               alert("User Not Found! Please Sign Up.")
@@ -144,109 +149,118 @@ const LoginUser = ({ handleChange }) => {
   };
 
   return (
-    <Grid>
-      <Paper style={paperStyle}>
-        <Grid align='center'>
-          <Avatar style={avatarStyle}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <h2>Sign In</h2>
-        </Grid>
-
-        <TextField
-          label={t('mobile_no')}
-          placeholder={t('mobile_no_placeholder')}
-          required
-          type='number'
-          id='mobile'
-          name='mobile'
-          fullWidth='fullWidth'
-          variant='standard'
-          helperText=''
-          autoFocus={false}
-          onChange={handleMobileNoInput}
-          // inputProps={{ maxLength: 5 }}
-          onInput={(e) => {
-            e.target.value = Math.max(0, parseInt(e.target.value))
-              .toString()
-              .slice(0, 10)
-          }}
-        />
-
-        <TextField
-          label={t('otp')}
-          placeholder={t('otp_placeholder')}
-          // required
-          type='number'
-          id='mobile'
-          name='mobile'
-          fullWidth='fullWidth'
-          variant='standard'
-          helperText=''
-          autoFocus={false}
-          onChange={handleOtpInput}
-          // inputProps={{ maxLength: 5 }}
-          onInput={(e) => {
-            e.target.value = Math.max(0, parseInt(e.target.value))
-              .toString()
-              .slice(0, 6)
-          }}
-        />
-
-        {/* <AddPrefixToMobile /> */}
-
-        {/* <OTP /> */}
-
-        {/* <FormControlLabel
-          control={<Checkbox name="checkedB" color="primary" />}
-          label="Remember me"
-        /> */}
-        &nbsp;&nbsp;
-        <Grid container>
-          <Grid item xs>
-            <Buttons text={t('get_otp')} disabled={disableGetOtp} onClick={generateOTP} />
+    <>
+    
+    {
+      (window.jwtTokenResult === "") ? (
+        <Grid>
+        <Paper style={paperStyle}>
+          <Grid align='center'>
+            <Avatar style={avatarStyle}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <h2>Sign In</h2>
           </Grid>
-          <Grid item >
-            <Buttons text={t('resend_otp')} disabled={true} onClick={generateOTP} />
-          </Grid>
-          {/* <Grid item>
-            <Buttons text={t('verify_otp')} disabled={disableVerifyOtp} onClick={verifyOTP}/>
-          </Grid> */}
-        </Grid>
-
-        {/* <Link
-          to='/status'
-          style={{
-            textDecoration: 'none',
-            color: 'inherit',
-          }}
-        > */}
-        
-          <Buttons
-            sx={{ mt: '30px', mb: '30px' }}
-            text={t('verify_otp')}
-            variant='contained'
-            disabled={disableVerifyOtp}
-            // color={(!disableGetOtp) ? 'gray' : 'gray'}
-            onClick={verifyOTP}
+  
+          <TextField
+            label={t('mobile_no')}
+            placeholder={t('mobile_no_placeholder')}
+            required
+            type='number'
+            id='mobile'
+            name='mobile'
             fullWidth='fullWidth'
+            variant='standard'
+            helperText=''
+            autoFocus={false}
+            onChange={handleMobileNoInput}
+            // inputProps={{ maxLength: 5 }}
+            onInput={(e) => {
+              e.target.value = Math.max(0, parseInt(e.target.value))
+                .toString()
+                .slice(0, 10)
+            }}
           />
-        {/* </Link> */}
-
-        {/* <Typography>
-          <Link href="#">Forgot password ?</Link>
-      </Typography>*/}
-        
-        <Typography>
-          Do you have an account?
-          <Link to='#' onClick={() => handleChange('event', 1)}>
-            Sign Up
-          </Link>
-        </Typography>
-        
-      </Paper>
-      <div id="recaptcha"></div>
-    </Grid>
+  
+          <TextField
+            label={t('otp')}
+            placeholder={t('otp_placeholder')}
+            // required
+            type='number'
+            id='mobile'
+            name='mobile'
+            fullWidth='fullWidth'
+            variant='standard'
+            helperText=''
+            autoFocus={false}
+            onChange={handleOtpInput}
+            // inputProps={{ maxLength: 5 }}
+            onInput={(e) => {
+              e.target.value = Math.max(0, parseInt(e.target.value))
+                .toString()
+                .slice(0, 6)
+            }}
+          />
+  
+          {/* <AddPrefixToMobile /> */}
+  
+          {/* <OTP /> */}
+  
+          {/* <FormControlLabel
+            control={<Checkbox name="checkedB" color="primary" />}
+            label="Remember me"
+          /> */}
+          &nbsp;&nbsp;
+          <Grid container>
+            <Grid item xs>
+              <Buttons text={t('get_otp')} disabled={disableGetOtp} onClick={generateOTP} />
+            </Grid>
+            <Grid item >
+              <Buttons text={t('resend_otp')} disabled={true} onClick={generateOTP} />
+            </Grid>
+            {/* <Grid item>
+              <Buttons text={t('verify_otp')} disabled={disableVerifyOtp} onClick={verifyOTP}/>
+            </Grid> */}
+          </Grid>
+  
+          {/* <Link
+            to='/status'
+            style={{
+              textDecoration: 'none',
+              color: 'inherit',
+            }}
+          > */}
+          
+            <Buttons
+              sx={{ mt: '30px', mb: '30px' }}
+              text={t('verify_otp')}
+              variant='contained'
+              disabled={disableVerifyOtp}
+              // color={(!disableGetOtp) ? 'gray' : 'gray'}
+              onClick={verifyOTP}
+              fullWidth='fullWidth'
+            />
+          {/* </Link> */}
+  
+          {/* <Typography>
+            <Link href="#">Forgot password ?</Link>
+        </Typography>*/}
+          
+          <Typography>
+            Do you have an account?
+            <Link to='#' onClick={() => handleChange('event', 1)}>
+              Sign Up
+            </Link>
+          </Typography>
+          
+        </Paper>
+        <div id="recaptcha"></div>
+      </Grid>
+      ):(
+        <Dashboard />
+      )
+    }
+   </>
   )
 }
 

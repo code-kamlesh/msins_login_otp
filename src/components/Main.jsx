@@ -26,6 +26,7 @@ import EligibilityTest, {
   UserIsEligible,
   UserIsNotEligible,
 } from '../pages/eligible/EligibilityTest'
+import  Dashboard from "./Dashboard"
 
 const Main = () => {
   // console.log(location.state)
@@ -54,53 +55,17 @@ const Main = () => {
             // }}
             // mt="4rem"
             >
-              <Header />
+             
               <Routes>
                 <Route path='/' element={<Home />} />
               </Routes>
               <Routes>
-                <Route path='/eligibilityTest' element={<EligibilityTest />} />
+                <Route path='/home' element={<Home />} />
               </Routes>
-              <Routes>
-                <Route
-                  path='/eligibilityTest/userIsEligible'
-                  element={<UserIsEligible />}
-                />
-              </Routes>
-              <Routes>
-                <Route
-                  path='/eligibilityTest/userIsNotEligible'
-                  element={<UserIsNotEligible />}
-                />
-              </Routes>
-              <Routes>
-                <Route path='/basicDetails' element={<BasicDetailsForm />} />
-              </Routes>
-              <Routes>
-                <Route path='/candidateType' element={<CandidateType />} />
-              </Routes>
-              <Routes>
-                <Route path='/status' element={<Status />} />
-              </Routes>{' '}
-              <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
-                <Routes>
-                  <Route
-                    path='/educationDetails'
-                    element={<EducationDetails />}
-                  />
-                </Routes>
-
-                <Routes>
-                  {/* <Route path="/form2" element={<Steppers />} /> */}
-                  <Route path='/form' element={<StepperForm />} />
-                  {/* (window.jwtTokenResult == '' || window.jwtTokenResult == null || window.jwtTokenResult == undefined) ? <Home/> : */}
-                  <Route
-                    path='/form/uploadDocuments'
-                    element={<UploadDocuments />}
-                  />
-                  {/* <Route path="/form3" element={<TextMobileStepper />} /> */}
-                </Routes>
-              </Container>
+              {/* <Routes>
+                <Route path='/dashboard' element={<Dashboard />} />
+              </Routes> */}
+           
             </Box>
             <Footer />
           </ThemeProvider>

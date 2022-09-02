@@ -20,7 +20,7 @@ window.engagementId = ""
 window.dob=""
 window.pincode=""
 window.primaryContactNumber=""
-
+window.loginType=""
 i18next
   .use(HttpApi)
   .use(LanguageDetector)
