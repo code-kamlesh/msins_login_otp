@@ -39,7 +39,7 @@ console.log(window?.loginType)
           
             <Box>
             <Routes>
-                <Route path='/' element={ window.loginType === "SignIn" ?<StepperForm /> : <UserIsEligible />} />
+                <Route path='/' element={ window.loginType === "SignIn" ? <StepperForm /> : <UserIsEligible />} />
 
               </Routes>
 

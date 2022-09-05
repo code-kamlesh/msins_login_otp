@@ -23,17 +23,7 @@ const selectQualificationOptions = ["PhD", "Masters", "Bachelors", "ITI"];
 const selectReligionOptions = ["Hindu", "Muslim", "Sikh", "Others"];
 const selectCategoryOptions = ["General", "O.B.C", "S.C", "Others"];
 const selectIncomeStatusOptions = ["BPL", "APL", "Antyodaya"];
-const selectBloodGroupOptions = [
-  "A+",
-  "A-",
-  "B+",
-  "B-",
-  "AB+",
-  "AB-",
-  "O+",
-  "O-",
-  "Other",
-];
+const selectBloodGroupOptions = ["A+","A-","B+","B-","AB+","AB-", "O+","O-","Other"];
 
 export default function BasicDetailsForm() {
   const location = useLocation();
