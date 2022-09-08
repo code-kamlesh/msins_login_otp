@@ -1,29 +1,43 @@
 import Grid from "@mui/material/Grid";
+import * as React from "react";
 import TypographyText from "../../components/shared/TypographyText";
 import SelectOption from "../../components/shared/SelectOption";
 import { Box } from "@mui/material";
 import TextFields from "../../components/shared/TextFields";
-import TextareaAutosizeBox from "./../../components/shared/TextareaAutosizeBox";
+import TextareaAutosizeBox from "./../../components/shared/TextareaAutosizeBox"
+import useStyles  from '../../components/layout'
+import { Link, useNavigate } from 'react-router-dom'
+import Container from "@mui/material/Container";
+import { Button } from "@mui/material";
+import Stack from '@mui/material/Stack';
+
+const selectExistingIdeaButton = [
+  "Yes(Self Owned)",
+  "Yes(Family Owned)",
+  "No",
+];
+const selectRaisedMoneyButton = ["Yes", "No"];
+const selectAadharRegistrationButton = ["Yes", "No"];
+const selectGSTRegistrationButton = ["Yes", "No"];
+const selectDIPPRegistrationButton = ["Yes", "No"];
 
 export default function ExistingBusinessInnovator() {
-  const selectExistingIdeaButton = [
-    "Yes(Self Owned)",
-    "Yes(Family Owned)",
-    "No",
-  ];
-  const selectRaisedMoneyButton = ["Yes", "No"];
-  const selectAadharRegistrationButton = ["Yes", "No"];
-  const selectGSTRegistrationButton = ["Yes", "No"];
+  const history = useNavigate();
+  const classes = useStyles();
+  
 
-  const selectDIPPRegistrationButton = ["Yes", "No"];
-
+  const submitData = ()=>{
+    history('/uploadDocuments' ,{replace:true})
+  }
+  const handleBack = ()=>{
+    history('/experiencedetails' ,{replace:true})
+  }
   return (
-    <>
-      {/* <TypographyText
-        variant="h6"
-        typoText="Existing Business- Innovator"
-        gutterBottom="gutterBottom"
-      /> */}
+      
+<div className={classes.root} >
+       <h3 style={{ textAlign: "center" }}>Existing Business</h3>
+       <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
+    <React.Fragment className={classes.actionsContainer}>
       <Grid container spacing={6}>
         {/*Start- Existing Business Entrepreneur questions */}
         <Grid item xs={12} sm={6} md={6}>
@@ -270,6 +284,13 @@ export default function ExistingBusinessInnovator() {
           />
         </Grid>
       </Grid>
-    </>
+         
+      <Stack direction="row" spacing={2}>
+        <Button type="submit" variant="contained" color="primary" onClick={handleBack} >Back</Button>
+        <Button type="submit" variant="contained" color="primary" onClick={submitData} >Next</Button>
+      </Stack>
+      </React.Fragment>
+      </Container>
+    </div>
   );
 }

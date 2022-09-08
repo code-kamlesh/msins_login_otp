@@ -7,12 +7,8 @@ import {
 } from '@mui/material'
 
 import { useState } from 'react'
-
 import Footer from './Footer'
-//import AgentInfo from "./../pages/AgentInfo";
-
 import Container from '@mui/material/Container'
-
 import StepperForm from './StepperForm'
 import UploadDocuments from './upload-documents/UploadDocuments'
 import Home from './../pages/Home'
@@ -21,18 +17,24 @@ import Status from '../pages/StatusOfApplication'
 import CandidateType from '../pages/candidate-type/CandidateType'
 import BasicDetailsForm from './../pages/forms/BasicDetailsForm'
 import Header from './Header'
-import { useLocation } from "react-router-dom";
+import SocioEconomicInnovatorForm from '../pages/forms/SocioEconomicInnovatorForm'
+import SocioEconomicEntepreneurForm from '../pages/forms/SocioEconomicEntepreneurForm'
+import ExperienceDetails from '../pages/forms/ExperienceDetailsForm'
+import ExistingBusinessDetails from '../pages/forms/ExistingBusinessDetails'
+import SocioEconimoicDetails from "../pages/forms/SocioEconomicDetails"
+import BusinessCaseEntrepreneurForm from "../pages/forms/BusinessCaseEntrepreneurForm"
+import ProtectedRoutes from "./RoutesProtector"
+// import SocioEconomicInnovatorForm from '../pages/forms/ExistingBusinessInnovatorForm'
+// import ExistingBusinessEnterpreneurForm from '../pages/forms/ExistingBusinessEnterpreneurForm'
 import EligibilityTest, {
   UserIsEligible,
   UserIsNotEligible,
 } from '../pages/eligible/EligibilityTest'
-import  Dashboard from "./Dashboard"
+
 
 const Main = () => {
-  // console.log(location.state)
   const [mode, setMode] = useState('light')
-  const jwtToken = window?.jwtTokenResult;
-  // const isOTPVerified
+  //  const mylocation = location.pathname;
 
   const darkTheme = createTheme({
     palette: {
@@ -41,36 +43,47 @@ const Main = () => {
   })
   return (
     <>
-      <BrowserRouter>
+        
         <StyledEngineProvider injectFirst>
           <ThemeProvider theme={darkTheme}>
             <Box
-            // component="main"
-            // sx={{
-            //   backgroundColor: "#F5F5F5",
-            //   flexGrow: 1,
-            //   minHeight: "82.5vh",
-            //   overflow: "auto",
-            //   display: "flex",
-            // }}
-            // mt="4rem"
             >
-             
+              <Header />
+              
               <Routes>
                 <Route path='/' element={<Home />} />
-              </Routes>
-              <Routes>
-                <Route path='/home' element={<Home />} />
-              </Routes>
+                {/* element={<CandidateType />} */}
+                <Route path='/eligibilityTest' element={<CandidateType />} />
+                <Route path='/eligibilityTest/userIsEligible' element={<UserIsEligible />}  />
+                <Route path='/eligibilityTest/userIsNotEligible'  element={<UserIsNotEligible />}  />
+                <Route path='/basicdetails' element={<BasicDetailsForm />} />
+                <Route path='/socioeconomicdetails' element={<SocioEconimoicDetails />} />
+                <Route path='/experiencedetails' element={< ExperienceDetails/>} />
+                <Route path='/Businessdetails' element={<ExistingBusinessDetails/>} />
+                <Route path='/entrepreneurbusinessform' element={<BusinessCaseEntrepreneurForm/>} />
+                <Route path='/uploadDocuments' element={<UploadDocuments />}/>
+                {/* <Route path='/eligibilityTest'  element ={}  /> */}
+                <Route path='/status' element={<Status />} />
               {/* <Routes>
-                <Route path='/dashboard' element={<Dashboard />} />
+                <Route path='/socioenterpreneur' element={< SocioEconomicEntepreneurForm/>} />
               </Routes> */}
-           
+              {/* <Routes>
+                <Route path='/eligibilityTest' element={<EligibilityTest />} />
+              </Routes> */} 
+               </Routes>{' '}
+              <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
+                <Routes>
+                  <Route
+                    path='/educationDetails'
+                    element={<EducationDetails />}
+                  />
+                </Routes>
+              </Container>
             </Box>
             <Footer />
           </ThemeProvider>
         </StyledEngineProvider>
-      </BrowserRouter>
+        
     </>
   )
 }

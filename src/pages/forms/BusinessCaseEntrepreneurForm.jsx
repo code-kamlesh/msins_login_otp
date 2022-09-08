@@ -1,22 +1,30 @@
 import * as React from "react";
 import Grid from "@mui/material/Grid";
-import TypographyText from "../../components/shared/TypographyText";
-import TextFields from "../../components/shared/TextFields";
-
-import SelectOption from "../../components/shared/SelectOption";
-import TextareaAutosize from "@mui/material/TextareaAutosize";
 import TextareaAutosizeBox from "../../components/shared/TextareaAutosizeBox";
-import { Box } from "@mui/material";
 import AddressData from "../../components/shared/AddressData";
+import useStyles  from '../../components/layout'
+import { Link, useNavigate } from 'react-router-dom'
+import Container from "@mui/material/Container";
+import { Button } from "@mui/material";
+import Stack from '@mui/material/Stack';
 
 export default function BusinessCaseEntrepreneurForm() {
+  const history = useNavigate();
+  const classes = useStyles();
+  
+  
+  const submitData = ()=>{
+    history('/uploadDocuments' ,{replace:true})
+  }
+  const handleBack = ()=>{
+    history('/Businessdetails' ,{replace:true})
+  }
+
   return (
-    <React.Fragment>
-      {/* <TypographyText
-        variant="h6"
-        typoText="Business Case Entrepreneurship Details"
-        gutterBottom="gutterBottom"
-      /> */}
+    <div className={classes.root} >
+       <h3 style={{ textAlign: "center" }}>Business Case Entepreneur</h3>
+       <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
+    <React.Fragment className={classes.actionsContainer}>   
       <Grid container spacing={6}>
         <Grid item xs={12}>
           <p>
@@ -155,6 +163,12 @@ export default function BusinessCaseEntrepreneurForm() {
         </Grid>
         {/* End of Business Case Entepreneur */}
       </Grid>
-    </React.Fragment>
+      <Stack direction="row" spacing={2}>
+        <Button type="submit" variant="contained" color="primary" onClick={handleBack} >Back</Button>
+        <Button type="submit" variant="contained" color="primary" onClick={submitData} >Next</Button>
+      </Stack>
+      </React.Fragment>
+      </Container>
+    </div>
   );
 }

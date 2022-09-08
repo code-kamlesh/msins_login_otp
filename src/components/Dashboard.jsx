@@ -1,8 +1,8 @@
 
-import {useState} from 'react'
-import { BrowserRouter, Routes, Route ,useNavigate,Link} from 'react-router-dom'
+import { useState } from 'react'
+import { BrowserRouter, Routes, Route,NavLink, useNavigate, Link } from 'react-router-dom'
 import { useLocation } from "react-router-dom";
-import {Box,createTheme,ThemeProvider,StyledEngineProvider,} from '@mui/material'
+import { Box, createTheme, ThemeProvider, StyledEngineProvider, } from '@mui/material'
 import Header from './Header'
 import Footer from './Footer'
 import StepperForm from './StepperForm'
@@ -10,40 +10,60 @@ import EducationDetails from '../pages/education-details/EducationDetails'
 import Status from '../pages/StatusOfApplication'
 import CandidateType from '../pages/candidate-type/CandidateType'
 import UploadDocuments from './upload-documents/UploadDocuments'
-import EligibilityTest, { UserIsEligible, UserIsNotEligible,} from '../pages/eligible/EligibilityTest'
+import EligibilityTest, { UserIsEligible, UserIsNotEligible, } from '../pages/eligible/EligibilityTest'
 import Container from '@mui/material/Container'
-export default function Dashboard(){
-const location = useLocation();
-const history = useNavigate();
-const [mode, setMode] = useState('light')
-//   if( location?.state !== null){
-//     var data = location?.state[0]
-//   }
+export default function Dashboard() {
+  const location = useLocation();
+  const history = useNavigate();
+  const [mode, setMode] = useState('light')
+  //   if( location?.state !== null){
+  //     var data = location?.state[0]
+  //   }
 
-console.log(window.location.href)
-console.log(window?.loginType)
-    // if(location?.state?.token == null || location?.state?.token == undefined){
-    //     history('/', {replace:true});
-    // }
-    // else{
-        const darkTheme = createTheme({
-            palette: {
-              mode: mode,
-            },
-          })
+  console.log(window.location.href)
+  console.log(window?.loginType)
+  console.log(window.loginType)
+  // if(location?.state?.token == null || location?.state?.token == undefined){
+  //     history('/', {replace:true});
+  // }
+  // else{
+  const darkTheme = createTheme({
+    palette: {
+      mode: mode,
+    },
+  })
 
-    return(
-        // <BrowserRouter>
-        <StyledEngineProvider injectFirst>
-          <ThemeProvider theme={darkTheme}>
-          
-            <Box>
-            <Routes>
+  return (
+    // <BrowserRouter>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={darkTheme}>
+
+        <Box>
+          {
+            window.loginType === "SignIn" ? 
+            // <Routes>
+            // <Route  path="/dashboard/form">
+            //   <StepperForm />
+            // </Route>
+            // </Routes>
+
+            // :<UserIsEligible />
+            <NavLink
+              className="navbar-item"
+              activeClassName="is-active"
+              to={ "Dashboard"+"/form"}
+              exact
+            >
+               <StepperForm />
+            </NavLink>
+            :<UserIsEligible />
+          }
+          {/* <Routes>
                 <Route path='/' element={ window.loginType === "SignIn" ? <StepperForm /> : <UserIsEligible />} />
 
-              </Routes>
+              </Routes> */}
 
-            {/* <Routes>
+          {/* <Routes>
                 <Route path='/eligibilityTest' element={<EligibilityTest />} />
               </Routes>
               <Routes>
@@ -61,40 +81,39 @@ console.log(window?.loginType)
               {/* <Routes>
                 <Route path='/basicDetails' element={<BasicDetailsForm />} />
               </Routes> */}
-              {/* <Routes>
+          {/* <Routes>
                 <Route exact path='/dashborad/candidateType' element={<CandidateType />} />
               </Routes>
               <Routes>
                 <Route path='/status' element={<Status />} />
               </Routes>{' '} 
               <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}> */}
-                {/* <Routes>
+          {/* <Routes>
                   <Route
                     path='/educationDetails'
                     element={<EducationDetails />}
                   />
                 </Routes> */}
 
-                {/* <Routes> */}
-                  {/* <Route path="/form2" element={<Steppers />} /> */}
-                  {/* <Route exact path='/dashborad/form' element={<StepperForm />} /> */}
-                  {/* (window.jwtTokenResult == '' || window.jwtTokenResult == null || window.jwtTokenResult == undefined) ? <Home/> : */}
-                  {/* <Route
+          {/* <Routes> */}
+          {/* <Route path="/form2" element={<Steppers />} /> */}
+          {/* <Route exact path='/dashborad/form' element={<StepperForm />} /> */}
+          {/* (window.jwtTokenResult == '' || window.jwtTokenResult == null || window.jwtTokenResult == undefined) ? <Home/> : */}
+          {/* <Route
                     path='/form/uploadDocuments'
                     element={<UploadDocuments />}
                   /> */}
-                  {/* <Route path="/form3" element={<TextMobileStepper />} /> */}
-                {/* </Routes> */}
-              {/* </Container> */}
-            </Box>
-           
-          </ThemeProvider>
-        </StyledEngineProvider>
-        // </BrowserRouter> 
-    )
-    }
-    
+          {/* <Route path="/form3" element={<TextMobileStepper />} /> */}
+          {/* </Routes> */}
+          {/* </Container> */}
+        </Box>
+
+      </ThemeProvider>
+    </StyledEngineProvider>
+    // </BrowserRouter> 
+  )
+}
+
 
 // }
 
- 

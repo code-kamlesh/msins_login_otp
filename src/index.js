@@ -5,17 +5,18 @@ import { initReactI18next } from "react-i18next";
 import HttpApi from "i18next-http-backend";
 import LanguageDetector from "i18next-browser-languagedetector";
 import "bootstrap/dist/js/bootstrap.js";
+import { BrowserRouter} from 'react-router-dom'
 import Main from "./components/Main";
 import App from "./App";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "flag-icon-css/css/flag-icons.min.css";
-window.userId=1
-window.studentType = "";
+window.userId=
+window.studentType = "Entepreneur"; // Entepreneur  Innovator
 window.jwtTokenResult = "";
 window.refreshJwtToken = "";
-window.engagementId=10
-window.dbUserId=10
+window.engagementId=
+window.dbUserId=
 window.engagementId = ""
 window.dob=""
 window.pincode=""
@@ -52,8 +53,10 @@ const loadingMarkup = (
 const rootElement = document.getElementById("root");
 const root = createRoot(rootElement);
 root.render(
+ 
   <Suspense fallback={loadingMarkup}>
+     <BrowserRouter>
     <App />
-
+    </BrowserRouter>
   </Suspense>,
 );

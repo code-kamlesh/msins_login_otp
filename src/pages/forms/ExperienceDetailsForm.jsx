@@ -1,15 +1,26 @@
 import React, {useState} from "react";
 import Grid from "@mui/material/Grid";
-import TypographyText from "../../components/shared/TypographyText";
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import TextFields from "../../components/shared/TextFields";
 import DateOfBirthBox from "../../components/shared/DateOfBirthBox";
-import { Box } from "@mui/material";
 import { saveExpDetails,fetchExperienceDetails } from "./../../utility/Api";
 import { Button } from "@mui/material";
 import {validateTextInput1 } from "./../../utility/Validation"
+import useStyles  from '../../components/layout'
+import {useNavigate } from 'react-router-dom'
+import Container from "@mui/material/Container";
+import Stack from '@mui/material/Stack';
+import FormControl from '@mui/material/FormControl'
+import FormLabel from '@mui/material/FormLabel'
 // validateTextInput1
 const dbUserId=1000011;
 export default function ExperienceDetails() {
+  const history = useNavigate();
+  const classes = useStyles();
+  
+  const [experience, setExperience] = useState("")
   const experienceTypeRadioBtn = ["Fresher", "Experience"];
   const [experienceData,setExperienceData] = useState({"dbUserId":dbUserId,"experienceFrom":'',"lastDesignation":'',"natureOfExperience":'',"employerName":'',"grossSalary":'',"postingLocation":'',"experienceTo":'',"employerAddress":'',"createdBy":7000019});
   const [errors,setErrors]= useState({})
@@ -72,6 +83,7 @@ export default function ExperienceDetails() {
   }
   
   const  handleExperienceData = (event)=>{
+    alert("Hello")
     event.preventDefault();
     let action = ""
     // console.log(scoioEconomicData);
@@ -81,20 +93,58 @@ export default function ExperienceDetails() {
     //   action =  "updateExperience";
     // }
     console.log(JSON.stringify(experienceData))
-    saveExpDetails(action,experienceData).then((jsondata)=>{
-      if(jsondata.appError==null){   
-        let jsonobjects = JSON.parse(jsondata.data); 
-        alert("Data Saved Successfully")
-      }
-    })
+    // saveExpDetails(action,experienceData).then((jsondata)=>{
+    //   if(jsondata.appError==null){   
+    //     let jsonobjects = JSON.parse(jsondata.data); 
+    //     alert("Data Saved Successfully")
+       
+    //   // }
+    // })
+    history('/Businessdetails' ,{replace:true})
   }
  
+  const handleBack = ()=>{
+    history('/socioeconomicdetails' ,{replace:true})
+  }
 
+  // setting radio button for experience details
+  const handleRadioButton = (e) => { 
+    setExperience(e.target.value) // saving in local
+    console.log(e.target.value)
+  }
   return (
-    <React.Fragment>
-      <form method="post" onSubmit={(e)=>handleExperienceData(e)}>
+    <div className={classes.root} >
+      <h3 style={{ textAlign: "center" }}>Experience Deatils</h3>
+      <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
+    <React.Fragment className={classes.actionsContainer}>
+      <FormControl style={{ marginTop: '20px', marginBottom: '10px' }}>
+            <FormLabel id='demo-row-radio-buttons-group-label'>
+            Do You Have any Business Experience.
+            </FormLabel>
+            <RadioGroup
+              row
+              aria-labelledby='demo-row-radio-buttons-group-label'
+              name='row-radio-buttons-group'
+            >
+              <FormControlLabel
+                value='Yes'
+                control={<Radio />}
+                label='Yes'
+                onChange={handleRadioButton}
+              />
+              <FormControlLabel
+                value='No'
+                control={<Radio />}
+                label='No'
+                onChange={handleRadioButton}
+              />
+            </RadioGroup>
+        </FormControl>
+        {
+          experience === "Yes" &&
+
+          <form>
       <Grid container spacing={3}>
-        <Grid></Grid>
         <Grid item xs={12} sm={6} md={6}>
           <DateOfBirthBox
             name="experienceFrom"
@@ -211,10 +261,14 @@ export default function ExperienceDetails() {
         </Grid>
       </Grid>{" "}
       <br />
-        <Grid container direction="row" justify="flex-end" alignItems="flex-end">
-          <Button type="submit" variant="contained" color="primary" >Save</Button>
-        </Grid>
       </form>
-    </React.Fragment>
+     }
+      <Stack direction="row" spacing={2}>
+        <Button type="submit" variant="contained" color="primary" onClick={handleBack} >Back</Button>
+        <Button type="submit" variant="contained" color="primary" onClick={(e)=>handleExperienceData(e) }>Next </Button>
+      </Stack>
+      </React.Fragment>
+      </Container>
+    </div>
   );
 }

@@ -76,10 +76,9 @@ export default function CommonData(props) {
 
   // save data
   const handleSubmitData = (e)=>{
-    alert("Hell")
     console.log(passingYear)
     if(passingYear>2018){
-    history('/form',{ replace: true });
+    history('/basicdetails',{ replace: true });
   }
   else{
     history('/eligibilityTest',{ replace: true });

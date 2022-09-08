@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import '../assets/css/status.css'
 
 export default function Status() {
+  
   return (
     <>
       <h2 style={{ textAlign: 'center', marginTop: '50px', color: '#8665f7' }}>

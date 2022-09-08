@@ -1,7 +1,4 @@
 import { serviceEndPoint } from './ServiceEndPoint';
-// const token = window?.jwtTokenResult;
-const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJrYW1sZXNoX3NpbmdoIiwiaWF0IjoxNjYyMzU4OTA3LCJleHAiOjE2NjI0NDUzMDd9.H4GUzo2agj8eqmxNmCd7SSIrbj9VtN1pjwBgkwHX2JQ5K4d5v8XXqVCIkOPIQozInXMDKqC-uRQWI5NI0JNCEw"
-
 export async function login() {
     let requestFormData = new FormData();  
     requestFormData.append('data', '{"token" : "", "action" : "login", "data" : [{"userName":"rahul@CL","password":"Pass@123"}]}');
@@ -12,7 +9,7 @@ export async function login() {
 }
 
 // export async function saveBasicData(action,aadharNo, gender, firstName, middleName, lastName,dob,highestQualification,religion, bloodGroup,incomeStatus,category,passingYear, primaryContactNumber, secondaryContactNumber,primaryEmailId, secondaryEmailId,remarks) {
-    export async function saveBasicData(action,data) {
+    export async function saveBasicData(action,data,token) {
     // if(isSessionValid()){
     let requestFormData = new FormData();  
     requestFormData.append('data', '{"token" : "1234", "action" : "'+action+'", "data" : [' + JSON.stringify(data) + ']}');
@@ -44,7 +41,7 @@ export async function fetchAddressDetailsBasedOnPincode(pincode) {
 }
 // saving aaddress data
 // export async function submitAddressData(action,entityId,entityType,addressLine1,addressLine2,pincode,villageName,cityName,district,createdBy,type,isActive)
-export async function submitAddressData(action,data)
+export async function submitAddressData(action,data,token)
 {
     // {"entityId":'+entityId+', "entityType":"'+entityType+'","addressLine1":"'+addressLine1+'","addressLine2":"'+addressLine2+'","pincode":'+pincode+',"state":"Maharashtra","villageName":"'+villageName+'","cityName":"'+cityName+'","district":"'+district+'","createdBy":'+createdBy+',"type":"'+type+'","isActive":"'+isActive+'"}]
     // if(isSessionValid()){
@@ -63,7 +60,7 @@ export async function submitAddressData(action,data)
 // return null;
 }
 // export async function captureStudentEngagementDetails(dbUserId,centerId,userId,ideaType,status) {
-    export async function captureStudentEngagementDetails(dbUserId,centerId,userId, studentType) {
+    export async function captureStudentEngagementDetails(dbUserId,centerId,userId, studentType,token) {
     // if(isSessionValid()){
     let requestFormData = new FormData();  
     requestFormData.append('data','{"token" : "'+ "1234" +'", "action" : "captureStudentEngagement", "data" :[{"dbUserId"  : ' + dbUserId + ' , "centerId" : ' + centerId + ', "createdBy" : ' + userId + ', "ideaType": "'+studentType+'", "remarks" : "","status" : "Draft"}]}');
@@ -84,7 +81,7 @@ export async function submitAddressData(action,data)
 
 
 //Socio Details added ashish
-export async function saveSocioDetails(action,data)
+export async function saveSocioDetails(action,data,token)
 {
     // if(isSessionValid()){
     let formData = new FormData();
@@ -103,7 +100,7 @@ export async function saveSocioDetails(action,data)
 }
 
 //fetching socio economic
-export async function fetchSocioDetails(id)
+export async function fetchSocioDetails(id, token)
 {
     // if(isSessionValid()){
      let formData = new FormData();
@@ -122,7 +119,7 @@ export async function fetchSocioDetails(id)
 }
 
 
-export async function fetchExperienceDetails(id)
+export async function fetchExperienceDetails(id,token)
 {
     // if(isSessionValid()){
     let formData = new FormData();
@@ -140,7 +137,7 @@ export async function fetchExperienceDetails(id)
 // return null;
 }
 
-export async function saveExpDetails(action, data)
+export async function saveExpDetails(action, data,token)
 {
     // if(isSessionValid()){
     let formData = new FormData();
@@ -158,7 +155,7 @@ export async function saveExpDetails(action, data)
 // return null;
 }
 
-export async function uploadDocument(dbUserId,engagementId,documentType,typeOfDocument,documentName,document,documentNumber,createdBy,updatedBy) {
+export async function uploadDocument(dbUserId,engagementId,documentType,typeOfDocument,documentName,document,documentNumber,createdBy,updatedBy,token) {
     // if(isSessionValid()){
     let requestFormData = new FormData();
     requestFormData.append('data', '{"token" : "", "action" : "captureDocDetails", "data" : [{"dbUserId":'+dbUserId+',"engagementId":'+engagementId+',"documentType":"'+documentType+'","typeOfDocument":"'+typeOfDocument+'","documentName":"'+documentName+'","base64File":"'+document+'","documentNo":"'+documentNumber+'","createdBy":"'+createdBy+'","updatedBy":"'+updatedBy+'"}]}');
@@ -175,7 +172,7 @@ export async function uploadDocument(dbUserId,engagementId,documentType,typeOfDo
 // return null;
 }
 
-export async function fetchUserDocumentsByEngagementId(engagementId) {
+export async function fetchUserDocumentsByEngagementId(engagementId,token) {
     // if(isSessionValid()){
     let requestFormData = new FormData();
     requestFormData.append('data', '{"token" : "", "action" : "fetchDocumentDetailsByEngagementId", "data" : [{"engagementId":'+engagementId+'}]}');
@@ -196,7 +193,7 @@ export async function fetchUserDocumentsByEngagementId(engagementId) {
 // viewAllBeneficiaryDetailsForContact
 
 
-export async function fetchStduentDataBaisedOnContactNumber(primaryContactNumber) {
+export async function fetchStduentDataBaisedOnContactNumber(primaryContactNumber,refreshtoken) {
     // if(isSessionValid()){
     let requestFormData = new FormData();
     requestFormData.append('data', '{"token" : "", "action" : "viewAllBeneficiaryDetailsForContact", "data" : [{"primaryContactNumber":' + primaryContactNumber + '}] }');
@@ -205,7 +202,7 @@ export async function fetchStduentDataBaisedOnContactNumber(primaryContactNumber
    return await fetch(serviceEndPoint.studentServiceEndPoint,{
      method: "POST",
      headers: {
-        'Authorization': 'Bearer '+token
+        'Authorization': 'Bearer '+refreshtoken
     }, 
      body: requestFormData,
      }).then(response => response.json());
@@ -214,7 +211,7 @@ export async function fetchStduentDataBaisedOnContactNumber(primaryContactNumber
 }
 
 // fetching studnet engagment data baised on dubuserId
-export async function fetchStduentEngagementDataBaisedOnDBUserId(dbUserId) {
+export async function fetchStduentEngagementDataBaisedOnDBUserId(dbUserId,token) {
     // if(isSessionValid()){
     let requestFormData = new FormData();
     requestFormData.append('data', '{"token" : "", "action" : "viewAllStudentEngagementForUser", "data" : [{"dbUserId":"' + dbUserId + '"}]}');
@@ -234,7 +231,8 @@ export async function fetchStduentEngagementDataBaisedOnDBUserId(dbUserId) {
 
 // fetch existing address if present
 // viewAllAddressForEntity
-export async function fetchExistingAddress(entityId,entityType) {
+export async function fetchExistingAddress(entityId,entityType,token) {
+    console.log(token)
     // if(isSessionValid()){
     let requestFormData = new FormData();
     requestFormData.append('data', '{"token" : "", "action" : "viewAllAddressForEntity", "data" : [{"entityId":"' + entityId + '", "entityType": "'+entityType+'"}]}');

@@ -1,12 +1,10 @@
 import React from "react";
 import { makeStyles, Theme, createStyles } from "@mui/styles";
-import Paper from "@mui/material/Paper";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Alert, StepButton, StepContent } from "@mui/material";
 import BasicDetailsForm from "../pages/forms/BasicDetailsForm";
 import SocioEconomicEntepreneurForm from "../pages/forms/SocioEconomicEntepreneurForm";
@@ -18,33 +16,11 @@ import BusinessCaseEntrepreneurForm from "../pages/forms/BusinessCaseEntrepreneu
 import ExistingBusinessInnovator from "../pages/forms/ExistingBusinessInnovatorForm";
 import UploadDocuments from "./upload-documents/UploadDocuments";
 import CheckIcon from "@mui/icons-material/Check";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import DialogBox from "./shared/DialogBox";
 import Container from "@mui/material/Container";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      width: "100%",
-    },
-    button: {
-      marginTop: theme.spacing(1),
-      marginRight: theme.spacing(1),
-    },
-    actionsContainer: {
-      marginBottom: theme.spacing(2),
-    },
-    resetContainer: {
-      padding: theme.spacing(3),
-    },
-    [theme.breakpoints.up("md")]: {
-      backgroundColor: "red",
-    },
-  }),
-);
-
+import useStyles  from './layout' 
+import { useEffect } from "react";
+import { Link, useNavigate } from 'react-router-dom'
 function getSteps() {
   if(window?.studentType ==="Innovator"){
     return [
@@ -125,6 +101,12 @@ function getStepContent(step) {
 }
 
 export default function StepperForm() {
+  const history = useNavigate();
+  console.log(window.refreshJwtToken)
+  // useEffect(() => {
+  //   if(window.refreshJwtToken === "")
+  //   history('/' ,{replace:true});
+  // }, []);
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState({});

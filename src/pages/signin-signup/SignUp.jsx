@@ -82,7 +82,6 @@ const Register = () => {
                    captureStudentEngagementDetails(dbUserId, 20, userId, studentType).then((jsondata) => {
                     console.log(">>>>>",jsondata)
                     let json = JSON.parse(jsondata.data);
-                    console.log(jsondata)
                     window.engagementId = json[0].engagementId //setting engagementid 
                     // console.log(eng_id)
                      history('/candidateType',{ replace: true });

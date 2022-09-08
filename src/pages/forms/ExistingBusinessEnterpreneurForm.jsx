@@ -2,12 +2,15 @@ import * as React from "react";
 import Grid from "@mui/material/Grid";
 import TypographyText from "../../components/shared/TypographyText";
 import TextFields from "../../components/shared/TextFields";
-
+import useStyles  from '../../components/layout'
+import { Link, useNavigate } from 'react-router-dom'
+import Container from "@mui/material/Container";
 import SelectOption from "../../components/shared/SelectOption";
 import TextareaAutosize from "@mui/material/TextareaAutosize";
 import TextareaAutosizeBox from "../../components/shared/TextareaAutosizeBox";
 import { Box } from "@mui/material";
-import AddressData from "../../components/shared/AddressData";
+import { Button } from "@mui/material";
+import Stack from '@mui/material/Stack';
 
 //adding select box options
 const selectLevelOptions = [
@@ -28,13 +31,22 @@ const selectudhyogAadharRegistrationOptions = ["Yes", "No"];
 const selectgstRegistrationOptions = ["Yes", "No", "Don't know"];
 
 export default function ExistingBusinessEntrepreneurshipForm() {
+  const history = useNavigate();
+  const classes = useStyles();
+
+
+  const submitData = ()=>{
+    history('/entrepreneurbusinessform' ,{replace:true})
+  }
+  const handleBack = ()=>{
+    history('/experiencedetails' ,{replace:true})
+  }
   return (
-    <React.Fragment>
-      {/* <TypographyText
-        variant="h6"
-        typoText="Existing Business Entrepreneurship Details"
-        gutterBottom="gutterBottom"
-      /> */}
+    
+<div className={classes.root} >
+       <h3 style={{ textAlign: "center" }}>Existing Business</h3>
+       <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
+    <React.Fragment className={classes.actionsContainer}>
       <Grid container spacing={6}>
         {/*Start- Existing Business Entrepreneur questions */}
         <Grid item xs={12}>
@@ -158,8 +170,13 @@ export default function ExistingBusinessEntrepreneurshipForm() {
             //minWidth= "10"
           />
         </Grid>
-        {/*End- Existing Business Entrepreneur questions */}
       </Grid>
-    </React.Fragment>
+      <Stack direction="row" spacing={2}>
+        <Button type="submit" variant="contained" color="primary" onClick={handleBack} >Back</Button>
+        <Button type="submit" variant="contained" color="primary" onClick={submitData} >Next</Button>
+      </Stack>
+      </React.Fragment>
+      </Container>
+    </div>
   );
 }

@@ -17,7 +17,6 @@ import AddPrefixToMobile from '../../components/shared/utils/AddPrefixToMobile'
 import { useTranslation } from 'react-i18next'
 import Language from '../../components/language/Language'
 import { login , fetchStduentDataBaisedOnContactNumber,fetchStduentEngagementDataBaisedOnDBUserId} from '../../utility/Api'
-import Dashboard from '../../components/Dashboard'
  
 // language/Language'
 
@@ -89,33 +88,27 @@ const LoginUser = ({ handleChange }) => {
         // setDisableVerifyOTPButton(true)
         await login().then( async(jsondata)=>{  
           console.log('jsondata ========> ', jsondata?.data)
-          let dataFromSucessLogin = JSON.parse(jsondata?.data)
-          // console.log("data at 0",dataFromSucessLogin)
-          // console.log("data at 1", typeof dataFromSucessLogin)
-          // console.log("<=======Data from login=======>",dataFromSucessLogin.token)
-          window.userId = dataFromSucessLogin[0]?.id;
-          window.jwtTokenResult = dataFromSucessLogin[0]?.token;
-          window.refreshJwtToken = dataFromSucessLogin[0]?.token;
-          window.userId = dataFromSucessLogin[1]?.id;
-          await fetchStduentDataBaisedOnContactNumber(mobileNo).then(async (jsondata)=>{
+          let dataFromSucessLogin = JSON.parse(jsondata?.data) 
+          await fetchStduentDataBaisedOnContactNumber(mobileNo, dataFromSucessLogin[0]?.token).then(async (jsondata)=>{
+            window.userId = dataFromSucessLogin[0]?.id;
+            window.jwtTokenResult = dataFromSucessLogin[0]?.token;
+            window.refreshJwtToken = dataFromSucessLogin[0]?.token;
+            window.userId = dataFromSucessLogin[1]?.id;
             let result =(jsondata.data)
             if(result.length >2 ){
               result =JSON.parse(jsondata.data)
-              console.log("studne details>>",result)
               let dbUserId = result[0].dbUserId;
-              window.dbUserId = dbUserId // setting global variable
+              window.dbUserId = result[0].dbUserId // setting global variable
               window.dob= result[0].dob
               window.primaryContactNumber = result[0].primaryContactNumber
-              // window.loginType = "SignIn"
-              window.loginType = "SignUp"
+              window.loginType = "SignIn"
               // Getting the enagagment ID baised on dbuserId
-              await fetchStduentEngagementDataBaisedOnDBUserId(result[0].dbUserId).then((jsondata)=>{
+              await fetchStduentEngagementDataBaisedOnDBUserId(result[0].dbUserId,dataFromSucessLogin[0]?.token).then((jsondata)=>{
                 let res = JSON.parse(jsondata.data)
-                console.log(res)
                 window.engagementId = res[0]?.engagementId
+                window.studentType = res[0]?.ideaType                
               })
-              // {state: {state: result , token : dataFromSucessLogin[0]?.token, "loginType": "SignIn"},
-              history('/home' ,{replace:true});
+              history('/basicdetails' ,{ replace:true });
             }
             else{
               alert("User Not Found! Please Sign Up.")
@@ -150,9 +143,6 @@ const LoginUser = ({ handleChange }) => {
 
   return (
     <>
-    
-    {
-      (window.jwtTokenResult === "") ? (
         <Grid>
         <Paper style={paperStyle}>
           <Grid align='center'>
@@ -256,10 +246,6 @@ const LoginUser = ({ handleChange }) => {
         </Paper>
         <div id="recaptcha"></div>
       </Grid>
-      ):(
-        <Dashboard />
-      )
-    }
    </>
   )
 }

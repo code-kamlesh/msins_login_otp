@@ -3,14 +3,16 @@ import {useState} from "react";
 import Container from '@mui/material/Container'
 import SelectOption from '../shared/SelectOption'
 import Box from '@mui/material/Box'
-import Buttons from '../shared/Buttons'
+import { Link, useNavigate } from 'react-router-dom'
 import { DropzoneArea } from 'material-ui-dropzone';
 import { Button } from "@mui/material";
+import Stack from '@mui/material/Stack';
 import {uploadDocument,fetchUserDocumentsByEngagementId} from "./../../utility/Api";
 
 const dbUserId = 1000011;
 const engagementId=1000011;
 export default function UploadDocuments() {
+  const history = useNavigate();
   //adding select box options
   const selectGenderOptions = ['Aadhar Card', 'Pan Card', 'Driving License']
   const [file,setFile] = useState(null)
@@ -60,11 +62,14 @@ export default function UploadDocuments() {
       reader.onerror = error => reject(error);
     });
   }
+
+  const handleBack = ()=>{
+    window.studentType === "Innovator" ? history('/Businessdetails' ,{replace:true}) : history('/entrepreneurbusinessform' ,{replace:true}) 
+  }
   return (
     <>
     <form method="post" onSubmit={(e)=>handleDocument(e)}>
       <Container component='main' maxWidth='md' sx={{ mb: 5 }}>
-      
         <Box mb={17}>
           <SelectOption
             label='Upload Documents'
@@ -93,11 +98,11 @@ export default function UploadDocuments() {
         </Box>
 
         <br /><br />        
-        <Grid container direction="row" justify="flex-end" alignItems="flex-end">
-          <Button type="submit" variant="contained" color="primary" >Save</Button>
-        </Grid>
-     
-        {/* <Box><Buttons sx={{ mt: 2 }} text="Upload" variant="contained" color="primary" startIcon={<FileUploadIcon />} /></Box> */}
+        <Stack direction="row" spacing={2}>
+        <Button  variant="contained" color="primary" onClick={handleBack} >Back</Button>
+        <Button type="submit" variant="contained" color="primary" >Next</Button>
+      </Stack>
+       
       </Container>
       </form>
     </>
