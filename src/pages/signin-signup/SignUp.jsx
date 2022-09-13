@@ -1,13 +1,5 @@
 import React, { useState } from 'react'
-import {
-  Grid,
-  Paper,
-  Avatar,
-  Typography,
-  TextField,
-  Button,
-  Box,
-} from '@mui/material'
+import {Grid, Paper, Avatar,Typography,TextField,Button, Box} from '@mui/material'
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
@@ -39,21 +31,12 @@ const Register = () => {
   const [disableVerifyOtp, setDisableVerifyOtp] = useState(true);
   const [checkBox1, setCheckBox1] = useState(false)
   const [checkBox2, setCheckBox2] = useState(false)
-  const [pincode, setPincode] = useState("");
-  const [studentType, setstudentType] = useState("");  // keep local for validation
-  const [errors, setErrors] = useState({})
-  const [emptyState, setEmptyState] = useState("");
 
-  const [basicData, setBasicData] = useState({ "primaryContactNumber": 0, "dob": "", "createdBy": 7000019, "updatedBy": 7000019 });
+  const [errors, setErrors] = useState({})
+
+  const [basicData, setBasicData] = useState({ "primaryContactNumber": "", "dob": "", "studentType": "", "pincode":"" });
 
   const submitData = (e) => {
-    if (basicData.primaryContactNumber?.length < 10 || otp?.length < 6) {
-      alert('please click get OTP to reciev the otp')
-    }
-    else {
-      if (ValidateForm(errors)) {
-        var userId = 0;
-        console.log("errors inside>>", errors)
         setDisableVerifyOtp(true)
         let confirmationOTP = window.confirmationResult;
         confirmationOTP.confirm(otp).then((result) => {
@@ -63,30 +46,17 @@ const Register = () => {
           // setDisableVerifyOTPButton(true)
           login().then(async (jsondata) => {
             console.log('jsondata ========> ', jsondata?.data)
+            window.loginType = "SignUp"
             let dataFromSucessLogin = JSON.parse(jsondata?.data)
             window.jwtTokenResult = dataFromSucessLogin[0]?.token;
             window.refreshJwtToken = dataFromSucessLogin[0]?.token;
-            userId = dataFromSucessLogin[1]?.id
-            window.userId = userId;
+            window.userId = dataFromSucessLogin[1]?.id
+           
             // checking for user is already exist or not
-            await fetchStduentDataBaisedOnContactNumber(basicData.primaryContactNumber).then(async (jsondata) => {
+            await fetchStduentDataBaisedOnContactNumber(basicData.primaryContactNumber, window.refreshJwtToken).then(async (jsondata) => {
               let result = (jsondata.data)
               if (result.length <= 2) {
-                const action = "captureBeneficiaryDetails"
-                await saveBasicData(action, basicData).then((jsondata) => {
-                  let result = JSON.parse(jsondata.data);
-                  let dbUserId = result[0].dbUserId
-                  window.dbUserId = dbUserId  // setting global variable
-                  console.log("id>>>", userId)
-                  // capturing engagement details
-                   captureStudentEngagementDetails(dbUserId, 20, userId, studentType).then((jsondata) => {
-                    console.log(">>>>>",jsondata)
-                    let json = JSON.parse(jsondata.data);
-                    window.engagementId = json[0].engagementId //setting engagementid 
-                    // console.log(eng_id)
-                     history('/candidateType',{ replace: true });
-                  })
-                })
+                history('/eligibilityTest',{ state:basicData });
               }
               else {
                 alert("User Already Exist! Please Sign in.")
@@ -100,58 +70,19 @@ const Register = () => {
           setDisableVerifyOtp(false)
           console.log(error)
         });
-      }
-      else {
-        alert("All Field are Mandatory")
-        console.log(errors)
-      }
-    }
   }
 
-  const ValidateForm = (errors) => {
-    // Validate('aadharNumber', aadharNumber)
-    Validate("dob", basicData.dob)
-    Validate("pincode",pincode)
-    let valid = true;
-    Object?.values(errors).forEach(
-      // if we have an error string set valid to false
-      (val) => val.length > 0 && (valid = false)
-    );
-    return valid;
-  }
-  const Validate = async (name, value) => {
-    let error = errors
-    switch (name) {
-      case 'dob': error = isNotEmpty(name, value)
-        setErrors(error)
-        setEmptyState("")
-        break;
 
-      case 'pincode': error = isNotEmpty(name, value)
-        setErrors(error)
-        break;
-    }
-  }
 
   const handleMobileNoInput = (event) => {
-    // console.log("<=====EVENT VALUE=====>",event?.target?.value);
-    setBasicData(preValue => ({ ...preValue, ["primaryContactNumber"]: event?.target?.value }))
-    // console.log(mobileNo)
-    if (event?.target?.value?.length > 9) {
-      // generateRecaptcha();
-      // let appVerifire = window.recaptchaVerifier;
-      // signInWithPhoneNumber(authorization, '+91'+mobileNo, appVerifire).then( confirmationResult =>{
-      //   window.confirmationResult = confirmationResult;
-      //   //  setDisableVerifyOTPButton(false);
-      //   //  setDisableGetOTPButton(true);  
-      // }). catch( error => {
-      //   console.log('<====Error while verifying the OTP====>',error)
-      // })
-    }
+      const errors = validateContact("mobile", event?.target?.value)
+      setErrors(errors);
+      setBasicData(preValue => ({ ...preValue, ["primaryContactNumber"]: event?.target?.value }))
+      window.primaryContactNumber= event?.target?.value
   };
 
   const generateOTP = () => {
-    if (basicData.mobileNo?.length < 10) {
+    if (basicData.primaryContactNumber?.length < 10) {
       alert('incorrect mobile number, please try again');
     }
     else {
@@ -180,9 +111,7 @@ const Register = () => {
     if (event?.target?.value || event?.length === 0) {
       const errors = validateSelectInput("dob", event?.target?.value)
       setErrors(errors);
-      // setDob(event?.target?.value)
       setBasicData(preValue => ({ ...preValue, ["dob"]: event?.target?.value }))
-      window.dob = event?.target?.value
     }
   }
   // Handle pincode
@@ -190,14 +119,11 @@ const Register = () => {
     if (event || event?.target?.length === 0) {
       const error = validatePincode("pincode", event?.target?.value, "lng");
       setErrors(error)
-      setPincode(event?.target?.value)
-      window.pincode = event?.target?.value
+      setBasicData(preValue => ({ ...preValue, ["pincode"]: event?.target?.value }))
     }
-    console.log(errors)
   }
   // handle otp
   const handleOtpInput = (event) => {
-    // console.log("<=====EVENT VALUE=====>",event?.target?.value);
     const error = validatePincode("otp", event?.target?.value, "lng");
     setErrors(error)
     setOtp(event?.target?.value);
@@ -214,7 +140,7 @@ const Register = () => {
   }
   const handleRadioButton = (e) => {
     window.studentType = (e.target.value) // set globally 
-    setstudentType(e.target.value) // saving in local
+    setBasicData(preValue => ({ ...preValue, ["studentType"]: e?.target?.value }))
   }
   return (
     <Grid>
@@ -249,6 +175,7 @@ const Register = () => {
                 .slice(0, 10)
             }}
           />
+          {errors?.mobile ? (<div style={{ color: "red" }}>{errors.mobile}</div>) : null}
           <Box>
             <DateOfBirthBox
               name="dob"
@@ -271,8 +198,6 @@ const Register = () => {
               fullWidth='fullWidth'
               variant='standard'
               onChange={hanldePinCode}
-              // error={(errors?.pincode==='')?true:false}
-              //inputProps={{ minLength: 6, maxLength: 6 }}
               onInput={(e) => {
                 e.target.value = Math.max(0, parseInt(e.target.value))
                   .toString()
@@ -338,11 +263,7 @@ const Register = () => {
 
           <Box style={{ display: 'flex' }}>
             <Box style={{ display: 'inline' }}>
-              {/* <Checkbox
-                name='tnc1'
-                label='I accept the'
-                onClick={handleCheckBox}
-              /> */}
+             
               <FormControlLabel
                 control={<Checkbox name='tnc1' id="myCheck1"
                 // checked={(checkBox1 == "Y" || dataValue.isActive == 'Y') ? true : false}
@@ -380,12 +301,14 @@ const Register = () => {
               />
             </Box>
           </Box>
-          {/* <Link
-            to='/candidateType'
-            style={{ textDecoration: 'none', color: 'inherit' }}> */}
-          <Buttons disabled={otp.length !== 6 ? true :pincode.length !== 6 ? true : studentType === '' ? true : (checkBox1 == true) && (checkBox2 == true) ? false : true}
-            onClick={(e) => submitData(e)} variant='contained' fullWidth='fullWidth' />
-          {/* </Link> */}
+            <Buttons
+              sx={{ mt: '30px', mb: '30px' }}
+              text={t('verify_otp')}
+              variant='contained'
+              disabled={basicData.dob === ""? true: basicData?.primaryContactNumber.length!==10? true:otp.length !== 6 ? true :basicData?.pincode.length !== 6 ? true : basicData.studentType === '' ? true : (checkBox1 == true) && (checkBox2 == true) ? false : true}
+              onClick={(e) => submitData(e)}
+              fullWidth='fullWidth'
+            />
         </form>
       </Paper>
       <div id="recaptcha"></div>

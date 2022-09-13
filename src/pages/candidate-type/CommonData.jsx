@@ -1,17 +1,7 @@
 import React ,{useState}from 'react'
-import RadioOptionButton from '../../components/shared/RadioOptionButton'
 import SelectOption from '../../components/shared/SelectOption'
 
-import {
-  Grid,
-  Box,
-  Paper,
-  Avatar,
-  Typography,
-  TextField,
-  Button,
-  Autocomplete,
-} from '@mui/material'
+import {Grid, Box, Paper, Avatar,Typography,} from '@mui/material'
 import { Link } from 'react-router-dom'
 
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined'
@@ -20,13 +10,11 @@ import RadioGroup from '@mui/material/RadioGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
-import Checkbox from '@mui/material/Checkbox'
 import TextFields from '../../components/shared/TextFields'
 import { useNavigate } from 'react-router-dom'
 import Buttons from '../../components/shared/Buttons'
-import EligibilityTest from '../eligible/EligibilityTest'
-import { useRef } from 'react'
-import { select } from 'underscore'
+import { saveBasicData, captureStudentEngagementDetails } from '../../utility/Api'
+
 import { validatePassingYear} from "./../../utility/Validation"
 const paperStyle = {
   padding: 20,
@@ -43,16 +31,17 @@ const collegeNameList = [{value:'College 1' , label:'College 1'},
                           {value:'College 3' , label:'College 3'},
                           {value:'College 4' , label:'College 4'},]
 export default function CommonData(props) {
-  const[qualification,setQualification] = useState("")
+  var data = props.value.value;
   const [qualificationStatus,setQualificationStatus] = useState("")
-  const [collegeName,setCollegeName] = useState("")
-  const [passingYear,setPassingYear] = useState("")
+  const [basicData, setBasicData] = useState({ "primaryContactNumber": data?.primaryContactNumber, "dob": data?.dob, "passingYear":"","highestQualification":"" ,"collegeName":"","createdBy": window?.userId, "updatedBy": window?.userId});
   const history = useNavigate();
   const[errors,setErrors] = useState({})
   // handle Qualification
   const handleQualification = (event)=>{
     if(event?.length !==0){
-      setQualification(event)
+      setBasicData(preValue => ({ ...preValue, ["highestQualification"]: event }))
+      console.log(basicData.highestQualification)
+      console.log(basicData.highestQualification.length)
     }
   }
 
@@ -61,28 +50,48 @@ export default function CommonData(props) {
   }
 
   const handleCollegeName = (event)=>{
-    setCollegeName(event)
+    setBasicData(preValue => ({ ...preValue, ["collegeName"]: event}))
   }
 
   // handle Passing year
   const handlePassingYear = (event)=>{
-    console.log(event.target.value)
-    if(event?.target.value.length !==0){
+    console.log(event?.target.value)
       const error = validatePassingYear("passingYear",event.target.value,"lng" )
       setErrors(error)
-      setPassingYear(event?.target?.value)
-    }
+      setBasicData(preValue => ({ ...preValue, ["passingYear"]: event?.target?.value }))
+      console.log(event?.target.value.length)
   }
 
   // save data
-  const handleSubmitData = (e)=>{
-    console.log(passingYear)
-    if(passingYear>2018){
-    history('/basicdetails',{ replace: true });
-  }
-  else{
-    history('/eligibilityTest',{ replace: true });
-  }
+  const handleSubmitData =async (e)=>{
+    e.preventDefault();
+    console.log(basicData)
+    try{
+      if(basicData?.passingYear>2018){
+        window.pincode = data?.pincode   // set pincode as global variable
+      // history('/basicdetails',{ replace: true });
+        const action = "captureBeneficiaryDetails"
+      await saveBasicData(action, basicData,  window.refreshJwtToken).then(async(jsondata) => {
+        let result = JSON.parse(jsondata.data);
+        let dbUserId = result[0].dbUserId
+        window.dbUserId = dbUserId  // setting global variable
+        // capturing engagement details
+         await captureStudentEngagementDetails(dbUserId, 20, window.userId, window.studentType, window.refreshJwtToken).then(async(jsondata) => {
+          let json = JSON.parse(jsondata.data);
+          window.engagementId = json[0].engagementId //setting engagementid 
+        })
+        history('/basicdetails',{ replace: true });
+      })
+    }
+    else{
+      console.log(basicData)
+      history('/eligibilityTest/userIsNotEligible',{ replace: true });
+    }
+    }
+    catch (err) {
+      alert(err.message)
+    }
+   
 }
   return (
     <>
@@ -141,19 +150,8 @@ export default function CommonData(props) {
                 </RadioGroup>
               </FormControl>
             </Box>
-<br/>
+                <br/>
             <Box>
-              {/* <Autocomplete
-                // disablePortal
-                id='combo-box-demo'
-                name = "collegeName"
-                options={props.collegeNameList}
-                sx={{ width: 300 }}
-                renderInput={(params) => (
-                  <TextField {...params} label='College' variant='standard'  ref={selectCollegeRef} 
-                  onChange={handleCollegeName}/>
-                )}
-              /> */}
                <SelectOption
               // style={{borderColor:"red"}}
               label="College Name"
@@ -162,7 +160,6 @@ export default function CommonData(props) {
               options={collegeNameList}
               variant="standard"
               onChange={(e) => handleCollegeName(e)}
-              
             />
             </Box>
             <Box>
@@ -184,21 +181,14 @@ export default function CommonData(props) {
             </Box>
             {errors?.passingYear ? (<div style={{ color: "red" }}>{errors?.passingYear}</div>) : null}
             <Box marginTop='20px'>
-              {/* <Link
-                to='/form'
-                style={{
-                  textDecoration: 'none',
-                  color: 'inherit',
-                }}
-              > */}
-                <Buttons
-                  type='text'
-                  variant='contained'
-                  fullWidth='fullWidth'
-                  disabled={qualification.length ===0 ? true:qualificationStatus ===''? true:collegeName.length ===0 ? true:false}
-                  onClick={handleSubmitData}
-               />
-              {/* </Link> */}
+             <Buttons
+              sx={{ mt: '30px', mb: '30px' }}
+              text="Submit"
+              variant='contained'
+              disabled={basicData?.highestQualification.length ===0 ? true:qualificationStatus ===''? true:basicData?.collegeName.length ===0 ? true:basicData?.passingYear.length <4?true:false}
+              onClick={handleSubmitData}
+              fullWidth='fullWidth'
+            />
             </Box>
           </form>
         </Paper>

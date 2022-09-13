@@ -191,15 +191,6 @@ const LoginUser = ({ handleChange }) => {
                 .slice(0, 6)
             }}
           />
-  
-          {/* <AddPrefixToMobile /> */}
-  
-          {/* <OTP /> */}
-  
-          {/* <FormControlLabel
-            control={<Checkbox name="checkedB" color="primary" />}
-            label="Remember me"
-          /> */}
           &nbsp;&nbsp;
           <Grid container>
             <Grid item xs>
@@ -208,19 +199,8 @@ const LoginUser = ({ handleChange }) => {
             <Grid item >
               <Buttons text={t('resend_otp')} disabled={true} onClick={generateOTP} />
             </Grid>
-            {/* <Grid item>
-              <Buttons text={t('verify_otp')} disabled={disableVerifyOtp} onClick={verifyOTP}/>
-            </Grid> */}
           </Grid>
   
-          {/* <Link
-            to='/status'
-            style={{
-              textDecoration: 'none',
-              color: 'inherit',
-            }}
-          > */}
-          
             <Buttons
               sx={{ mt: '30px', mb: '30px' }}
               text={t('verify_otp')}

@@ -4,7 +4,7 @@ import Paper from '@mui/material/Paper'
 import Buttons from '../../components/shared/Buttons'
 import '../../assets/css/user-is-not-eligible.css'
 import { Box } from '@mui/material'
-
+import { useNavigate } from 'react-router-dom'
 export function UserIsEligible() {
   return (
     <>
@@ -49,6 +49,10 @@ export function UserIsEligible() {
 }
 
 export function UserIsNotEligible() {
+  const history =  useNavigate();
+  const handleButton = ()=>{
+      history('/',{ replace:true });
+  }
   return (
     <>
       <Box className='modal-dialog modal-confirm'>
@@ -73,7 +77,8 @@ export function UserIsNotEligible() {
                 variant='contained'
                 color='error'
                 fullWidth='fullWidth'
-              >
+                onClick={handleButton}
+                >
                 OK
               </Buttons>
             </Box>

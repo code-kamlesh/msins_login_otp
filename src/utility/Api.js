@@ -1,4 +1,5 @@
 import { serviceEndPoint } from './ServiceEndPoint';
+const tokeney = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJrYW1sZXNoX3NpbmdoIiwiaWF0IjoxNjYzMDU3NDE5LCJleHAiOjE2NjMxNDM4MTl9.OZe4YaEEnPv7F2y4l-QWHekuome9TvV7F3SyGs_P_8H_WT3ivZNYY4brek-z5EjXT4UwyTAnuoHHz3nwq2k5dw"
 export async function login() {
     let requestFormData = new FormData();  
     requestFormData.append('data', '{"token" : "", "action" : "login", "data" : [{"userName":"rahul@CL","password":"Pass@123"}]}');
@@ -155,16 +156,16 @@ export async function saveExpDetails(action, data,token)
 // return null;
 }
 
-export async function uploadDocument(dbUserId,engagementId,documentType,typeOfDocument,documentName,document,documentNumber,createdBy,updatedBy,token) {
+export async function uploadDocument(dbUserId,engagementId,documentType,typeOfDocument,documentName,document,createdBy,updatedBy,token) {
     // if(isSessionValid()){
     let requestFormData = new FormData();
-    requestFormData.append('data', '{"token" : "", "action" : "captureDocDetails", "data" : [{"dbUserId":'+dbUserId+',"engagementId":'+engagementId+',"documentType":"'+documentType+'","typeOfDocument":"'+typeOfDocument+'","documentName":"'+documentName+'","base64File":"'+document+'","documentNo":"'+documentNumber+'","createdBy":"'+createdBy+'","updatedBy":"'+updatedBy+'"}]}');
+    requestFormData.append('data', '{"token" : "", "action" : "captureDocDetails", "data" : [{"dbUserId":'+dbUserId+',"engagementId":'+engagementId+',"documentType":"'+documentType+'","typeOfDocument":"'+typeOfDocument+'","documentName":"'+documentName+'","base64File":"'+document+'","createdBy":"'+createdBy+'","updatedBy":"'+updatedBy+'"}]}');
     // if(!isTokenValid()) 
     //     await regenerateToken();
     return fetch(serviceEndPoint.documentServiceEndPoint, {
         method: "POST",
         headers: {
-            'Authorization': 'Bearer '+token
+            'Authorization': 'Bearer '+tokeney
         },
         body: requestFormData,
     }).then(response => response.json());
@@ -181,7 +182,7 @@ export async function fetchUserDocumentsByEngagementId(engagementId,token) {
   return fetch(serviceEndPoint.documentServiceEndPoint, {
         method: "POST",
         headers: {
-            'Authorization': 'Bearer '+token
+            'Authorization': 'Bearer '+tokeney
         }, 
         body: requestFormData,
     }).then(response => response.json());
@@ -193,7 +194,7 @@ export async function fetchUserDocumentsByEngagementId(engagementId,token) {
 // viewAllBeneficiaryDetailsForContact
 
 
-export async function fetchStduentDataBaisedOnContactNumber(primaryContactNumber,refreshtoken) {
+export async function fetchStduentDataBaisedOnContactNumber(primaryContactNumber,token) {
     // if(isSessionValid()){
     let requestFormData = new FormData();
     requestFormData.append('data', '{"token" : "", "action" : "viewAllBeneficiaryDetailsForContact", "data" : [{"primaryContactNumber":' + primaryContactNumber + '}] }');
@@ -202,7 +203,7 @@ export async function fetchStduentDataBaisedOnContactNumber(primaryContactNumber
    return await fetch(serviceEndPoint.studentServiceEndPoint,{
      method: "POST",
      headers: {
-        'Authorization': 'Bearer '+refreshtoken
+        'Authorization': 'Bearer '+token
     }, 
      body: requestFormData,
      }).then(response => response.json());

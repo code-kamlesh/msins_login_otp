@@ -1,21 +1,16 @@
-import React ,{useState}from "react";
+import React ,{useState,useEffect}from "react";
 import Grid from "@mui/material/Grid";
-import TypographyText from "../../components/shared/TypographyText";
 import SelectOption from "../../components/shared/SelectOption";
 import Box from "@mui/material/Box";
 import Stack from '@mui/material/Stack';
 import Input from "@mui/material/Input";
 import { Button } from "@mui/material";
 import useStyles  from '../../components/layout'
-import { Link, useNavigate } from 'react-router-dom'
+import {  useNavigate } from 'react-router-dom'
 import Container from "@mui/material/Container";
 import { saveSocioDetails,fetchSocioDetails } from "./../../utility/Api";
 
-const dbUserId = 1000012
-export default function SocioEconomicEntepreneurForm() {
-  const history = useNavigate();
-  const classes = useStyles();
-  const selectPhysicalChallengedButton = ["Yes", "No"];
+const selectPhysicalChallengedButton = ["Yes", "No"];
   const selectMaritalStatusButton = [
     "Married",
     "Unmarried",
@@ -31,11 +26,35 @@ export default function SocioEconomicEntepreneurForm() {
     "Others",
   ];
 
-  const [scoioEconomicData, setScoioEconomicData] = useState({"dbUserId":dbUserId,"mediumOfLight":'',"housingUnit":'',"physicallyChallenged":'',"sourceOfWater":'',"maritalStatus":'',"isActive":"Y","membersInHousehold":'',"brothers":0,"sisters":0,"rooms":'',"ownership":'',"createdBy":7000019, "updatedBy":7000019});
+export default function SocioEconomicEntepreneurForm() {
+  const history = useNavigate();
+  const classes = useStyles();
+  const [isDataPresent , setIsDataPresent] = useState("")
+  const [scoioEconomicData, setScoioEconomicData] = useState({"dbUserId":window.dbUserId,"mediumOfLight":'',"housingUnit":'',"physicallyChallenged":'',"sourceOfWater":'',"maritalStatus":'',"isActive":"Y","membersInHousehold":'',"brothers":0,"sisters":0,"rooms":'',"ownership":'',"createdBy":window.userId, "updatedBy":window.userId});
  
+  useEffect(() => {
+    if (window.jwtTokenResult == "") {
+      history('/', { replace: true })
+    }
+    else if (window.loginType === "SignIn") {
+      getSocioEconomicData();
+    }
+  }, []);
+
+  const getSocioEconomicData = ()=>{
+    fetchSocioDetails(window.dbUserId, window.jwtTokenResult).then((jsondata)=>{
+      if(jsondata.appError === null && jsondata.data !== "[]" ){
+        let res = JSON.parse(jsondata.data)
+        setScoioEconomicData(res[0])
+      }
+      else if(jsondata.appError === null && jsondata.data === "[]"){
+        setIsDataPresent(null)
+      }
+    })
+  }
+
   const onChangePhysicalChallenged = (event)=>{
     if(event?.length!==0){
-      console.log(event)
     setScoioEconomicData(preValue=>({...preValue, ["physicallyChallenged"]:event}))
     }
   }
@@ -78,19 +97,19 @@ const hanldeUnitOfNumber = (event)=>{
   const handleSocioEconomicData=(event)=>{
     event.preventDefault();
     let action =""
-    // if (dbUserId) {
-      action =  "captureSocioEconomic";
-    // } else {
-    //   action =  "updateSocioEconomic";
-    // }
-    // 7000019 is created by 
-    saveSocioDetails(action,scoioEconomicData).then((jsondata)=>{
-      console.log(jsondata)
-      if(jsondata.appError === null){
-        alert("Data Saved Successfully");
-        history('/experiencedetails' ,{replace:true})
-      }
-    })
+    isDataPresent === null ? action = "captureSocioEconomic" : action = "updateSocioEconomic" 
+    try{
+      saveSocioDetails(action,scoioEconomicData,window.jwtTokenResult).then((jsondata)=>{
+        console.log(jsondata)
+        if(jsondata.appError === null){
+          alert("Data Saved Successfully");
+          history('/experiencedetails' ,{replace:true})
+        }
+      })
+    }catch(err){
+      alert(err.message)
+    }
+   
   }
   const handleBack = ()=>{
     history('/basicdetails' ,{replace:true})

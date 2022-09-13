@@ -10,13 +10,14 @@ import underscore from 'underscore';
 import SelectOption from "../../components/shared/SelectOption";
 import Container from "@mui/material/Container";
 import useStyles from '../../components/layout'
+import { SingleSelect } from "react-select-material-ui";
 const selectHearingOptions = [
-  "Social Media",
-  "Newspaper",
-  "Reference(Friends/ relatives)",
-  "School/ College",
-  "Job fairs/ Gathering",
-  "Others",
+  {value:'Social Media' , label:'Social Media'},
+  {value:'Newspaper 1' , label:'Newspaper'},
+  {value:'Reference(Friends/ relatives)' , label:'Reference(Friends/ relatives)'},
+  {value:'School/ College' , label:'School/ College'},
+  {value:'Job fairs/ Gathering' , label:'Job fairs/ Gathering'},
+  {value:'Others' , label:'Others'}
 ];
 
 const selectQualificationOptions = ["PhD", "Masters", "Bachelors", "ITI"];
@@ -28,18 +29,24 @@ const selectBloodGroupOptions = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-
 export default function BasicDetailsForm() {
   const history = useNavigate();
   const classes = useStyles();
-  const [stduentBasicData, setStduentBasicData] = useState({
-    "dbUserId": 1000067935, "aadharNo": "", "dob": "", "firstName": "", "lastName": "", "middleName": "", "advertisment": "", "gender": "", "highestQualification": "", "religion": "", "category": "", "bplStatus": "", "bloodGroup": "",
-    "passingYear": 2019, "primaryContactNumber": "", "primaryEmailId": "", "secondaryContactNo": "", "createdBy": window?.userId, "updatedBy": window?.userId
-  });
+  const [isDataPresent,setIsDataPresent] = useState("");
+  const[update,setUpdate] = useState("")
+  // const[advertisment,setAdvertisment] = useState("")
+  const [selectVillageNameOptions, setSelectVillageNameOptions] = useState([]);
+  const [selectCityNameOptions, setSelectCityNameOptions] = useState([])
+  const [selectDistrictNameOptions, setSelectDistrictNameOptions] = useState([])
+  const selectGenderOptions = ["Male", "Female", "Other"];
+  const [errors, setErrors] = useState({"advertisment":""});
+  const [emptyState, setEmptyState] = useState("");
 
+  const [stduentBasicData, setStduentBasicData] = useState({
+    "dbUserId": window.dbUserId, "aadharNo": "", "dob": "", "firstName": "", "lastName": "", "middleName": "", "advertisment": "", "gender": "", "highestQualification": "", "religion": "", "category": "", "bplStatus": "", "bloodGroup": "",
+    "passingYear":"", "primaryContactNumber": "", "primaryEmailId": "", "secondaryContactNo": "", "createdBy": window?.userId, "updatedBy": window?.userId});
+    // "id": "",
   const [basicAddressData, setBasicAddressData] = useState({
-    "id": "",
     "entityId": "", "entityType": "S", "pincode": "", "district": "",
     "cityName": "", "villageName": "", "addressLine1": "", "addressLine2": "", "state": "Maharashtra", "isActive": "Y", "createdBy": window?.userId, "updatedBy": window?.userId
   })
-
-
   useEffect(() => {
     console.log(window)
     if (window.jwtTokenResult == "") {
@@ -51,40 +58,44 @@ export default function BasicDetailsForm() {
     }
     else{
       getStudentData();
+      setBasicAddressData(preValue => ({ ...preValue, ["pincode"]: window.pincode }))
+      fetchCityVillegeDistrictList(window.pincode);
     }
 
-  }, []);
+  },[]);
 
+  // [""]:res[0].
   const getStudentData = async () => {
     await fetchStduentDataBaisedOnContactNumber(window.primaryContactNumber, window.jwtTokenResult).then(async (jsondata) => {
       let res = JSON.parse(jsondata.data)
-      setStduentBasicData(res[0])
+      setStduentBasicData(preValue => ({ ...preValue, ["aadharNo"]:res[0]?.aadharNo|| "" , ["bplStatus"]:res[0]?.bplStatus||"",
+      ["dob"]:res[0]?.dob, ["firstName"]:res[0].firstName||"",["lastName"]:res[0].lastName||"",["middleName"]:res[0]?.middleName ||"",
+        ["passingYear"]:res[0].passingYear,["primaryContactNumber"]:res[0]?.primaryContactNumber||"", ["primaryEmailId"] :res[0]?.primaryEmailId|| "",
+        ["primaryEmailId"]:res[0]?.primaryEmailId || "",["advertisment"]:res[0]?.advertisment || "",["category"]:res[0]?.category || "",["bloodGroup"]:res[0]?.bloodGroup || "",
+        ["gender"]:res[0]?.gender||"",["highestQualification"]:res[0]?.highestQualification || "",
+        // [""]:res[0].,[""]:res[0].
+    }))
     })
-    console.log(stduentBasicData?.advertisment?.length)
   }
   const getAddressData = async () => {
     await fetchExistingAddress(window?.dbUserId, "S", window.jwtTokenResult).then(async (jsondata) => {
-      let res = JSON.parse(jsondata.data)
-      setBasicAddressData(res[0])
-      if (res[0] !== null) {
+      if(jsondata.appError === null && jsondata.data !== "[]" ){
+        let res = JSON.parse(jsondata.data)
+        console.log(res)
+        setBasicAddressData(res[0])
+        if (res[0] !== null) {
         setBasicAddressData(preValue => ({ ...preValue, ["id"]: res[0].id }))
         fetchCityVillegeDistrictList(res[0]?.pincode);
+      }
+      }
+      else if(jsondata.appError === null && jsondata.data === "[]"){
+        setIsDataPresent(null)
       }
     })
   };
 
 
-  const [selectVillageNameOptions, setSelectVillageNameOptions] = useState([]);
-  const [selectCityNameOptions, setSelectCityNameOptions] = useState([])
-  const [selectDistrictNameOptions, setSelectDistrictNameOptions] = useState([])
-  const selectGenderOptions = ["Male", "Female", "Other"];
-  const [errors, setErrors] = useState({});
-
-  const [emptyState, setEmptyState] = useState("");
-
-  // (action,aadharNo, gender, firstName, middleName, lastName,dob,highestQualification,religion, bloodGroup,incomeStatus,category,passingYear, primaryContactNumber, secondaryContactNumber,primaryEmailId, secondaryEmailId,remarks)
-
-
+ 
   const handleAadharNumber = (event) => {
     if (event?.target?.value || event?.target?.value?.length === 0) {
       const errors = validateAadharNumber(event?.target?.value, "lng")
@@ -97,7 +108,6 @@ export default function BasicDetailsForm() {
     if (event?.target?.value || event?.target?.value.length === 0) {
       const errors = validateTextInput("firstName", event?.target?.value, "lng")
       setErrors(errors)
-
       setStduentBasicData(preValue => ({ ...preValue, ["firstName"]: event?.target?.value }))
     }
   }
@@ -124,16 +134,17 @@ export default function BasicDetailsForm() {
   }
   const hanldeGender = (event) => {
     if (event || event?.length === 0) {
-      const errors = validateSelectInput("gender", event)
+      const errors = validateSelectInput("gender", event?.target?.value)
+      console.log(errors)
       setErrors(errors);
       setStduentBasicData(preValue => ({ ...preValue, ["gender"]: event }))
     }
-  }
+   }
   const handleAdvertisment = (event) => {
+    console.log(event)
     if (event || event?.length === 0) {
       const errors = validateSelectInput("advertisment", event)
       setErrors(errors);
-
       setStduentBasicData(preValue => ({ ...preValue, ["advertisment"]: event }))
     }
   }
@@ -171,15 +182,14 @@ export default function BasicDetailsForm() {
   const hanldeBloodGroup = (event) => {
     if (event || event?.length === 0) {
       const errors = validateSelectInput("bloodGroup", event)
+      console.log(errors)
       setErrors(errors);
       setStduentBasicData(preValue => ({ ...preValue, ["bloodGroup"]: event }))
     }
   }
   const handlePrimaryContact = (event) => {
     if (event?.target?.value || event?.target?.value?.length === 0) {
-      console.log("name>>", event?.target?.name)
       const errors = validateContact(event?.target?.name, event?.target?.value)
-      console.log(errors)
       setErrors(errors)
       setStduentBasicData(preValue => ({ ...preValue, ["primaryContactNumber"]: event?.target?.value }))
     }
@@ -188,23 +198,13 @@ export default function BasicDetailsForm() {
   const handleprimaryEmail = (event) => {
     if (event?.target?.value || event?.target?.value?.length === 0) {
       const errors = validateEmail(event?.target?.name, event?.target?.value)
-      console.log(errors)
       setErrors(errors)
       setStduentBasicData(preValue => ({ ...preValue, ["primaryEmailId"]: event?.target?.value }))
     }
   }
-  const hanldeSecondaryContact = (event) => {
-    if (event?.target?.value || event?.target?.value?.length === 0) {
-      console.log("name>>", event?.target?.name)
-      const errors = validateContact(event?.target?.name, event?.target?.value)
-      console.log(errors)
-      setErrors(errors)
-      setStduentBasicData(preValue => ({ ...preValue, ["secondaryContactNo"]: event?.target?.value }))
-    }
-  }
   const hanldePinCode = (event) => {
     if (event || event?.target?.length === 0) {
-      const errors = validatePincode(event?.target?.value, "lng");
+      const errors = validatePincode("pincode",event?.target?.value, "lng");
       setErrors(errors)
       setBasicAddressData(preValue => ({ ...preValue, ["pincode"]: event?.target?.value }))
     }
@@ -244,7 +244,6 @@ export default function BasicDetailsForm() {
     if (event || event?.length === 0) {
       const errors = validateSelectInput("district", event)
       setErrors(errors);
-
       setBasicAddressData(preValue => ({ ...preValue, ["district"]: event }))
     }
   }
@@ -275,159 +274,110 @@ export default function BasicDetailsForm() {
       setBasicAddressData(preValue => ({ ...preValue, ["addressLine2"]: event?.target?.value }))
     }
   }
-  const ValidateForm = (errors) => {
-    Validate('aadharNumber', stduentBasicData.aadharNumber)
-    Validate("dob", stduentBasicData.dob)
-    Validate("firstName", stduentBasicData.firstName)
-    Validate("middleName", stduentBasicData.middleName)
-    Validate("lastName", stduentBasicData.lastName)
-    Validate("advertisment", stduentBasicData.advertisment)
-    Validate("villageName", stduentBasicData.villageName)
-    Validate("gender", stduentBasicData.gender)
-    Validate("highestQualification", stduentBasicData.highestQualification)
-    Validate("religion", stduentBasicData.religion)
-    Validate("incomeStatus", stduentBasicData.incomeStatus)
-    Validate("category", stduentBasicData.category)
-    Validate("bloodGroup", stduentBasicData.bloodGroup)
-    Validate("religion", stduentBasicData.religion)
-    Validate("primaryContact", stduentBasicData.primaryContact)
-    Validate("primaryEmailId", stduentBasicData.primaryEmailId)
-    Validate("address1", basicAddressData.address1)
-    Validate("pincode", basicAddressData.pincode)
-    Validate('cityName', basicAddressData.cityName)
-    Validate('district', basicAddressData.district)
+  const ValidateForm =  (errors) => {
+    Validate("advertisment", stduentBasicData?.advertisment)
+    Validate("gender", stduentBasicData?.gender)
+    Validate("highestQualification", stduentBasicData?.highestQualification)
+    Validate("religion", stduentBasicData?.religion)
+    Validate("incomeStatus", stduentBasicData?.bplStatus)
+    Validate("category", stduentBasicData?.category)
+    Validate("bloodGroup", stduentBasicData?.bloodGroup)
+    Validate("religion", stduentBasicData?.religion)
+    Validate("primaryEmailId", stduentBasicData?.primaryEmailId)
+    Validate("pincode", basicAddressData?.pincode)
+    Validate('cityName', basicAddressData?.cityName)
+    Validate('district', basicAddressData?.district)
+    Validate("villageName", basicAddressData?.villageName)
     let valid = true;
-    Object?.values(errors).forEach(
+    console.log("last stage>>>",errors)
+    Object.values(errors).forEach(
       // if we have an error string set valid to false
       (val) => val.length > 0 && (valid = false)
     );
     return valid;
   }
-  const Validate = async (name, value) => {
-    let error = errors
-    switch (name) {
-      case 'aadharNumber': error = isNotEmpty(name, value)
-        setErrors(error)
-        setEmptyState("")
-        break;
-      case 'dob': error = isNotEmpty(name, value)
-        setErrors(error)
-        setEmptyState("")
-        break;
-      case 'firstName': error = isNotEmpty(name, value)
-        setErrors(error)
-        setEmptyState("")
-        break;
-      case 'middleName': error = isNotEmpty(name, value)
-        setErrors(error)
-        setEmptyState("")
-        break;
-      case 'lastName': error = isNotEmpty(name, value)
-        setErrors(error)
-        setEmptyState("")
-        break;
-      case 'gender': error = isNotEmpty(name, value)
-        setErrors(error)
-        break;
-      case 'advertisment': error = isNotEmpty(name, value)
-        setErrors(error)
-        break;
-      case 'category': error = isNotEmpty(name, value)
-        setErrors(error)
-        break;
-      case 'bloodGroup': error = isNotEmpty(name, value)
-        setErrors(error)
-        break;
-      case 'religion': error = isNotEmpty(name, value)
-        setErrors(error)
-        break;
-      case 'highestQualification': error = isNotEmpty(name, value)
-        setErrors(error)
-        break;
-      case 'religion': error = isNotEmpty(name, value)
-        setErrors(error)
-        break;
 
-      case 'pincode': error = isNotEmpty(name, value)
-        setErrors(error)
+  const Validate = (name, value) => {
+    console.log("before validation>>>",errors)
+    switch (name) {
+      case 'gender': setErrors(errors["gender"] = isNotEmpty(value))
         break;
-      case 'incomeStatus': error = isNotEmpty(name, value)
-        setErrors(error)
+      case 'advertisment': setErrors(errors["advertisment"] = isNotEmpty(value))  
         break;
-      case 'primaryContact': error = isNotEmpty(name, value)
-        setErrors(error)
+      case 'category': errors["category"] = isNotEmpty(value)
         break;
-      case 'primaryEmailId': error = isNotEmpty(name, value)
-        setErrors(error)
+      case 'bloodGroup':errors["bloodGroup"] = isNotEmpty(value)
         break;
-      case 'address1': error = isNotEmpty(name, value)
-        setErrors(error)
+      case 'religion': errors["religion"] = isNotEmpty(value)
         break;
-      case 'villageName': error = isNotEmpty(name, value)
-        setErrors(error)
+      case 'highestQualification': errors["highestQualification"] = isNotEmpty(value)
+       
         break;
-      case 'cityName': error = isNotEmpty(name, value)
-        setErrors(error)
+      case 'religion': errors["religion"] = isNotEmpty(value)
         break;
-      case 'district': error = isNotEmpty(name, value)
-        setErrors(error)
-        setEmptyState("")
+      case 'incomeStatus': errors["incomeStatus"] = isNotEmpty(value)
+        break;
+      case 'primaryEmailId': errors["primaryEmailId"] = isNotEmpty(value)
+        break;
+      case 'address1': errors["address1"] = isNotEmpty(value)
+        break;
+      case 'villageName': errors["villageName"] = isNotEmpty(value)
+        break;
+      case 'cityName': errors["cityName"] = isNotEmpty(value)
+        break;
+      case 'district':errors["district"] = isNotEmpty(value)
         break;
     }
-    setEmptyState("")
+    setErrors(errors)
   }
 
-  // useEffect(()=>{},[])
-  const handleFormData = (event) => {
-    // useEffect(()=>{},[])
+  const handleFormData =async (event) => {
     event.preventDefault();
-    // if (ValidateForm(errors)) 
-    // {
+    console.log(stduentBasicData)
     console.log(errors)
-    const action = "updateBeneficiaryDetails";
-    saveBasicData(action, stduentBasicData, window.jwtTokenResult).then(async (jsondata) => {
-      if (jsondata.appError == null) {
-        let jsonObject = JSON.parse(jsondata.data)
-        let student_db_Id = jsonObject[0].dbUserId // student db id
-        setBasicAddressData(preValue => ({ ...preValue, ["entityId"]: student_db_Id }))
-        submitAddress(student_db_Id);
-        // capturing engagement details
-        if (window.loginType === "SignUp") {
-          captureStudentEngagementDetails(student_db_Id, 20, 7000019, "Innovator", window.jwtTokenResult).then((jsondata) => {
-            let json = JSON.parse(jsondata.data);
-            console.log(json)
-            let eng_id = json[0].engagementId //setting engagementid 
-            console.log(eng_id)
-          })
-        }
-
+    if(ValidateForm(errors)){
+      console.log("i am here>>>>",errors)
+      try{
+        const action = "updateBeneficiaryDetails";
+        await saveBasicData(action, stduentBasicData, window.jwtTokenResult).then((jsondata) => {
+          if (jsondata.appError == null) {
+            let jsonObject = JSON.parse(jsondata.data)
+            basicAddressData["entityId"] = jsonObject[0].dbUserId 
+            setBasicAddressData(preValue => ({ ...preValue, "entityId": jsonObject[0].dbUserId }))
+            // setUpdate("")
+            let student_db_Id = jsonObject[0].dbUserId // student db id
+            // ()=>{setAddress(addressValue)}
+             submitAddress(student_db_Id);
+            // capturing engagement details
+            if (window.loginType === "SignUp") {
+              captureStudentEngagementDetails(student_db_Id, 20, window.userId, window.studentType, window.jwtTokenResult).then((jsondata) => {
+                let json = JSON.parse(jsondata.data);
+                let eng_id = json[0].engagementId //setting engagementid 
+                window.engagementId = eng_id
+              })
+            }
+          }
+        })
       }
-    })
-    // }
-
-    console.log(errors)
+      catch(err){
+        alert(err.message)
+      }
+    }
+    else{
+      alert("All field are Maindatory")
+    }
   }
-  const submitAddress = async (dbUserId) => {
+  const submitAddress = async (student_db_Id) => {
     try {
+      console.log(student_db_Id)
+      console.log(basicAddressData)
       let action = "";
-      window.loginType === "SignUp" ? action = "captureAddress" : action = "updateAddress"
-
-
-      // await fetchExistingAddress(dbUserId, "S", window.jwtTokenResult).then(async (jsondata) => {
-      //   let res = JSON.parse(jsondata.data)
-      //   console.log(res)
-      //   console.log(typeof res)
-      //   if (res == null) {
-      //     action = "captureAddress"
-      //   }
-      //   else {
-
-      //   }
+      isDataPresent === null ? action = "captureAddress" : action = "updateAddress"
       console.log("data>>>", basicAddressData)
       await submitAddressData(action, basicAddressData, window.jwtTokenResult).then((jsondata) => {
         if (jsondata.appError == null) {
           alert("Data Saved Successfully")
-          history('/socioeconomicdetails', { replace: true })
+          // history('/socioeconomicdetails', { replace: true })
 
         } else {
           console.log("error");
@@ -515,14 +465,14 @@ export default function BasicDetailsForm() {
                 {errors?.lastName ? (<div style={{ color: "red" }}>{errors.lastName}</div>) : null}
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <SelectOption
+                <TextFields
                   style={{ borderColor: "red" }}
                   label="Gender"
                   id="gender  "
                   name="gender"
                   options={selectGenderOptions}
                   variant="standard"
-                  onChange={(e) => hanldeGender(e)}
+                  onChange={hanldeGender}
                   value={stduentBasicData?.gender || ""}
                 />
                 {errors?.gender ? (<div style={{ color: "red" }}>{errors.gender}</div>) : null}
@@ -601,7 +551,7 @@ export default function BasicDetailsForm() {
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
                 <TextFields
-                  disabled={true}
+                  // disabled={true}
                   id="primaryContact"
                   name="primaryContact"
                   type="number"
@@ -633,7 +583,7 @@ export default function BasicDetailsForm() {
                 />
                 {errors?.primaryEmailId ? (<div style={{ color: "red" }}>{errors.primaryEmailId}</div>) : null}
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              {/* <Grid item xs={12} sm={6} md={4}>
                 <TextFields
                   id="secondaryContactNo"
                   name="secondaryContactNo"
@@ -650,7 +600,7 @@ export default function BasicDetailsForm() {
                   }}
                 />
                 {errors?.secondaryContactNo ? (<div style={{ color: "red" }}>{errors.secondaryContactNo}</div>) : null}
-              </Grid>
+              </Grid> */}
               <Grid item xs={12} sm={6}>
                 <TextFields
                   id="address1"
@@ -736,7 +686,10 @@ export default function BasicDetailsForm() {
             <br />
             <Grid container direction="row" justify="flex-end" alignItems="flex-end">
            {/* stduentBasicData?.advertisment?.length === 0 */}
-              <Button disabled={(stduentBasicData.aadharNo.length<12) ? true:stduentBasicData?.firstName!=="" && stduentBasicData?.middleName!=="" && stduentBasicData?.lastName!==""&& stduentBasicData?.primaryEmailId !== ""&& basicAddressData?.addressLine1!== "" && basicAddressData?.pincode?.length >5 ? false: stduentBasicData?.gender.length=== 0 ? true: false  } 
+              <Button
+              // stduentBasicData?.gender?.length ===0
+                // disabled={stduentBasicData?.gender?.length ===0 ? true: false  } && stduentBasicData?.highestQualification?.length ===0)
+               disabled={stduentBasicData?.aadharNo?.length<12 ? true:stduentBasicData?.firstName!=="" && stduentBasicData?.middleName!=="" && stduentBasicData?.lastName!==""&& stduentBasicData?.primaryEmailId !== ""&& basicAddressData?.addressLine1!== "" && basicAddressData?.pincode?.length >5 ? false:true  } 
               type="submit" variant="contained" color="primary" >Save</Button>
             </Grid>
           </form>

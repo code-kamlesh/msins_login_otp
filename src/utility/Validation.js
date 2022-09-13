@@ -121,15 +121,13 @@ export function validatePassingYear(value,pincode, lng) {
     return errors;
 }
 
-// validation for empty field
-export function isNotEmpty(name,value){
-    if(value==null){value="";}
-    errors[name] =  value.length == 0 ? 'Please fill out this field!' : '';
-    return errors;
+export function isNotEmpty(value){
+    if(value==="" || value === null){value="";}
+  return  value.length == 0 ? 'Please fill out this field!' : '';
 }
 
 export function isNotEmptyTest(name,value){
-    if(value==null){value="";}
+    if(value==null || value===""){value="";}
     errors[name] =  value.length == 0 ? 'Please fill out this field!' : '';
     return errors;
 }
