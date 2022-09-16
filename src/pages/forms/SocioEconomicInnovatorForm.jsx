@@ -32,11 +32,13 @@ export default function SocioEconomicInnovatorForm() {
 
   const getSocioEconomicData = ()=>{
     fetchSocioDetails(window.dbUserId, window.jwtTokenResult).then((jsondata)=>{
-      if(jsondata.appError === null && jsondata.data !== "[]" ){
+      console.log(jsondata)
+      if(jsondata.appError === null && jsondata.data !== "[null]" ){
         let res = JSON.parse(jsondata.data)
-        setScoioEconomicData(res[0])
+        setScoioEconomicData(preValue => ({ ...preValue, ["physicallyChallenged"]:res[0]?.physicallyChallenged|| "", ["maritalStatus"]: res[0]?.maritalStatus,  ["id"]:res[0].id}))
+        // setScoioEconomicData(preValue => ({ ...preValue, ["aadharNo"]:res[0]?.aadharNo|| "" ,
       }
-      else if(jsondata.appError === null && jsondata.data === "[]"){
+      else{
         setIsDataPresent(null)
       }
     })
@@ -59,7 +61,6 @@ const onChangeMaritalStatus = (event)=>{
      isDataPresent === null ? action = "captureSocioEconomic" : action = "updateSocioEconomic" 
      try{
       saveSocioDetails(action,scoioEconomicData, window.jwtTokenResult).then((jsondata)=>{
-        console.log(jsondata)
         if(jsondata.appError === null){
           alert("Data Saved Successfully");
           history('/experiencedetails' ,{replace:true})
@@ -89,7 +90,6 @@ const onChangeMaritalStatus = (event)=>{
             variant="standard"
             fullWidth="fullWidth"
             value={scoioEconomicData?.physicallyChallenged}
-            error={true}
             onChange={(e)=>onChangePhysicalChallenged(e)}
           />
         </Grid>
@@ -101,7 +101,6 @@ const onChangeMaritalStatus = (event)=>{
             variant="standard"
             fullWidth="fullWidth"
             value={scoioEconomicData?.maritalStatus}
-            error={true}
             onChange={(e)=>onChangeMaritalStatus(e)}
           />
         </Grid>
@@ -110,7 +109,9 @@ const onChangeMaritalStatus = (event)=>{
         
         <Stack direction="row" spacing={2}>
         <Button  variant="contained" color="primary" onClick={handleBack} >Back</Button>
-        <Button type="submit" variant="contained" color="primary"  >Next</Button>
+        <Button 
+        disabled={(scoioEconomicData?.physicallyChallenged?.length >0) &&(scoioEconomicData?.maritalStatus?.length >0) ?false:true}
+        type="submit" variant="contained" color="primary"  >Next</Button>
       </Stack>
       </form>
       </React.Fragment>

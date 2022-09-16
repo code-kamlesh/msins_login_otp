@@ -18,12 +18,11 @@ import FormLabel from '@mui/material/FormLabel'
 export default function ExperienceDetails() {
   const history = useNavigate();
   const classes = useStyles();
-  const [isDataPresent , setIsDataPresent] = useState("")
-  const experienceTypeRadioBtn = ["Fresher", "Experience"];
-  const [experienceData,setExperienceData] = useState({"dbUserId":window.dbUserId,"experienceFrom":'',"lastDesignation":'',"natureOfExperience":'',"employerName":'',"grossSalary":''|| 0,"postingLocation":'',"experienceTo":'',"employerAddress":'',"isExperience":"","createdBy":window.userId, "updatedBy":window.userId});
+  const [isDataPresent , setIsDataPresent] = useState("null")
+  const [experienceData,setExperienceData] = useState({"dbUserId":window.dbUserId,"experienceFrom":'',"lastDesignation":'',"natureOfExperience":'',"employerName":'',"grossSalary":''|| 0,"postingLocation":'',"experienceTo":'',"employerAddress":'',"isExperience":"",
+                                                          "isActive":"Y","createdBy":window.userId, "updatedBy":window.userId});
   const [errors,setErrors]= useState({})  
   useEffect(() => {
-    console.log(window)
     if (window.jwtTokenResult == "") {
       history('/', { replace: true })
     }
@@ -35,18 +34,16 @@ export default function ExperienceDetails() {
   const getExistingData = ()=>{
     fetchExperienceDetails(window.dbUserId, window.jwtTokenResult).then((jsondata)=>{
       if(jsondata.appError === null && jsondata.data !== "[]"){
+        setIsDataPresent("not null")
         let res = JSON.parse(jsondata.data)
-        console.log(res)
-        setExperienceData(preValue =>({...preValue, ["isExperience"]: res[0].isExperience}))
-        setExperienceData(res[0])
-
-        console.log(experienceData)
+        setExperienceData(preValue =>({...preValue, ["isExperience"]: res[0].isExperience, ["experienceFrom"]:res[0].experienceFrom, ["lastDesignation"]:res[0].lastDesignation, ["natureOfExperience"]:res[0].natureOfExperience,
+        ["experienceTo"]:res[0].experienceTo,  ["employerAddress"]:res[0].employerAddress,  ["postingLocation"]:res[0].postingLocation,  ["grossSalary"]:res[0].grossSalary, ["employerName"]:res[0].employerName,
+        ["id"]:res[0].id,}))
       }
-      else if(jsondata.appError === null && jsondata.data === "[]"){
-        setIsDataPresent(null)
+      else{
+        setIsDataPresent("null")
       }
     })
-    
   }
   const handleDate = (event)=>{
     if(event?.target?.value?.length>0){
@@ -55,9 +52,7 @@ export default function ExperienceDetails() {
   }
   const handleSalary = (event)=>{
     if (event?.target?.value || event?.target?.value.length === 0) {
-      
       const error = validateTextInput1(event?.target.name, event?.target?.value,"lng")
-     
       setErrors(error)
       setExperienceData(preValue=>({...preValue, "grossSalary":event?.target?.value}))
     }
@@ -78,7 +73,6 @@ export default function ExperienceDetails() {
       setErrors(error)
       setExperienceData(preValue=>({...preValue, "natureOfExperience":event?.target?.value}))
     }
-    console.log(errors)
   }
   const handleEmpAddress = (event)=>{
     if (event?.target?.value || event?.target?.value.length === 0) {
@@ -89,7 +83,6 @@ export default function ExperienceDetails() {
   }
   const handlePostingLoaction = (event)=>{
     if (event?.target?.value || event?.target?.value.length === 0) {
-      console.log(event?.target.name)
       const error = validateTextInput1(event?.target.name, event?.target?.value,"lng")
       
       setErrors(error)
@@ -108,8 +101,7 @@ export default function ExperienceDetails() {
     try{
     event.preventDefault();
     let action = ""
-    isDataPresent == null  ? action = "captureExperience" : action = "updateExperience" 
-    console.log(JSON.stringify(experienceData))
+    isDataPresent == "null"  ? action = "captureExperience" : action = "updateExperience" 
     saveExpDetails(action,experienceData,window.jwtTokenResult).then((jsondata)=>{
       if(jsondata.appError==null){   
         let jsonobjects = JSON.parse(jsondata.data); 
@@ -131,7 +123,6 @@ export default function ExperienceDetails() {
   const handleRadioButton = (event) => { 
       setExperienceData(preValue=>({...preValue, ["isExperience"]:event?.target?.value}))
 
-      console.log(event?.target?.value)
       // setExperienceData({"dbUserId":window.dbUserId,"experienceFrom":'',"lastDesignation":'',"natureOfExperience":'',"employerName":'',"grossSalary":0,"postingLocation":'',"experienceTo":'',"employerAddress":'',"isExperience":"Y","createdBy":window.userId, "updatedBy":window.userId});
     
   }
@@ -141,8 +132,8 @@ export default function ExperienceDetails() {
       <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
     <React.Fragment className={classes.actionsContainer}>
       {
-        isDataPresent == null &&
-        <FormControl style={{ marginTop: '20px', marginBottom: '10px' }}>
+         isDataPresent==="null" &&
+         <FormControl style={{ marginTop: '20px', marginBottom: '10px' }}>
          <FormLabel id='demo-row-radio-buttons-group-label'>
            Do You Have any Business Experience.
            </FormLabel>
@@ -167,7 +158,7 @@ export default function ExperienceDetails() {
        </FormControl>
       }
         {
-         isDataPresent !== null  &&
+        (experienceData.isExperience==="Y" || isDataPresent==="not null") &&
           <form>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6} md={6}>
@@ -289,7 +280,7 @@ export default function ExperienceDetails() {
       <Stack direction="row" spacing={2}>
         <Button type="submit" variant="contained" color="primary" onClick={handleBack} >Back</Button>
         <Button type="submit" 
-         disabled={experienceData?.lastDesignation !=="" && experienceData?.postingLocation!=="" && experienceData?.natureOfExperience!=="" && experienceData?.grossSalary!==""&&experienceData?.employerAddress!=="" && experienceData?.employerName!==""?false:true}
+         disabled={experienceData?.experienceTo !=="" &&experienceData?.experienceFrom !=="" &&experienceData?.lastDesignation !=="" && experienceData?.postingLocation!=="" && experienceData?.natureOfExperience!=="" && experienceData?.grossSalary!==""&&experienceData?.employerAddress!=="" && experienceData?.employerName!==""?false:true}
         variant="contained" color="primary" onClick={(e)=>handleExperienceData(e) }>Next </Button>
       </Stack>
       </React.Fragment>

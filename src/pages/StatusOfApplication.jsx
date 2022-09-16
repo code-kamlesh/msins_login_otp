@@ -1,8 +1,34 @@
+import React,{useState,useEffect} from "react"; 
+import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import '../assets/css/status.css'
-
+import { Button } from "@mui/material";
+import {fetchAllStudentDataByEngagementId} from './../utility/Api'
 export default function Status() {
-  
+  const history = useNavigate();
+  const[ studentData, setStudentData] = useState([])
+  useEffect(() => {
+       if (window.jwtTokenResult == "") {
+      history('/', { replace: true })
+    }
+    else{
+      ApplicationStatus();
+    }
+  },[]);
+
+  const ApplicationStatus = ()=>{
+    fetchAllStudentDataByEngagementId(window.engagementId,window.refreshJwtToken).then((jsondata)=>{
+      if(jsondata.data!==null){
+        let res  = JSON.parse(jsondata.data)
+        setStudentData(res[0])
+      }
+    })
+  }
+
+  const editForm = (event)=>{
+    event.preventDefault();
+    history('/basicdetails', { replace: true })
+  }
   return (
     <>
       <h2 style={{ textAlign: 'center', marginTop: '50px', color: '#8665f7' }}>
@@ -17,28 +43,32 @@ export default function Status() {
             <p>Engagement ID</p>
           </Box>
           <Box className='table-cell'>
-            <p>Student ID</p>
+            <p>Idea Type</p>
           </Box>
           <Box className='table-cell last-cell'>
             <p>Status</p>
+          </Box>
+          <Box className='table-cell last-cell'>
+            <p>Action</p>
           </Box>
         </Box>
 
         <Box className='table-row'>
           <Box className='table-cell first-cell'>
-            <p>Sagar Kudu</p>
+            <p>{studentData.firstName}  {studentData.lastName}</p>
           </Box>
           <Box className='table-cell'>
-            <p>ENG_1245252352</p>
+            <p>{studentData.engagementId}</p>
           </Box>
           <Box className='table-cell'>
-            <p>STU_485815102</p>
+            <p>{window.studentType}</p>
+          </Box>
+          <Box className='table-cell'>
+            <p>{studentData.status}</p>
           </Box>
           <Box className='table-cell last-cell'>
-            <span class='btn info'>Mobilized</span>
+           <Button class='btn info' onClick={(e)=>editForm(e)}>Edit</Button>
           </Box>
-
-          {/* <button className="button button2 table-cell last-cell" style={{textAlign: "center"}}>Draft</button> */}
         </Box>
       </Box>
     </>

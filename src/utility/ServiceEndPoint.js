@@ -9,4 +9,7 @@ export const serviceEndPoint = {
     socioeconomicServiceEndPoint:process.env.REACT_APP_API_ENDPOINT+"ssservices-v1/sservices-v1/socioEconomic",
     experienceServiceEndPoint:process.env.REACT_APP_API_ENDPOINT+"ssservices-v1/sservices-v1/experience",
     documentServiceEndPoint:process.env.REACT_APP_API_ENDPOINT+"ssservices-v1/sservices-v1/documents",
+    downloadDocument : process.env.REACT_APP_API_ENDPOINT+"Downloads/",
+    //BusinessDetails
+    BusinessDetailsServiceEndPoint:"http://localhost:8080/businessdetails",
     }

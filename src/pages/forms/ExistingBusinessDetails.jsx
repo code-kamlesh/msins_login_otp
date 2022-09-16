@@ -2,7 +2,6 @@ import ExistingBusinessEntrepreneurshipForm from "./ExistingBusinessEnterpreneur
 import ExistingBusinessInnovator from "./ExistingBusinessInnovatorForm"
 
 export default function existingBusinessDetails(){
-    console.log(window.studentType)
     return(
         <>
             {

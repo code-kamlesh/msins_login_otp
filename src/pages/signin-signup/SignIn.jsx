@@ -43,17 +43,6 @@ const LoginUser = ({ handleChange }) => {
   const handleMobileNoInput  = (event) => {
       // console.log("<=====EVENT VALUE=====>",event?.target?.value);
       setMobileNo(event?.target?.value);
-      if(event?.target?.value?.length > 9){
-          // generateRecaptcha();
-          // let appVerifire = window.recaptchaVerifier;
-          // signInWithPhoneNumber(authorization, '+91'+mobileNo, appVerifire).then( confirmationResult =>{
-          //   window.confirmationResult = confirmationResult;
-          //   //  setDisableVerifyOTPButton(false);
-          //   //  setDisableGetOTPButton(true);  
-          // }). catch( error => {
-          //   console.log('<====Error while verifying the OTP====>',error)
-          // })
-      }
   };
 
   const generateOTP = () => {
@@ -87,7 +76,6 @@ const LoginUser = ({ handleChange }) => {
         alert('User Sucessfully logged in!')
         // setDisableVerifyOTPButton(true)
         await login().then( async(jsondata)=>{  
-          console.log('jsondata ========> ', jsondata?.data)
           let dataFromSucessLogin = JSON.parse(jsondata?.data) 
           await fetchStduentDataBaisedOnContactNumber(mobileNo, dataFromSucessLogin[0]?.token).then(async (jsondata)=>{
             window.userId = dataFromSucessLogin[0]?.id;
@@ -108,7 +96,7 @@ const LoginUser = ({ handleChange }) => {
                 window.engagementId = res[0]?.engagementId
                 window.studentType = res[0]?.ideaType                
               })
-              history('/basicdetails' ,{ replace:true });
+              history('/status' ,{ replace:true });
             }
             else{
               alert("User Not Found! Please Sign Up.")
@@ -121,13 +109,12 @@ const LoginUser = ({ handleChange }) => {
       }).catch((error) => {
         // User couldn't sign in (bad verification code?)
         setDisableVerifyOtp(false)
-        console.log(error)
+        alert("Invalid OTP!")
       });
     }
   }
 
   const handleOtpInput = (event) => {
-      // console.log("<=====EVENT VALUE=====>",event?.target?.value);
       setOtp(event?.target?.value);
   };
 

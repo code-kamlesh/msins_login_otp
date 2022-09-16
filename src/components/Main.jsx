@@ -1,15 +1,10 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import {
-  Box,
-  createTheme,
-  ThemeProvider,
-  StyledEngineProvider,
+import { Routes, Route } from 'react-router-dom'
+import {Box,createTheme,ThemeProvider,StyledEngineProvider,
 } from '@mui/material'
-
 import { useState } from 'react'
 import Footer from './Footer'
 import Container from '@mui/material/Container'
-import StepperForm from './StepperForm'
+
 import UploadDocuments from './upload-documents/UploadDocuments'
 import Home from './../pages/Home'
 import EducationDetails from '../pages/education-details/EducationDetails'
@@ -17,8 +12,6 @@ import Status from '../pages/StatusOfApplication'
 import CandidateType from '../pages/candidate-type/CandidateType'
 import BasicDetailsForm from './../pages/forms/BasicDetailsForm'
 import Header from './Header'
-import SocioEconomicInnovatorForm from '../pages/forms/SocioEconomicInnovatorForm'
-import SocioEconomicEntepreneurForm from '../pages/forms/SocioEconomicEntepreneurForm'
 import ExperienceDetails from '../pages/forms/ExperienceDetailsForm'
 import ExistingBusinessDetails from '../pages/forms/ExistingBusinessDetails'
 import SocioEconimoicDetails from "../pages/forms/SocioEconomicDetails"

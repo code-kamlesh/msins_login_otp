@@ -1,17 +1,15 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
-import TypographyText from "../../components/shared/TypographyText";
 import TextFields from "../../components/shared/TextFields";
-import useStyles  from '../../components/layout'
+import useStyles from '../../components/layout'
 import { Link, useNavigate } from 'react-router-dom'
 import Container from "@mui/material/Container";
 import SelectOption from "../../components/shared/SelectOption";
-import TextareaAutosize from "@mui/material/TextareaAutosize";
-import TextareaAutosizeBox from "../../components/shared/TextareaAutosizeBox";
 import { Box } from "@mui/material";
 import { Button } from "@mui/material";
 import Stack from '@mui/material/Stack';
-
+import {validateTextInput1 } from "./../../utility/Validation"
+import { fetchAllQestionSet,saveMsinsBusinessData,updateMsinsBuisnessDetails,fetchSavedQuestionAnswer } from './../../utility/Api'
 //adding select box options
 const selectLevelOptions = [
   "Level 0: Idea - Unproven concept, no testing has been performed",
@@ -29,153 +27,329 @@ const selectBorrowedMoneyOptions = ["Yes", "No"];
 const selectDepositMoneyOptions = ["Yes", "No"];
 const selectudhyogAadharRegistrationOptions = ["Yes", "No"];
 const selectgstRegistrationOptions = ["Yes", "No", "Don't know"];
-
 export default function ExistingBusinessEntrepreneurshipForm() {
   const history = useNavigate();
   const classes = useStyles();
+  const [errors,setErrors] = useState({})
+  var businessData= [];
+
+  const [questionAnswer1 , setQuestionAnswer1] = useState({"id":"","questionId":"1", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userId,"updatedBy":window.userId});
+  const [questionAnswer2 , setQuestionAnswer2] = useState({"id":"","questionId":"2", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userId,"updatedBy":window.userId});
+  const [questionAnswer3 , setQuestionAnswer3] = useState({"id":"","questionId":"3", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userId,"updatedBy":window.userId});
+  const [questionAnswer4 , setQuestionAnswer4] = useState({"id":"","questionId":"4", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userId,"updatedBy":window.userId});
+  const [questionAnswer5 , setQuestionAnswer5] = useState({"id":"","questionId":"5", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userId,"updatedBy":window.userId});
+  const [questionAnswer6 , setQuestionAnswer6] = useState({"id":"","questionId":"6", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userId,"updatedBy":window.userId});
+  const [questionAnswer7 , setQuestionAnswer7] = useState({"id":"","questionId":"7", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userId,"updatedBy":window.userId});
+  const [questionAnswer8 , setQuestionAnswer8] = useState({"id":"","questionId":"8", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userId,"updatedBy":window.userId});
 
 
-  const submitData = ()=>{
-    history('/entrepreneurbusinessform' ,{replace:true})
+  const [questionlist, setQuestionlist] = useState([]);
+  // const [businessData, setBusinessData] = useState([])
+  useEffect(() => {
+
+    if (window.jwtTokenResult == "") {
+      history('/', { replace: true })
+    }
+    else{
+    fetchExistingData();
+    fetchQuestionSet();
+    }
+  }, []);
+
+  const fetchExistingData = ()=>{
+    fetchSavedQuestionAnswer(window.dbUserId,window.refreshJwtToken).then((jsondata)=>{
+      let res = jsondata
+      for(var i=0;i<res.length;i++){
+        if(res[i].questionId === "1"){
+        questionAnswer1.answer = res[i]?.answer
+        questionAnswer1.id = res[i]?.id
+        }
+        else if(res[i].questionId === "2"){
+          questionAnswer2.answer = res[i]?.answer
+          questionAnswer2.id = res[i]?.id
+        }
+        else if(res[i].questionId === "3"){
+          questionAnswer3.answer = res[i]?.answer
+          questionAnswer3.id = res[i]?.id
+        // setQuestionAnswer3(preValue=>({...preValue,["answer"]: res[i]?.answer, ["id"]:res[i]?.id}))
+        }
+        else if(res[i].questionId === "4"){
+          questionAnswer4.answer = res[i]?.answer
+          questionAnswer4.id = res[i]?.id
+          // setQuestionAnswer4(preValue=>({...preValue,["answer"]: res[i]?.answer}))
+        }
+        else if(res[i].questionId === "5"){
+          questionAnswer5.answer = res[i]?.answer
+          questionAnswer5.id = res[i]?.id
+        // setQuestionAnswer5(preValue=>({...preValue,["answer"]: res[i]?.answer}))
+        }
+        else if(res[i].questionId === "6"){
+          questionAnswer6.answer = res[i]?.answer
+          questionAnswer6.id = res[i]?.id
+        //  setQuestionAnswer6(preValue=>({...preValue,["answer"]: res[i]?.answer}))
+        }
+        else if(res[i].questionId === "7"){
+          questionAnswer7.answer = res[i]?.answer
+          questionAnswer7.id = res[i]?.id
+        // setQuestionAnswer7(preValue=>({...preValue,["answer"]: res[i]?.answer}))
+        
+        }
+        else if(res[i].questionId === "8"){
+        questionAnswer8.answer = res[i]?.answer
+        questionAnswer8.id = res[i]?.id
+        
+        }
+      }
+    })
+   
   }
-  const handleBack = ()=>{
-    history('/experiencedetails' ,{replace:true})
+  const fetchQuestionSet = () => {
+    try{
+      let arr = [];
+      fetchAllQestionSet("all", window.refreshJwtToken).then((jsondata) => {
+        for (var i = 0; i < jsondata.length; i++) {
+          if (jsondata[i].businessType === "EEB") {
+            arr[i] = (jsondata[i])
+          }
+        }
+        setQuestionlist(arr)
+      })
+    }
+    catch(err){
+      alert(err.message)
+    }
+  }
+  const submitData = async() => {
+    businessData.push(questionAnswer1)
+    businessData.push(questionAnswer2)
+    businessData.push(questionAnswer3)
+    businessData.push(questionAnswer4)
+    businessData.push(questionAnswer5)
+    businessData.push(questionAnswer6)
+    businessData.push(questionAnswer7)
+    businessData.push(questionAnswer8)
+    try{
+      for(var i=0; i<businessData.length;i++){
+        if(businessData[i].id ===""){
+          saveMsinsBusinessData(businessData[i],  window.refreshJwtToken).then((jsondata)=>{
+            
+            console.log("saving")
+          })
+        }
+        else{
+          updateMsinsBuisnessDetails(businessData[i],  window.refreshJwtToken).then((jsondata)=>{
+          
+            console.log("updating")
+          })
+        }
+      }
+     
+      businessData = []
+      history('/entrepreneurbusinessform', { replace: true })
+    }
+    catch(err){
+      alert(err.message)
+    }
+     
+  }
+
+
+  const handleLevel = (event) => {
+   
+    setQuestionAnswer1(preValue=>({...preValue,["answer"]: event}))
+  }
+
+  const handleExistingBuisness = (event) => {
+    setQuestionAnswer2(preValue=>({...preValue,["answer"]: event}))
+  }
+
+  const handleDepositeMoney = (event) => {
+    setQuestionAnswer3(preValue=>({...preValue,"answer": event}))
+  }
+
+  const handleLoanAmountDuration = (event) => {
+    const error = validateTextInput1("durationAmount", event?.target?.value,"lng")
+      setErrors(error)
+    setQuestionAnswer4(preValue=>({...preValue,"answer": event?.target?.value}))
+  }
+
+  const handleBroowMoney = (event) => {
+    setQuestionAnswer5(preValue=>({...preValue,"answer": event}))
+  }
+
+  const handleLoanSource = (event) => {
+    const error = validateTextInput1("loanFromBank", event?.target?.value,"lng")
+      setErrors(error)
+    setQuestionAnswer6(preValue=>({...preValue,"answer": event?.target?.value}))
+  }
+
+  const handleUdyogResigtration = (event) => {
+    setQuestionAnswer7(preValue=>({...preValue,"answer": event}))
+  }
+  const handleGSTRegistration = (event) => {
+    setQuestionAnswer8(preValue=>({...preValue,"answer": event}))
+  }
+
+  const handleBack = () => {
+    
+    history('/experiencedetails', { replace: true })
   }
   return (
-    
-<div className={classes.root} >
-       <h3 style={{ textAlign: "center" }}>Existing Business</h3>
-       <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
-    <React.Fragment className={classes.actionsContainer}>
-      <Grid container spacing={6}>
-        {/*Start- Existing Business Entrepreneur questions */}
-        <Grid item xs={12}>
-          <p>1. Select your level</p>
-          <SelectOption
-            label="Select Level"
-            id="selectLevel"
-            name="selectLevel"
-            options={selectLevelOptions}
-            fullWidth="fullWidth"
-            autoFocus={true}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={6}>
-          <p>2. Do you have an existing business?</p>
-          <Grid item>
-            <SelectOption
-              label="Existing business"
-              id="existingBusiness"
-              name="existingBusiness"
-              options={selectExistingBusinessOptions}
-              variant="standard"
-              fullWidth="fullWidth"
-            />
-          </Grid>
-        </Grid>
-        <Grid item xs={12} sm={6} md={6}>
-          <p>3. Did you ever deposit your money in a bank or savings group??</p>
-          <SelectOption
-            //label="Do you have an existing business"
-            id="DepositMoney"
-            name="DepositMoney"
-            label="Deposit Money"
-            options={selectDepositMoneyOptions}
-            variant="standard"
-            minWidth="md"
-            fullWidth="fullWidth"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={6}>
-          <p>
-            4. If you had to obtain a loan for INR 2,00,000 within the next
-            month, how confident are you of being able to arrange such a loan?
-          </p>
-          <Grid item xs={12} sm={6} md={6}>
-            <Box mt={2}>
-              <TextFields
-                required
-                id="loanAmountDuration"
-                name="loanAmountDuration"
-                type="number"
-                //label="Aadhar Number"
+
+    <div className={classes.root} >
+      <h3 style={{ textAlign: "center" }}>Existing Business</h3>
+      <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
+        <React.Fragment className={classes.actionsContainer}>
+          <Grid container spacing={6}>
+            {/*Start- Existing Business Entrepreneur questions */}
+            <Grid item xs={12}>
+              <p>1. Select your level</p>
+              <SelectOption
+                label="Select Level"
+                id="1"
+                name="1"
+                options={selectLevelOptions}
+                value={questionAnswer1?.answer || ""}
+                onChange={(e)=>handleLevel(e)}
                 fullWidth="fullWidth"
-                placeholder="e.g 1 to 10 months"
-                variant="standard"
-                autoFocus={false}
-                onInput={(e) => {
-                  e.target.value = Math.max(0, parseInt(e.target.value))
-                    .toString()
-                    .slice(0, 2);
-                }}
+                autoFocus={true}
               />
-            </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={6}>
+              <p>2. Do you have an existing business?</p>
+              <Grid item>
+                <SelectOption
+                  label="Existing business"
+                  id="2"
+                  name="2"
+                  options={selectExistingBusinessOptions}
+                  variant="standard"
+                  value={questionAnswer2?.answer || ""}
+                  fullWidth="fullWidth"
+                  onChange={(e) => { handleExistingBuisness(e) }}
+                />
+              </Grid>
+            </Grid>
+            <Grid item xs={12} sm={6} md={6}>
+              <p>3. Did you ever deposit your money in a bank or savings group??</p>
+              <SelectOption
+                //label="Do you have an existing business"
+                id="3"
+                name="3"
+                label="Deposit Money"
+                options={selectDepositMoneyOptions}
+                variant="standard"
+                minWidth="md"
+                value={questionAnswer3?.answer || ""}
+                fullWidth="fullWidth"
+                onChange={(e) => { handleDepositeMoney(e) }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={6}>
+              <p>
+                4. If you had to obtain a loan for INR 2,00,000 within the next
+                month, how confident are you of being able to arrange such a loan?
+              </p>
+              <Grid item xs={12} sm={6} md={6}>
+                <Box mt={2}>
+                  <TextFields
+                    id="4"
+                    name="durationAmount"
+                    type="number"
+                    //label="Aadhar Number"
+                    fullWidth="fullWidth"
+                    placeholder="e.g 1 to 10 months"
+                    variant="standard"
+                    value={questionAnswer4?.answer || ""}
+                    autoFocus={false}
+                    onChange={(e) => { handleLoanAmountDuration(e) }}
+                    onInput={(e) => {
+                      e.target.value = Math.max(0, parseInt(e.target.value))
+                        .toString()
+                        .slice(0, 2);
+                    }}
+                  />
+                </Box>
+              </Grid>
+              {errors?.durationAmount ? (<div style={{ color: "red" }}>{errors.durationAmount}</div>) : null}
+            </Grid>{" "}
+            <Grid item xs={12} sm={6} md={6}>
+              <p>
+                5. In the past 12 months have you borrowed any money from any source
+                ?
+              </p>
+              <br />
+              <SelectOption
+                //label="Do you have an existing business"
+                id="5"
+                name="5"
+                label="Borrowed Money"
+                options={selectBorrowedMoneyOptions}
+                variant="standard"
+                value={questionAnswer5?.answer || ""}
+                fullWidth="fullWidth"
+                onChange={(e) => { handleBroowMoney(e) }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={6}>
+              <p>6. From whom will you be obtaining such a loan?</p>
+              <Box mt={2.5}>
+                <TextFields
+                  required
+                  id="6"
+                  name="loanFromBank"
+                  type="text"
+                  //label="Aadhar Number"
+                  fullWidth="fullWidth"
+                  placeholder="e.g bank"
+                  variant="standard"
+                  value={questionAnswer6?.answer || ""}
+                  autoFocus={false}
+                  inputProps={{ maxLength: 45 }}
+                  onChange={(e) => { handleLoanSource(e) }}
+                />
+              </Box>
+            </Grid>
+            {errors?.loanFromBank ? (<div style={{ color: "red" }}>{errors.loanFromBank}</div>) : null}
+            <Grid item xs={12} sm={6} md={3}>
+              <p>7. Do you have Udyog Aadhar registration?</p>
+              <SelectOption
+                //label="Do you have an existing business"
+                id="7"
+                name="7"
+                label="Aadhar Registration"
+                options={selectudhyogAadharRegistrationOptions}
+                variant="standard"
+                value={questionAnswer7?.answer || ""}
+                fullWidth="fullWidth"
+                onChange={(e) => { handleUdyogResigtration(e) }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <p>8. Do you have GST registration?</p>
+              <SelectOption
+                //label="Do you have an existing business"
+                id="8"
+                name="8"
+                label="GST Registration"
+                options={selectgstRegistrationOptions}
+                variant="standard"
+                value={questionAnswer8?.answer || ""}
+                fullWidth="fullWidth"
+                //minWidth= "10"
+                onChange={(e) => { handleGSTRegistration(e) }}
+              />
+            </Grid>
           </Grid>
-        </Grid>{" "}
-        <Grid item xs={12} sm={6} md={6}>
-          <p>
-            5. In the past 12 months have you borrowed any money from any source
-            ?
-          </p>
-          <br />
-          <SelectOption
-            //label="Do you have an existing business"
-            id="borrowedMoney"
-            name="borrowedMoney"
-            label="Borrowed Money"
-            options={selectBorrowedMoneyOptions}
-            variant="standard"
-            fullWidth="fullWidth"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={6}>
-          <p>6. From whom will you be obtaining such a loan?</p>
-          <Box mt={2.5}>
-            <TextFields
-              required
-              id="loanSource"
-              name="loanSource"
-              type="text"
-              //label="Aadhar Number"
-              fullWidth="fullWidth"
-              placeholder="e.g bank"
-              variant="standard"
-              autoFocus={false}
-              inputProps={{ maxLength: 45 }}
-            />
-          </Box>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <p>7. Do you have Udyog Aadhar registration?</p>
-          <SelectOption
-            //label="Do you have an existing business"
-            id="udhyogAadharRegistration"
-            name="udhyogAadharRegistration"
-            label="Aadhar Registration"
-            options={selectudhyogAadharRegistrationOptions}
-            variant="standard"
-            fullWidth="fullWidth"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <p>8. Do you have GST registration?</p>
-          <SelectOption
-            //label="Do you have an existing business"
-            id="gstRegistration"
-            name="gstRegistration"
-            label="GST Registration"
-            options={selectgstRegistrationOptions}
-            variant="standard"
-            fullWidth="fullWidth"
-            //minWidth= "10"
-          />
-        </Grid>
-      </Grid>
-      <Stack direction="row" spacing={2}>
-        <Button type="submit" variant="contained" color="primary" onClick={handleBack} >Back</Button>
-        <Button type="submit" variant="contained" color="primary" onClick={submitData} >Next</Button>
-      </Stack>
-      </React.Fragment>
+          <br/>
+          <Stack direction="row" spacing={2}>
+            <Button type="submit" variant="contained" color="primary" onClick={handleBack} >Back</Button>
+            <Button
+            disabled={questionAnswer1?.answer!=="" && questionAnswer2?.answer!=="" && questionAnswer3?.answer!=="" &&questionAnswer4?.answer!=="" &&questionAnswer5?.answer!=="" 
+            &&questionAnswer6?.answer!=="" &&questionAnswer7?.answer!=="" &&questionAnswer8?.answer!==""?false:true}
+            type="submit" variant="contained" color="primary" onClick={submitData} >Next</Button>
+          </Stack>
+        </React.Fragment>
       </Container>
     </div>
   );

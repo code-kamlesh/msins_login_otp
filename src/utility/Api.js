@@ -172,7 +172,23 @@ export async function uploadDocument(dbUserId,engagementId,documentType,typeOfDo
 // }
 // return null;
 }
-
+// delete documents
+export async function deleteDocumentById(basicDocId) {
+    // if(isSessionValid()){
+    let requestFormData = new FormData();
+    requestFormData.append('data', '{"token" : "", "action" : "deleteDocument", "data" : [{"basicDocId":'+basicDocId+'}]}');
+    // if(!isTokenValid()) 
+        // await regenerateToken();
+  return fetch(serviceEndPoint.documentServiceEndPoint, {
+        method: "POST",
+        headers: {
+            'Authorization': 'Bearer '+tokeney
+        }, 
+        body: requestFormData,
+    }).then(response => response.json());
+// }
+// return null;
+}
 export async function fetchUserDocumentsByEngagementId(engagementId,token) {
     // if(isSessionValid()){
     let requestFormData = new FormData();
@@ -245,6 +261,110 @@ export async function fetchExistingAddress(entityId,entityType,token) {
         'Authorization': 'Bearer '+token
     }, 
      body: requestFormData,
+     }).then(response => response.json());
+    // }
+    // return null;
+}
+
+export async function fetchAllStudentDataByEngagementId(engagementId,token) {
+    // if(isSessionValid()){
+    let requestFormData = new FormData();  
+    requestFormData.append('data','{"token" : "'+ "1234" +'", "action" : "fetchAllStudentDataByEngagementId", "data" : [{"engagementId":"' + engagementId + '"}]}');
+    // if(!isTokenValid()) 
+        // await regenerateToken();
+  return  fetch(serviceEndPoint.engagementServiceEndPoint,{
+     method: "POST",
+     headers: {
+        'Authorization': 'Bearer '+token
+    }, 
+     body: requestFormData,
+     }).then(response => response.json());
+    // }
+    // return null;   
+}
+
+//fetching Question set 
+
+export async function fetchAllQestionSet(all,token) {
+    // if(isSessionValid()){
+    // if(!isTokenValid()) 
+        // await regenerateToken();  
+        var url= serviceEndPoint.BusinessDetailsServiceEndPoint+"/"+all                                                                 
+    return await fetch(url,{
+        headers: {
+            'Authorization': 'Bearer '+token
+        },
+        }).then(response => response.text()) // json.parse doesn't hanlde the null value
+        .then((text)=>text.length?JSON.parse(text):{});
+    // }
+    // return null;
+}
+
+// Saving FieldVisits and Sessions data
+export async function saveMsinsBusinessData(data,token) {
+    // if(isSessionValid()){
+    // if(!isTokenValid()) 
+    //     await regenerateToken();  
+        var responseBody = JSON.stringify({
+        "questionId":data?.questionId,
+        "answer":data?.answer,
+        "businessType":data?.businessType,
+        "dbUserId":data?.dbUserId,
+        "createdBy":data?.createdBy,
+        "updatedBy":data?.updatedBy,
+        })
+        var url= serviceEndPoint.BusinessDetailsServiceEndPoint+"/"+"save"                                                               
+   return  await fetch(url,{
+     method: "POST",
+     headers: {
+        'Authorization': 'Bearer '+token,
+        'Content-Type': 'application/json'
+    }, 
+     body:responseBody,
+     }).then(response => response.json());
+    // }
+    // return null;
+}
+
+// fetchinh saved answer
+// fetching parent sme field visit data
+export async function fetchSavedQuestionAnswer(dbUserId,token) {
+    // if(isSessionValid()){
+    // if(!isTokenValid()) 
+    //     await regenerateToken();  
+        var url=serviceEndPoint.BusinessDetailsServiceEndPoint +"/"+dbUserId                                                                   
+    return await fetch(url,{
+        headers: {
+            'Authorization': 'Bearer '+token
+        },
+        }).then(response => response.text()) // json.parse doesn't hanlde the null value
+        .then((text)=>text.length?JSON.parse(text):{});
+    // }
+    // return null;
+}
+
+//update the msins data
+
+export async function updateMsinsBuisnessDetails(data,token) {
+    // if(isSessionValid()){
+    // if(!isTokenValid()) 
+    //     await regenerateToken(); 
+        var responseBody = JSON.stringify({ 
+            "questionId":data?.questionId,
+            "answer":data?.answer,
+            "businessType":data?.businessType,
+            "dbUserId":data?.dbUserId,
+            "createdBy":data?.createdBy,
+            "updatedBy":data?.updatedBy,
+        })
+        var url= serviceEndPoint.BusinessDetailsServiceEndPoint+"/"+"update/"+data?.id                                                                 
+   return  await fetch(url,{
+     method: "put",
+     headers: {
+        'Authorization': 'Bearer '+token,
+        "Content-Type": "application/json"
+    }, 
+   body: responseBody
      }).then(response => response.json());
     // }
     // return null;

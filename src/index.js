@@ -11,12 +11,12 @@ import App from "./App";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "flag-icon-css/css/flag-icons.min.css";
-window.userId=0
-window.studentType = "Innovator"; // Entepreneur  Innovator
+window.userId=""
+window.studentType = "Entepreneur"; // Entepreneur  Innovator
 window.jwtTokenResult = "";
 window.refreshJwtToken = "";
-window.dbUserId=100
-window.engagementId = 100
+window.dbUserId=
+window.engagementId = ""
 window.dob=""
 window.pincode=""
 window.primaryContactNumber=""

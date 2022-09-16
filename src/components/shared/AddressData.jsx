@@ -1,30 +1,15 @@
-import React from "react";
+import React , {useState}from "react";
 import Grid from "@mui/material/Grid";
 import SelectOption from "./SelectOption";
 import  TextField  from '@mui/material/TextField';
 
-export default function AddressData({
-  pincodeId,
-  pincodeName,
-  pincodeType,
-  pincodeLabel,
-  districtId,
-  districtLabel,
-  districtName,
-  fullWidth,
-  selectDistrictNameOptions,
-  cityId,
-  cityName,
-  CityLabel,
-  selectCityNameOptions,
-  villageId,
-  villageName,
-  VillageLabel,
-  selectVillageNameOptions,
-  onChange,
-  autoFocus,
-  options
-}) {
+export default function AddressData({}) {
+
+  const [businessAddressDetails,setBusinessAddressDetails] = useState({"pincode":"",})
+  const handlePinCode = (event)=>{
+    console.log(event?.target?.value)
+    setBusinessAddressDetails(preValue=>({...preValue,["pincode"]:event?.target?.value}))
+  }
   return (
     <>
       <Grid item xs={12} sm={6} md={4}>
@@ -37,8 +22,8 @@ export default function AddressData({
           fullWidth="fullWidth"
           autoComplete="pincode"
           variant="standard"
-          onChange={onChange}
-          autoFocus={autoFocus}
+          onChange={handlePinCode}
+          // autoFocus={autoFocus}
           onInput={(e) => {
             e.target.value = Math.max(0, parseInt(e.target.value))
               .toString()
@@ -52,11 +37,11 @@ export default function AddressData({
           label="District"
           id="district"
           name="district"
-          options={options}
+          // options={options}
           variant="standard"
-          onChange={onChange}
+          // onChange={onChange}
           fullWidth="fullWidth"
-          autoFocus={autoFocus}
+          // autoFocus={autoFocus}
           //onKeyDown={(e) => e.preventDefault()}
         />
       </Grid>
@@ -66,9 +51,9 @@ export default function AddressData({
           name="city"
           label="City"
           fullWidth="fullWidth"
-          options={options}
-          onChange={onChange}
-          autoFocus={autoFocus}
+          // options={options}
+          // onChange={onChange}
+          // autoFocus={autoFocus}
           //onKeyDown={(e) => e.preventDefault()}
         />
       </Grid>
@@ -78,9 +63,9 @@ export default function AddressData({
           name="village"
           label="Village"
           fullWidth="fullWidth"
-          autoFocus={autoFocus}
-          options={options}
-          onChange={onChange}
+          // autoFocus={autoFocus}
+          // options={options}
+          // onChange={onChange}
           //onKeyDown={(e) => e.preventDefault()}
         />
       </Grid>

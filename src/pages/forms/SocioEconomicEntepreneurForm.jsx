@@ -9,6 +9,7 @@ import useStyles  from '../../components/layout'
 import {  useNavigate } from 'react-router-dom'
 import Container from "@mui/material/Container";
 import { saveSocioDetails,fetchSocioDetails } from "./../../utility/Api";
+import { validateTextInput1 } from "./../../utility/Validation"
 
 const selectPhysicalChallengedButton = ["Yes", "No"];
   const selectMaritalStatusButton = [
@@ -29,8 +30,9 @@ const selectPhysicalChallengedButton = ["Yes", "No"];
 export default function SocioEconomicEntepreneurForm() {
   const history = useNavigate();
   const classes = useStyles();
+  const [errors,setErrors] = useState({})
   const [isDataPresent , setIsDataPresent] = useState("")
-  const [scoioEconomicData, setScoioEconomicData] = useState({"dbUserId":window.dbUserId,"mediumOfLight":'',"housingUnit":'',"physicallyChallenged":'',"sourceOfWater":'',"maritalStatus":'',"isActive":"Y","membersInHousehold":'',"brothers":0,"sisters":0,"rooms":'',"ownership":'',"createdBy":window.userId, "updatedBy":window.userId});
+  const [scoioEconomicData, setScoioEconomicData] = useState({"dbUserId":window.dbUserId,"mediumOfCooking":'',"housingUnit":'',"physicallyChallenged":'',"sourceOfWater":'',"maritalStatus":'',"isActive":"Y","membersInHousehold":'',"brothers":0,"sisters":0,"rooms":'',"ownership":'',"isActive":"Y","createdBy":window.userId, "updatedBy":window.userId});
  
   useEffect(() => {
     if (window.jwtTokenResult == "") {
@@ -41,16 +43,22 @@ export default function SocioEconomicEntepreneurForm() {
     }
   }, []);
 
-  const getSocioEconomicData = ()=>{
-    fetchSocioDetails(window.dbUserId, window.jwtTokenResult).then((jsondata)=>{
-      if(jsondata.appError === null && jsondata.data !== "[]" ){
+  const getSocioEconomicData = async()=>{
+    await fetchSocioDetails(window.dbUserId, window.jwtTokenResult).then((jsondata)=>{
+      if(jsondata.appError === null && jsondata.data !== "[null]" ){
         let res = JSON.parse(jsondata.data)
-        setScoioEconomicData(res[0])
-      }
-      else if(jsondata.appError === null && jsondata.data === "[]"){
+        setScoioEconomicData(preValue => ({ ...preValue, ["physicallyChallenged"]:res[0]?.physicallyChallenged|| "", ["maritalStatus"]: res[0]?.maritalStatus, 
+                                            ["mediumOfCooking"]:res[0]?.mediumOfCooking,["housingUnit"]:res[0]?.housingUnit,["sourceOfWater"]:res[0]?.sourceOfWater,
+                                            ["membersInHousehold"]:res[0]?.membersInHousehold,["rooms"]:res[0]?.rooms,["ownership"]:res[0]?.ownership,["id"]:res[0]?.id}))
+     
+                                            console.log(scoioEconomicData?.membersInHousehold?.length)
+                                          }
+      else{
         setIsDataPresent(null)
       }
     })
+
+   
   }
 
   const onChangePhysicalChallenged = (event)=>{
@@ -80,16 +88,23 @@ export default function SocioEconomicEntepreneurForm() {
   }
   const handleFuelSource = (event)=>{
     if(event?.length!==0){
-      setScoioEconomicData(preValue=>({...preValue, ["mediumOfLight"]:event}));
+      setScoioEconomicData(preValue=>({...preValue, ["mediumOfCooking"]:event}));
     }
   }
 const hanldeBrotherSister = (event)=>{
-  if(event?.target?.value.length>0){
+  // if(event?.target?.value.length===0){
+    const errors = validateTextInput1(event?.target?.name, event?.target?.value, "lng")
+    setErrors(errors);
+    console.log(event?.target?.value.length)
     setScoioEconomicData(preValue=>({...preValue, [event?.target?.name]:event?.target?.value}));
-  }
+  // }
 }
 const hanldeUnitOfNumber = (event)=>{
-  setScoioEconomicData(preValue=>({...preValue, [event?.target?.name]:event?.target?.value}));
+  // if(event?.target?.value.length===0){
+    const errors = validateTextInput1(event?.target?.name, event?.target?.value, "lng")
+    setErrors(errors);
+    setScoioEconomicData(preValue=>({...preValue, [event?.target?.name]:event?.target?.value}));
+  // }
 }
 
 
@@ -129,6 +144,7 @@ const hanldeUnitOfNumber = (event)=>{
             variant="standard"
             fullWidth="fullWidth"
             autoFocus={true}
+            value={scoioEconomicData?.physicallyChallenged || ""}
             onChange={(e)=>onChangePhysicalChallenged(e)}
           />
         </Grid>
@@ -139,6 +155,7 @@ const hanldeUnitOfNumber = (event)=>{
             options={selectMaritalStatusButton}
             variant="standard"
             fullWidth="fullWidth"
+            value={scoioEconomicData?.maritalStatus ||""}
             onChange={(e)=>onChangeMaritalStatus(e)}
           />
         </Grid>
@@ -154,10 +171,11 @@ const hanldeUnitOfNumber = (event)=>{
               placeholder="e.g 2"
               name= "membersInHousehold"
               inputProps={{ maxLength: 1 }}
-              error={(scoioEconomicData.membersInHousehold.length>0)?false:true}
+              value={scoioEconomicData?.membersInHousehold}
               onChange={(e)=>hanldeBrotherSister(e)}
             />
           </Grid>
+          {errors?.membersInHousehold ? (<div style={{ color: "red" }}>{errors.membersInHousehold}</div>) : null}
           <Grid item xs={12} md={4}>
             <p>2. How many Rooms does this Housing unit has?</p>
           </Grid>
@@ -167,11 +185,11 @@ const hanldeUnitOfNumber = (event)=>{
               name= "rooms"
               //onChange=""
               inputProps={{ maxLength: 1 }}
-              error={(scoioEconomicData.rooms.length>0)?false:true}
+              value={scoioEconomicData?.rooms}
               onChange={(e)=>hanldeUnitOfNumber(e)}
             />
           </Grid>
-
+          {errors?.rooms ? (<div style={{ color: "red" }}>{errors?.rooms}</div>) : null}
           <Grid item xs={12} md={4}>
             <p>3. What is the Ownership status of your Household?</p>
           </Grid>
@@ -182,6 +200,7 @@ const hanldeUnitOfNumber = (event)=>{
               options={selectOwnershipStatusButton}
               variant="standard"
               fullWidth="fullWidth"
+              value={scoioEconomicData?.ownership|| ""}
               error={true}
               onChange={(e)=>handleOwenerShip(e)}
             />
@@ -201,6 +220,7 @@ const hanldeUnitOfNumber = (event)=>{
               options={selectFuelSourceButton}
               variant="standard"
               fullWidth="fullWidth"
+              value={scoioEconomicData?.mediumOfCooking || ""}
               error={true}
               onChange={(e)=>handleFuelSource(e)}
             />
@@ -218,6 +238,7 @@ const hanldeUnitOfNumber = (event)=>{
               options={selectHousingUnitButton}
               variant="standard"
               fullWidth="fullWidth"
+              value={scoioEconomicData?.housingUnit || ""}
               error={true}
               onChange={(e)=>handleHousingUnit(e)}
             />
@@ -233,6 +254,7 @@ const hanldeUnitOfNumber = (event)=>{
               name="waterSource"
               options={selectwaterSourceButton}
               variant="standard"
+              value={scoioEconomicData?.sourceOfWater||""}
               fullWidth="fullWidth"
               error={true}
               onChange={(e)=>handleWaterSource(e)}
@@ -241,13 +263,13 @@ const hanldeUnitOfNumber = (event)=>{
         </Grid>
       </Box>
       <br />
-        <Grid container direction="row" justify="flex-end" alignItems="flex-end">
-          <Button type="submit" variant="contained" color="primary" >Save</Button>
-        </Grid>
-
         <Stack direction="row" spacing={2}>
         <Button  variant="contained" color="primary" onClick={handleBack} >Back</Button>
-        <Button type="submit" variant="contained" color="primary"  >Next</Button>
+        <Button 
+        // (scoioEconomicData?.rooms?.length>0) && (scoioEconomicData?.membersInHousehold?.length>0)&&
+        disabled={(scoioEconomicData?.physicallyChallenged?.length >0) &&(scoioEconomicData?.maritalStatus?.length >0) && (scoioEconomicData?.ownership?.length >0) &&
+           (scoioEconomicData?.mediumOfCooking?.length >0)&&(scoioEconomicData?.housingUnit?.length >0)&&(scoioEconomicData?.sourceOfWater?.length >0)?false:true}
+        type="submit" variant="contained" color="primary"  >Next</Button>
       </Stack>
       </form>
       </React.Fragment>

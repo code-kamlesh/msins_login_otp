@@ -17,10 +17,12 @@ import { DropzoneArea } from 'material-ui-dropzone';
 import { Button } from "@mui/material";
 import Stack from '@mui/material/Stack';
 import useStyles from '../../components/layout'
-import {uploadDocument,fetchUserDocumentsByEngagementId} from "./../../utility/Api";
+import {uploadDocument,fetchUserDocumentsByEngagementId,deleteDocumentById} from "./../../utility/Api";
+import { serviceEndPoint } from './../../utility/ServiceEndPoint';
 
-const dbUserId = 1000011;
-const engagementId=1000011;
+
+const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJrYW1sZXNoX3NpbmdoIiwiaWF0IjoxNjYzMDY3NjcxLCJleHAiOjE2NjMxNTQwNzF9.AM_ivWrc3tamo-fkSU7Sn3BvSgUNIUWK-hApOqfPCaRciYWS5-5Z_3KFcQuMbeWVSA5OfEZb5UAUKoEF1sMiaw"
+
 export default function UploadDocuments() {
   useEffect(() => {
     console.log(window)
@@ -35,8 +37,7 @@ export default function UploadDocuments() {
     else{
      getSubmittedDocument(window.engagementId);
     }
-
-  },[]);
+ },[]);
   var x = 0;
   const classes = useStyles();
   const history = useNavigate();
@@ -100,12 +101,9 @@ export default function UploadDocuments() {
     }
   }
   // fetching User Document List
-
   const getSubmittedDocument = (engagementId)=>{
-    x = 0
     fetchUserDocumentsByEngagementId(engagementId).then((jsondata) => {   
       let jsonobjects = JSON.parse(jsondata.data); 
-      console.log(jsonobjects)
       setDocumentList(jsonobjects)
     })
   }
@@ -131,14 +129,38 @@ export default function UploadDocuments() {
     setDocumentName(event?.target?.value)
   }
   const downloadDocuments =(basicDocId)=>{
+    let formData = new FormData();
+  formData.append('data', '{"token" : "", "action" : "downloadDocument", "data" : [{"basicDocId":'+basicDocId+'}]}');
+  fetch(serviceEndPoint.documentServiceEndPoint, {
+      method: 'post',
+      headers: {
+        'Authorization': 'Bearer '+token
+    }, 
+      body: formData
+  }).then(response => response.json()).then((jsondata)=>{
+    let jsonobjects = JSON.parse(jsondata.data);
+    // console.log("response>>>",jsonobjects)
+    console.log(jsonobjects[0].documentPath)
+    var url=serviceEndPoint.downloadDocument+jsonobjects[0].documentPath+""; 
+
+    window.open(url, "_blank");
+  });
     console.log(basicDocId)
   }
-  const deleteDocument =(basicDocId)=>{
-    console.log(basicDocId)
+  const deleteDocument =async (basicDocId)=>{
+    await deleteDocumentById(basicDocId).then((jsondata) => {
+
+      getSubmittedDocument(window.dbUserId)
+    });
+    
   }
   const handleBack = ()=>{
     window.studentType === "Innovator" ? history('/Businessdetails' ,{replace:true}) : history('/entrepreneurbusinessform' ,{replace:true}) 
   }
+const finalSubmission = (event)=>{
+  
+}
+
   return (
     <div className={classes.root} >
       <h3 style={{ textAlign: "center" }}>Upload Documents</h3>
@@ -223,7 +245,7 @@ export default function UploadDocuments() {
         </TableHead>
 
         <TableBody>
-          {DocumentList.map(row=>(
+          {DocumentList.filter(val=>(val.isActive==="Y")).map(row=>(
             <TableRow key={row.basicDocId}>
               <TableCell component="th" scope="row">
                 {row.documentType}
@@ -232,27 +254,24 @@ export default function UploadDocuments() {
                 {row.documentName}
               </TableCell>
             <TableCell >                 
-              <Button variant="contained" color="primary" size="small" name="download" id="download" 
-             
-               onClick={downloadDocuments(row.basicDocId)}
+              <Button variant="contained" color="primary" size="small" name="download" id="download"
+               onClick={()=>downloadDocuments(row.basicDocId)}
               >Download</Button>
             </TableCell>            
 
             <TableCell >                 
               <Button variant="contained" color="primary" size="small" name="delete" id="delete" 
-               onClick={deleteDocument(row.basicDocId)}
+               onClick={()=>deleteDocument(row.basicDocId)}
               >Delete</Button>
             </TableCell>            
-
-
             </TableRow>
           ))}
         </TableBody>
-
        </Table>
+       <br/>
       <Stack direction="row" spacing={2}>
         <Button  variant="contained"  onClick={handleBack} style={{color:"white" , background:"blue"}}>Back</Button>
-        <Button type="submit" variant="contained" style={{color:"white" , background:"blue"}} onClick={(e)=>handleDocument(e)}>Save</Button>
+        <Button type="submit" variant="contained" style={{color:"white" , background:"blue"}} onClick={(e)=>finalSubmission(e)}>Save</Button>
       </Stack>
       </Container>
     </div>
