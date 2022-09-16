@@ -40,7 +40,7 @@ export default function BasicDetailsForm() {
 
   const [stduentBasicData, setStduentBasicData] = useState({
     "dbUserId": window.dbUserId, "aadharNo": "", "dob": "", "firstName": "", "lastName": "", "middleName": "", "advertisment": "", "gender": "", "highestQualification": "", "religion": "", "category": "", "bplStatus": "", "bloodGroup": "",
-    "passingYear":"", "primaryContactNumber": "", "primaryEmailId": "", "secondaryContactNo": "", "createdBy": window?.userId, "updatedBy": window?.userId});
+    "mobilizationChannel":"","passingYear":"", "primaryContactNumber": "", "primaryEmailId": "", "secondaryContactNo": "", "createdBy": window?.userId, "updatedBy": window?.userId});
     // "id": "",
   const [basicAddressData, setBasicAddressData] = useState({
     "entityId": "", "entityType": "S", "pincode": "", "district": "",
@@ -57,6 +57,7 @@ export default function BasicDetailsForm() {
     }
     else{
       getStudentData();
+      getAddressData();
       setBasicAddressData(preValue => ({ ...preValue, ["pincode"]: window.pincode }))
       fetchCityVillegeDistrictList(window.pincode);
     }
@@ -69,7 +70,7 @@ export default function BasicDetailsForm() {
       ["dob"]:res[0]?.dob, ["firstName"]:res[0].firstName||"",["lastName"]:res[0].lastName||"",["middleName"]:res[0]?.middleName ||"",
         ["passingYear"]:res[0].passingYear,["primaryContactNumber"]:res[0]?.primaryContactNumber||"", ["primaryEmailId"] :res[0]?.primaryEmailId|| "",
         ["primaryEmailId"]:res[0]?.primaryEmailId || "",["advertisment"]:res[0]?.advertisment || "",["category"]:res[0]?.category || "",["bloodGroup"]:res[0]?.bloodGroup || "",
-        ["gender"]:res[0]?.gender||"",["highestQualification"]:res[0]?.highestQualification || "",["religion"]:res[0]?.religion || ""
+        ["mobilizationChannel"]:res[0]?.mobilizationChannel||"", ["gender"]:res[0]?.gender||"",["highestQualification"]:res[0]?.highestQualification || "",["religion"]:res[0]?.religion || ""
         // [""]:res[0].,[""]:res[0].
     }))
     })
@@ -138,7 +139,7 @@ export default function BasicDetailsForm() {
       if (event || event?.length === 0) {
       const errors = validateSelectInput("advertisment", event)
       setErrors(errors);
-      setStduentBasicData(preValue => ({ ...preValue, ["advertisment"]: event }))
+      setStduentBasicData(preValue => ({ ...preValue, ["mobilizationChannel"]: event }))
     }
   }
   const hanldeQualification = (event) => {
@@ -266,7 +267,7 @@ export default function BasicDetailsForm() {
     }
   }
   const ValidateForm =  (errors) => {
-    Validate("advertisment", stduentBasicData?.advertisment)
+    Validate("mobilizationChannel", stduentBasicData?.mobilizationChannel)
     Validate("gender", stduentBasicData?.gender)
     Validate("highestQualification", stduentBasicData?.highestQualification)
     Validate("religion", stduentBasicData?.religion)
@@ -291,7 +292,7 @@ export default function BasicDetailsForm() {
     switch (name) {
       case 'gender': setErrors(errors["gender"] = isNotEmpty(value))
         break;
-      case 'advertisment': setErrors(errors["advertisment"] = isNotEmpty(value))  
+      case 'mobilizationChannel': setErrors(errors["advertisment"] = isNotEmpty(value))  
         break;
       case 'category': errors["category"] = isNotEmpty(value)
         break;
@@ -471,7 +472,7 @@ export default function BasicDetailsForm() {
                   label="How did you hear about us?"
                   name="advertisment"
                   options={selectHearingOptions}
-                  value={stduentBasicData?.advertisment || ""}
+                  value={stduentBasicData?.mobilizationChannel || ""}
                   variant="standard"
                   onChange={(e) => handleAdvertisment(e)}
                 />

@@ -105,7 +105,7 @@ export default function BusinessCaseEntrepreneurForm() {
   }
   // show saved answer
   const getBusinessCaseAnswer = (id)=>{
-    console.log("i am at answer place", id)
+    console.log("i am at answer place",)
     for(var i =0;i<answerFromDb;i++){
       var singalAnswer = answerFromDb[i]
       if(singalAnswer?.questionId === id){
