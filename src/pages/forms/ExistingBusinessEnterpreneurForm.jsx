@@ -33,14 +33,14 @@ export default function ExistingBusinessEntrepreneurshipForm() {
   const [errors,setErrors] = useState({})
   var businessData= [];
 
-  const [questionAnswer1 , setQuestionAnswer1] = useState({"id":"","questionId":"1", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userId,"updatedBy":window.userId});
-  const [questionAnswer2 , setQuestionAnswer2] = useState({"id":"","questionId":"2", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userId,"updatedBy":window.userId});
-  const [questionAnswer3 , setQuestionAnswer3] = useState({"id":"","questionId":"3", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userId,"updatedBy":window.userId});
-  const [questionAnswer4 , setQuestionAnswer4] = useState({"id":"","questionId":"4", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userId,"updatedBy":window.userId});
-  const [questionAnswer5 , setQuestionAnswer5] = useState({"id":"","questionId":"5", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userId,"updatedBy":window.userId});
-  const [questionAnswer6 , setQuestionAnswer6] = useState({"id":"","questionId":"6", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userId,"updatedBy":window.userId});
-  const [questionAnswer7 , setQuestionAnswer7] = useState({"id":"","questionId":"7", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userId,"updatedBy":window.userId});
-  const [questionAnswer8 , setQuestionAnswer8] = useState({"id":"","questionId":"8", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userId,"updatedBy":window.userId});
+  const [questionAnswer1 , setQuestionAnswer1] = useState({"id":"","questionId":"1", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userid,"updatedBy":window.userid});
+  const [questionAnswer2 , setQuestionAnswer2] = useState({"id":"","questionId":"2", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userid,"updatedBy":window.userid});
+  const [questionAnswer3 , setQuestionAnswer3] = useState({"id":"","questionId":"3", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userid,"updatedBy":window.userid});
+  const [questionAnswer4 , setQuestionAnswer4] = useState({"id":"","questionId":"4", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userid,"updatedBy":window.userid});
+  const [questionAnswer5 , setQuestionAnswer5] = useState({"id":"","questionId":"5", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userid,"updatedBy":window.userid});
+  const [questionAnswer6 , setQuestionAnswer6] = useState({"id":"","questionId":"6", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userid,"updatedBy":window.userid});
+  const [questionAnswer7 , setQuestionAnswer7] = useState({"id":"","questionId":"7", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userid,"updatedBy":window.userid});
+  const [questionAnswer8 , setQuestionAnswer8] = useState({"id":"","questionId":"8", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userid,"updatedBy":window.userid});
 
 
   const [questionlist, setQuestionlist] = useState([]);
@@ -132,18 +132,14 @@ export default function ExistingBusinessEntrepreneurshipForm() {
       for(var i=0; i<businessData.length;i++){
         if(businessData[i].id ===""){
           saveMsinsBusinessData(businessData[i],  window.refreshJwtToken).then((jsondata)=>{
-            
-            console.log("saving")
           })
         }
         else{
           updateMsinsBuisnessDetails(businessData[i],  window.refreshJwtToken).then((jsondata)=>{
-          
-            console.log("updating")
           })
         }
       }
-     
+      alert("Data Saved Successfully")
       businessData = []
       history('/entrepreneurbusinessform', { replace: true })
     }
@@ -152,10 +148,7 @@ export default function ExistingBusinessEntrepreneurshipForm() {
     }
      
   }
-
-
   const handleLevel = (event) => {
-   
     setQuestionAnswer1(preValue=>({...preValue,["answer"]: event}))
   }
 
@@ -179,7 +172,7 @@ export default function ExistingBusinessEntrepreneurshipForm() {
 
   const handleLoanSource = (event) => {
     const error = validateTextInput1("loanFromBank", event?.target?.value,"lng")
-      setErrors(error)
+    setErrors(error)
     setQuestionAnswer6(preValue=>({...preValue,"answer": event?.target?.value}))
   }
 
@@ -200,12 +193,12 @@ export default function ExistingBusinessEntrepreneurshipForm() {
       <h3 style={{ textAlign: "center" }}>Existing Business</h3>
       <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
         <React.Fragment className={classes.actionsContainer}>
+          <br/>
           <Grid container spacing={6}>
-            {/*Start- Existing Business Entrepreneur questions */}
-            <Grid item xs={12}>
-              <p>1. Select your level</p>
+            <Grid item xs={12} sm={6} md={6}>
+              <p><sup><font color="red" size="4px">*</font></sup> Select your level</p>
               <SelectOption
-                label="Select Level"
+                // label="Select Level"
                 id="1"
                 name="1"
                 options={selectLevelOptions}
@@ -216,10 +209,10 @@ export default function ExistingBusinessEntrepreneurshipForm() {
               />
             </Grid>
             <Grid item xs={12} sm={6} md={6}>
-              <p>2. Do you have an existing business?</p>
+             <p> <sup><font color="red" size="4px">*</font></sup> Do you have an existing business?</p>
               <Grid item>
                 <SelectOption
-                  label="Existing business"
+                  // label="Existing business"
                   id="2"
                   name="2"
                   options={selectExistingBusinessOptions}
@@ -231,12 +224,12 @@ export default function ExistingBusinessEntrepreneurshipForm() {
               </Grid>
             </Grid>
             <Grid item xs={12} sm={6} md={6}>
-              <p>3. Did you ever deposit your money in a bank or savings group??</p>
+              <p><sup><font color="red" size="4px">*</font></sup> Did you ever deposit your money in a bank or savings group??</p>
               <SelectOption
                 //label="Do you have an existing business"
                 id="3"
                 name="3"
-                label="Deposit Money"
+                // label="Deposit Money"
                 options={selectDepositMoneyOptions}
                 variant="standard"
                 minWidth="md"
@@ -246,17 +239,15 @@ export default function ExistingBusinessEntrepreneurshipForm() {
               />
             </Grid>
             <Grid item xs={12} sm={6} md={6}>
-              <p>
-                4. If you had to obtain a loan for INR 2,00,000 within the next
+              <p><sup><font color="red" size="4px">*</font></sup> If you had to obtain a loan for INR 2,00,000 within the next
                 month, how confident are you of being able to arrange such a loan?
               </p>
               <Grid item xs={12} sm={6} md={6}>
-                <Box mt={2}>
+                {/* <Box mt={2.5}> */}
                   <TextFields
                     id="4"
                     name="durationAmount"
                     type="number"
-                    //label="Aadhar Number"
                     fullWidth="fullWidth"
                     placeholder="e.g 1 to 10 months"
                     variant="standard"
@@ -269,21 +260,19 @@ export default function ExistingBusinessEntrepreneurshipForm() {
                         .slice(0, 2);
                     }}
                   />
-                </Box>
+                   {errors?.durationAmount ? (<div style={{ color: "red" }}>{errors.durationAmount}</div>) : null}
+                {/* </Box> */}
               </Grid>
-              {errors?.durationAmount ? (<div style={{ color: "red" }}>{errors.durationAmount}</div>) : null}
-            </Grid>{" "}
+             
+            </Grid>
+            {/* {" "} */}
             <Grid item xs={12} sm={6} md={6}>
-              <p>
-                5. In the past 12 months have you borrowed any money from any source
-                ?
-              </p>
-              <br />
+              <p><sup><font color="red" size="4px">*</font></sup> In the past 12 months have you borrowed any money from any source?</p>
               <SelectOption
                 //label="Do you have an existing business"
                 id="5"
                 name="5"
-                label="Borrowed Money"
+                // label="Borrowed Money"
                 options={selectBorrowedMoneyOptions}
                 variant="standard"
                 value={questionAnswer5?.answer || ""}
@@ -292,10 +281,9 @@ export default function ExistingBusinessEntrepreneurshipForm() {
               />
             </Grid>
             <Grid item xs={12} sm={6} md={6}>
-              <p>6. From whom will you be obtaining such a loan?</p>
-              <Box mt={2.5}>
+              <p><sup><font color="red" size="4px">*</font></sup> From whom will you be obtaining such a loan?</p>
+              {/* <Box mt={2}> */}
                 <TextFields
-                  required
                   id="6"
                   name="loanFromBank"
                   type="text"
@@ -304,20 +292,21 @@ export default function ExistingBusinessEntrepreneurshipForm() {
                   placeholder="e.g bank"
                   variant="standard"
                   value={questionAnswer6?.answer || ""}
-                  autoFocus={false}
+                  // autoFocus={false}
                   inputProps={{ maxLength: 45 }}
                   onChange={(e) => { handleLoanSource(e) }}
                 />
-              </Box>
+                 {errors?.loanFromBank ? (<div style={{ color: "red" }}>{errors.loanFromBank}</div>) : null}
+              {/* </Box> */}
             </Grid>
-            {errors?.loanFromBank ? (<div style={{ color: "red" }}>{errors.loanFromBank}</div>) : null}
-            <Grid item xs={12} sm={6} md={3}>
-              <p>7. Do you have Udyog Aadhar registration?</p>
+           
+            <Grid item xs={12} sm={6} md={6}>
+              <p><sup><font color="red" size="4px">*</font></sup> Do you have Udyog Aadhar registration?</p>
               <SelectOption
                 //label="Do you have an existing business"
                 id="7"
                 name="7"
-                label="Aadhar Registration"
+                // label="Aadhar Registration"
                 options={selectudhyogAadharRegistrationOptions}
                 variant="standard"
                 value={questionAnswer7?.answer || ""}
@@ -325,13 +314,14 @@ export default function ExistingBusinessEntrepreneurshipForm() {
                 onChange={(e) => { handleUdyogResigtration(e) }}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <p>8. Do you have GST registration?</p>
+            <Grid item xs={12} sm={6} md={6}>
+              <p><sup><font color="red" size="4px">*</font></sup> 
+              Do you have GST registration?</p>
               <SelectOption
                 //label="Do you have an existing business"
                 id="8"
                 name="8"
-                label="GST Registration"
+                // label="GST Registration"
                 options={selectgstRegistrationOptions}
                 variant="standard"
                 value={questionAnswer8?.answer || ""}

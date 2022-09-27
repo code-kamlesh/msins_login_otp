@@ -32,13 +32,13 @@ export default function SocioEconomicEntepreneurForm() {
   const classes = useStyles();
   const [errors,setErrors] = useState({})
   const [isDataPresent , setIsDataPresent] = useState("")
-  const [scoioEconomicData, setScoioEconomicData] = useState({"dbUserId":window.dbUserId,"mediumOfCooking":'',"housingUnit":'',"physicallyChallenged":'',"sourceOfWater":'',"maritalStatus":'',"isActive":"Y","membersInHousehold":'',"brothers":0,"sisters":0,"rooms":'',"ownership":'',"isActive":"Y","createdBy":window.userId, "updatedBy":window.userId});
+  const [scoioEconomicData, setScoioEconomicData] = useState({"dbUserId":window.dbUserId,"mediumOfCooking":'',"housingUnit":'',"physicallyChallenged":'',"sourceOfWater":'',"maritalStatus":'',"isActive":"Y","membersInHousehold":'',"brothers":0,"sisters":0,"rooms":'',"ownership":'',"createdBy":window.userid, "updatedBy":window.userid});
  
   useEffect(() => {
     if (window.jwtTokenResult == "") {
       history('/', { replace: true })
     }
-    else if (window.loginType === "SignIn") {
+    else{
       getSocioEconomicData();
     }
   }, []);
@@ -47,11 +47,10 @@ export default function SocioEconomicEntepreneurForm() {
     await fetchSocioDetails(window.dbUserId, window.jwtTokenResult).then((jsondata)=>{
       if(jsondata.appError === null && jsondata.data !== "[null]" ){
         let res = JSON.parse(jsondata.data)
-        setScoioEconomicData(preValue => ({ ...preValue, ["physicallyChallenged"]:res[0]?.physicallyChallenged|| "", ["maritalStatus"]: res[0]?.maritalStatus, 
-                                            ["mediumOfCooking"]:res[0]?.mediumOfCooking,["housingUnit"]:res[0]?.housingUnit,["sourceOfWater"]:res[0]?.sourceOfWater,
-                                            ["membersInHousehold"]:res[0]?.membersInHousehold,["rooms"]:res[0]?.rooms,["ownership"]:res[0]?.ownership,["id"]:res[0]?.id}))
+        setScoioEconomicData(preValue => ({ ...preValue, "physicallyChallenged":res[0]?.physicallyChallenged|| "", "maritalStatus": res[0]?.maritalStatus, 
+                                          "mediumOfCooking":res[0]?.mediumOfCooking,"housingUnit":res[0]?.housingUnit,"sourceOfWater":res[0]?.sourceOfWater,
+                                            "membersInHousehold":res[0]?.membersInHousehold,"rooms":res[0]?.rooms,"ownership":res[0]?.ownership,"id":res[0]?.id}))
      
-                                            console.log(scoioEconomicData?.membersInHousehold?.length)
                                           }
       else{
         setIsDataPresent(null)
@@ -63,39 +62,39 @@ export default function SocioEconomicEntepreneurForm() {
 
   const onChangePhysicalChallenged = (event)=>{
     if(event?.length!==0){
-    setScoioEconomicData(preValue=>({...preValue, ["physicallyChallenged"]:event}))
+    setScoioEconomicData(preValue=>({...preValue, "physicallyChallenged":event}))
     }
   }
   const onChangeMaritalStatus = (event)=>{
     if(event?.length!==0){
-      setScoioEconomicData(preValue=>({...preValue, ["maritalStatus"]:event}));
+      setScoioEconomicData(preValue=>({...preValue, "maritalStatus":event}));
     }
   }
   const handleOwenerShip = (event)=>{
     if(event?.length!==0){
-      setScoioEconomicData(preValue=>({...preValue, ["ownership"]:event}));
+      setScoioEconomicData(preValue=>({...preValue, "ownership":event}));
     }
   }  
   const handleWaterSource = (event)=>{
     if(event?.length!==0){
-      setScoioEconomicData(preValue=>({...preValue, ["sourceOfWater"]:event}));
+      setScoioEconomicData(preValue=>({...preValue, "sourceOfWater":event}));
     }
   }
   const handleHousingUnit = (event)=>{
     if(event?.length!==0){
-      setScoioEconomicData(preValue=>({...preValue, ["housingUnit"]:event}));
+      setScoioEconomicData(preValue=>({...preValue, "housingUnit":event}));
     }
   }
   const handleFuelSource = (event)=>{
     if(event?.length!==0){
-      setScoioEconomicData(preValue=>({...preValue, ["mediumOfCooking"]:event}));
+      setScoioEconomicData(preValue=>({...preValue, "mediumOfCooking":event}));
     }
   }
 const hanldeBrotherSister = (event)=>{
   // if(event?.target?.value.length===0){
     const errors = validateTextInput1(event?.target?.name, event?.target?.value, "lng")
     setErrors(errors);
-    console.log(event?.target?.value.length)
+    
     setScoioEconomicData(preValue=>({...preValue, [event?.target?.name]:event?.target?.value}));
   // }
 }
@@ -115,7 +114,7 @@ const hanldeUnitOfNumber = (event)=>{
     isDataPresent === null ? action = "captureSocioEconomic" : action = "updateSocioEconomic" 
     try{
       saveSocioDetails(action,scoioEconomicData,window.jwtTokenResult).then((jsondata)=>{
-        console.log(jsondata)
+        
         if(jsondata.appError === null){
           alert("Data Saved Successfully");
           history('/experiencedetails' ,{replace:true})
@@ -135,10 +134,14 @@ const hanldeUnitOfNumber = (event)=>{
        <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
     <React.Fragment className={classes.actionsContainer}>
        <form method="post" onSubmit={(e)=>handleSocioEconomicData(e)}>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+      <Box mt={4}>
+        <Grid container spacing={1.5}>
+        <Grid item xs={12} md={4}>
+            <p>Do You have any physically Challenged?</p>
+          </Grid>
+          <Grid item xs={12} md={2} mb={2}>
           <SelectOption
-            label="Physical Challenged"
+            // label="Physical Challenged"
             name="physicallyChallenged"
             options={selectPhysicalChallengedButton}
             variant="standard"
@@ -147,10 +150,13 @@ const hanldeUnitOfNumber = (event)=>{
             value={scoioEconomicData?.physicallyChallenged || ""}
             onChange={(e)=>onChangePhysicalChallenged(e)}
           />
-        </Grid>
-        <Grid item xs={12} md={6}>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <p>Are you Married?</p>
+          </Grid>
+          <Grid item xs={12} md={2} mb={2}>
           <SelectOption
-            label="Marital Status"
+            // label="Marital Status"
             name="maritalStatus"
             options={selectMaritalStatusButton}
             variant="standard"
@@ -158,13 +164,13 @@ const hanldeUnitOfNumber = (event)=>{
             value={scoioEconomicData?.maritalStatus ||""}
             onChange={(e)=>onChangeMaritalStatus(e)}
           />
-        </Grid>
-      </Grid>
+          </Grid>
 
-      <Box mt={4}>
-        <Grid container spacing={1.5}>
+
+
+
           <Grid item xs={12} md={4}>
-            <p>1. How many Brothers and Sisters do you have?</p>
+            <p>How many Brothers and Sisters do you have?</p>
           </Grid>
           <Grid item xs={12} md={2} mb={2}>
             <Input
@@ -177,13 +183,12 @@ const hanldeUnitOfNumber = (event)=>{
           </Grid>
           {errors?.membersInHousehold ? (<div style={{ color: "red" }}>{errors.membersInHousehold}</div>) : null}
           <Grid item xs={12} md={4}>
-            <p>2. How many Rooms does this Housing unit has?</p>
+            <p>How many Rooms does this Housing unit has?</p>
           </Grid>
           <Grid item xs={12} md={2}>
             <Input
               placeholder="e.g 2"
               name= "rooms"
-              //onChange=""
               inputProps={{ maxLength: 1 }}
               value={scoioEconomicData?.rooms}
               onChange={(e)=>hanldeUnitOfNumber(e)}
@@ -191,72 +196,70 @@ const hanldeUnitOfNumber = (event)=>{
           </Grid>
           {errors?.rooms ? (<div style={{ color: "red" }}>{errors?.rooms}</div>) : null}
           <Grid item xs={12} md={4}>
-            <p>3. What is the Ownership status of your Household?</p>
+            <p>What is the Ownership status of your Household?</p>
           </Grid>
           <Grid item xs={12} md={2}>
             <SelectOption
-              label="Ownership"
+              // label="Ownership"
               name="ownershipStatus"
               options={selectOwnershipStatusButton}
               variant="standard"
               fullWidth="fullWidth"
               value={scoioEconomicData?.ownership|| ""}
-              error={true}
               onChange={(e)=>handleOwenerShip(e)}
             />
           </Grid>
 
           <Grid item xs={12} md={4}>
             <p>
-              4. What is the Household's main source for fuel or energy for
+              What is the Household's main source for fuel or energy for
               lighting?
             </p>
           </Grid>
           <Grid item xs={12} md={2}>
             <SelectOption
-              label="Fuel Source"
+              // label="Fuel Source"
               id="fuelSource"
               name="fuelSource"
               options={selectFuelSourceButton}
               variant="standard"
               fullWidth="fullWidth"
               value={scoioEconomicData?.mediumOfCooking || ""}
-              error={true}
               onChange={(e)=>handleFuelSource(e)}
             />
           </Grid>
 
           <Grid item xs={12} md={4}>
             <p>
-              5. What Type of Housing unit does you and your family lives in?
+              What Type of Housing unit does you and your family lives in?
             </p>
           </Grid>
           <Grid item xs={12} md={2}>
             <SelectOption
-              label="Housing Unit"
+              // label="Housing Unit"
               name="housingUnit"
               options={selectHousingUnitButton}
               variant="standard"
               fullWidth="fullWidth"
               value={scoioEconomicData?.housingUnit || ""}
-              error={true}
+              
               onChange={(e)=>handleHousingUnit(e)}
             />
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <p>6. What is the source of Drinking water in your house-hold?</p>
+            <p>What is the source of Drinking water in your house-hold?</p>
           </Grid>
           <Grid item xs={12} md={2}>
             <SelectOption
-              label="Water Source"
+              // label="Water Source"
               id="waterSource"
               name="waterSource"
               options={selectwaterSourceButton}
               variant="standard"
               value={scoioEconomicData?.sourceOfWater||""}
               fullWidth="fullWidth"
-              error={true}
+              
               onChange={(e)=>handleWaterSource(e)}
             />
           </Grid>

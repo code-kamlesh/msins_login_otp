@@ -4,7 +4,7 @@ import TextFields from "../../components/shared/TextFields";
 import { useNavigate } from 'react-router-dom'
 import DateOfBirthBox from "../../components/shared/DateOfBirthBox";
 import { validateTextInput1, validateEmail, validateContact, isNotEmpty, validateAadharNumber, validatePincode, validateTextInput, validateSelectInput } from "./../../utility/Validation"
-import { fetchStduentDataBaisedOnContactNumber, saveBasicData, fetchAddressDetailsBasedOnPincode, fetchExistingAddress, submitAddressData, captureStudentEngagementDetails } from "./../../utility/Api";
+import { fetchStduentDataBaisedOndbUserId, saveBasicData, fetchAddressDetailsBasedOnPincode, fetchExistingAddress, submitAddressData, captureStudentEngagementDetails } from "./../../utility/Api";
 import { Button } from "@mui/material";
 import underscore from 'underscore';
 import SelectOption from "../../components/shared/SelectOption";
@@ -19,7 +19,12 @@ const selectHearingOptions = [
   {value:'Others' , label:'Others'}
 ];
 
-const selectQualificationOptions = ["PhD", "Masters", "Bachelors", "ITI"];
+const selectQualificationOptions = ["PhD", "Masters", "Bachelors", "ITI","Graduation"];
+const tradeList= [{value:"Electrical", label:"Electrical"},
+                  {value:"Fitter", label:"Fitter"},
+                  {value:"Welder", label:"Welder"},
+                  {value:"Mechanical", label:"Mechanical"},
+                  {value:"Other", label:"Other"}];
 const selectReligionOptions = ["Hindu", "Muslim", "Sikh", "Others"];
 const selectCategoryOptions = ["General", "O.B.C", "S.C", "Others"];
 const selectIncomeStatusOptions = ["BPL", "APL", "Antyodaya"];
@@ -40,14 +45,13 @@ export default function BasicDetailsForm() {
 
   const [stduentBasicData, setStduentBasicData] = useState({
     "dbUserId": window.dbUserId, "aadharNo": "", "dob": "", "firstName": "", "lastName": "", "middleName": "", "advertisment": "", "gender": "", "highestQualification": "", "religion": "", "category": "", "bplStatus": "", "bloodGroup": "",
-    "mobilizationChannel":"","passingYear":"", "primaryContactNumber": "", "primaryEmailId": "", "secondaryContactNo": "", "createdBy": window?.userId, "updatedBy": window?.userId});
+    "mobilizationChannel":"","passingYear":"", "primaryContactNumber": "", "primaryEmailId": "", "secondaryContactNo": "", "createdBy": window?.userid, "updatedBy": window?.userid});
     // "id": "",
   const [basicAddressData, setBasicAddressData] = useState({
     "entityId": "", "entityType": "S", "pincode": "", "district": "",
-    "cityName": "", "villageName": "", "addressLine1": "", "addressLine2": "", "state": "Maharashtra", "isActive": "Y", "createdBy": window?.userId, "updatedBy": window?.userId
+    "cityName": "", "villageName": "", "addressLine1": "", "addressLine2": "", "state": "Maharashtra", "isActive": "Y", "createdBy": window?.userid, "updatedBy": window?.userid
   })
   useEffect(() => {
-    
     if (window.jwtTokenResult == "") {
       history('/', { replace: true })
     }
@@ -64,14 +68,14 @@ export default function BasicDetailsForm() {
 
   },[]);
   const getStudentData = async () => {
-    await fetchStduentDataBaisedOnContactNumber(window.primaryContactNumber, window.jwtTokenResult).then(async (jsondata) => {
+    await fetchStduentDataBaisedOndbUserId(window.dbUserId, window.jwtTokenResult).then(async (jsondata) => {
       let res = JSON.parse(jsondata.data)
       setStduentBasicData(preValue => ({ ...preValue, ["aadharNo"]:res[0]?.aadharNo|| "" , ["bplStatus"]:res[0]?.bplStatus||"",
       ["dob"]:res[0]?.dob, ["firstName"]:res[0].firstName||"",["lastName"]:res[0].lastName||"",["middleName"]:res[0]?.middleName ||"",
         ["passingYear"]:res[0].passingYear,["primaryContactNumber"]:res[0]?.primaryContactNumber||"", ["primaryEmailId"] :res[0]?.primaryEmailId|| "",
         ["primaryEmailId"]:res[0]?.primaryEmailId || "",["advertisment"]:res[0]?.advertisment || "",["category"]:res[0]?.category || "",["bloodGroup"]:res[0]?.bloodGroup || "",
-        ["mobilizationChannel"]:res[0]?.mobilizationChannel||"", ["gender"]:res[0]?.gender||"",["highestQualification"]:res[0]?.highestQualification || "",["religion"]:res[0]?.religion || ""
-        // [""]:res[0].,[""]:res[0].
+        ["mobilizationChannel"]:res[0]?.mobilizationChannel||"", ["gender"]:res[0]?.gender||"",["highestQualification"]:res[0]?.highestQualification || "",["religion"]:res[0]?.religion || "",
+        ["itiTrade"]:res[0]?.itiTrade
     }))
     })
   }
@@ -404,9 +408,9 @@ export default function BasicDetailsForm() {
                 />
                 {errors?.aadharNumber ? (<div style={{ color: "red" }}>{errors.aadharNumber}</div>) : null}
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <div>Date of Birth</div>
+              <Grid item xs={12} sm={6} md={6}>
                 <DateOfBirthBox variant="standard"
+                label={"Date of Birth"}
                   disabled={true}
                   onChange={(e) => handleDob(e)}
                   value={stduentBasicData?.dob || ""}
@@ -480,6 +484,7 @@ export default function BasicDetailsForm() {
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
                 <SelectOption
+                disabled={true}
                   id="highestQualification"
                   label="Highest Qualification"
                   name="highestQualification"
@@ -490,6 +495,22 @@ export default function BasicDetailsForm() {
                 />
                 {errors?.highestQualification ? (<div style={{ color: "red" }}>{errors.highestQualification}</div>) : null}
               </Grid>
+
+                  {stduentBasicData?.highestQualification ==="ITI" &&
+                     <Grid item xs={12} sm={6} md={4}>
+                     <SelectOption
+                     disabled={true}
+                       id="itiTrade"
+                       label="Domain"
+                       name="Iti Trade"
+                       options={tradeList}
+                       value={stduentBasicData?.itiTrade || ""}
+                       variant="standard"
+                     />
+                     {errors?.highestQualification ? (<div style={{ color: "red" }}>{errors.highestQualification}</div>) : null}
+                   </Grid>
+                  }
+
               <Grid item xs={12} sm={6} md={4}>
                 <SelectOption
                   id="religion"

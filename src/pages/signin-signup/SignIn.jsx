@@ -1,23 +1,14 @@
-import React,{useState} from 'react'
-import {
-  Grid,
-  Paper,
-  Avatar,
-  TextField,
-  Button,
-  Typography,
-} from '@mui/material'
+import React, { useState } from 'react'
+import { Grid, Paper, Avatar, TextField, Typography, } from '@mui/material'
+import DateOfBirthBox from '../../components/shared/DateOfBirthBox'
 import { Link, useNavigate } from 'react-router-dom'
-import {authorization} from '../../services/firebase' 
+import { authorization } from '../../services/firebase'
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Buttons from '../../components/shared/Buttons'
-import OTP from '../../components/shared/utils/OTP'
-import AddPrefixToMobile from '../../components/shared/utils/AddPrefixToMobile'
 import { useTranslation } from 'react-i18next'
-import Language from '../../components/language/Language'
-import { login , fetchStduentDataBaisedOnContactNumber,fetchStduentEngagementDataBaisedOnDBUserId} from '../../utility/Api'
- 
+import { login, fetchStduentDataBaisedOnContactNumberandDob, fetchStduentEngagementDataBaisedOnDBUserId } from '../../utility/Api'
+
 // language/Language'
 
 const LoginUser = ({ handleChange }) => {
@@ -25,11 +16,9 @@ const LoginUser = ({ handleChange }) => {
   const history = useNavigate();
   const [mobileNo, setMobileNo] = useState('');
   const [otp, setOtp] = useState('');
+  const [dob, setDob] = useState("");
   const [disableGetOtp, setDisableGetOtp] = useState(false);
   const [disableVerifyOtp, setDisableVerifyOtp] = useState(true);
-  const [mobileNoError, setMobileNoError] = useState('');
-  const [otpError, setOtpError] = useState('');
-  
 
   const paperStyle = {
     padding: 20,
@@ -40,71 +29,83 @@ const LoginUser = ({ handleChange }) => {
 
   const avatarStyle = { backgroundColor: '#62c4e7' }
 
-  const handleMobileNoInput  = (event) => {
-      // console.log("<=====EVENT VALUE=====>",event?.target?.value);
-      setMobileNo(event?.target?.value);
+  const handleMobileNoInput = (event) => {
+    // console.log("<=====EVENT VALUE=====>",event?.target?.value);
+    setMobileNo(event?.target?.value);
   };
 
+  const handleDob = (event) => {
+    if (event?.target?.value || event?.length === 0) {
+      setDob(event?.target?.value)
+      window.dob = event?.target?.value  // setting value as globally
+    }
+  }
   const generateOTP = () => {
-      if(mobileNo?.length < 10){
-         alert('incorrect mobile number, please try again');
-      }
-      else{
-        generateRecaptcha();
-        let appVerifire = window.recaptchaVerifier;
-        signInWithPhoneNumber(authorization, '+91'+mobileNo, appVerifire).then( confirmationResult =>{
-          window.confirmationResult = confirmationResult;
-          setDisableVerifyOtp(false);
-          setDisableGetOtp(true);
-        }). catch( error => {
-          console.log('<====Error while verifying the OTP====>',error)
-        })
-      } 
+    if (mobileNo?.length < 10) {
+      alert('incorrect mobile number, please try again');
+    }
+    else {
+      generateRecaptcha();
+      let appVerifire = window.recaptchaVerifier;
+      signInWithPhoneNumber(authorization, '+91' + mobileNo, appVerifire).then(confirmationResult => {
+        window.confirmationResult = confirmationResult;
+        setDisableVerifyOtp(false);
+        setDisableGetOtp(true);
+      }).catch(error => {
+        console.log('<====Error while verifying the OTP====>', error)
+      })
+    }
   };
 
   const verifyOTP = async () => {
-    if(mobileNo?.length<10 || otp?.length<6){
+    if (mobileNo?.length < 10 || otp?.length < 6) {
       alert('please click get OTP to reciev the otp')
     }
-    else{
+    else {
       setDisableVerifyOtp(true)
-      
+
       let confirmationOTP = window.confirmationResult;
-      confirmationOTP.confirm(otp).then( async (result) => {
+      confirmationOTP.confirm(otp).then(async (result) => {
         const user = result.user;
         window.userOTPresult = user;
-        alert('User Sucessfully logged in!')
         // setDisableVerifyOTPButton(true)
-        await login().then( async(jsondata)=>{  
-          let dataFromSucessLogin = JSON.parse(jsondata?.data) 
-          await fetchStduentDataBaisedOnContactNumber(mobileNo, dataFromSucessLogin[0]?.token).then(async (jsondata)=>{
-            window.userId = dataFromSucessLogin[0]?.id;
-            window.jwtTokenResult = dataFromSucessLogin[0]?.token;
-            window.refreshJwtToken = dataFromSucessLogin[0]?.token;
-            window.userId = dataFromSucessLogin[1]?.id;
-            let result =(jsondata.data)
-            if(result.length >2 ){
-              result =JSON.parse(jsondata.data)
-              let dbUserId = result[0].dbUserId;
+        await login().then(async (jsondata) => {
+          let dataFromSucessLogin = JSON.parse(jsondata?.data)
+          window.jwtTokenResult = dataFromSucessLogin[0]?.token;
+          window.refreshJwtToken = dataFromSucessLogin[0]?.token;
+          window.userid = dataFromSucessLogin[1]?.id;
+          window.secretKey = "strive";
+          var jwtTimeOut = new Date();
+          jwtTimeOut.setMinutes(jwtTimeOut.getMinutes() + 15);
+          window.jwtTimeOut = jwtTimeOut;
+          window.sessionTime = "";
+          var sessionTimeOut = new Date();
+          sessionTimeOut.setMinutes(sessionTimeOut.getMinutes() + 15);
+          window.sessionTime = sessionTimeOut;
+          window.loginType = "SignIn"
+
+          await fetchStduentDataBaisedOnContactNumberandDob(mobileNo, dob, dataFromSucessLogin[0]?.token).then(async (jsondata) => {
+            let result = (jsondata.data)
+            if (result.length > 2) {
+              result = JSON.parse(jsondata.data)
               window.dbUserId = result[0].dbUserId // setting global variable
-              window.dob= result[0].dob
+              window.dob = result[0].dob
               window.primaryContactNumber = result[0].primaryContactNumber
-              window.loginType = "SignIn"
               // Getting the enagagment ID baised on dbuserId
-              await fetchStduentEngagementDataBaisedOnDBUserId(result[0].dbUserId,dataFromSucessLogin[0]?.token).then((jsondata)=>{
+              await fetchStduentEngagementDataBaisedOnDBUserId(result[0].dbUserId, dataFromSucessLogin[0]?.token).then((jsondata) => {
                 let res = JSON.parse(jsondata.data)
                 window.engagementId = res[0]?.engagementId
-                window.studentType = res[0]?.ideaType                
+                window.studentType = res[0]?.ideaType
               })
-              history('/status' ,{ replace:true });
+              history('/status', { replace: true });
             }
-            else{
+            else {
               alert("User Not Found! Please Sign Up.")
             }
           })
-         
-        }).catch((error)=>{
-          console.log("error========>",error)
+
+        }).catch((error) => {
+          console.log("error========>", error)
         })
       }).catch((error) => {
         // User couldn't sign in (bad verification code?)
@@ -115,7 +116,7 @@ const LoginUser = ({ handleChange }) => {
   }
 
   const handleOtpInput = (event) => {
-      setOtp(event?.target?.value);
+    setOtp(event?.target?.value);
   };
 
   const generateRecaptcha = () => {
@@ -130,7 +131,7 @@ const LoginUser = ({ handleChange }) => {
 
   return (
     <>
-        <Grid>
+      <Grid>
         <Paper style={paperStyle}>
           <Grid align='center'>
             <Avatar style={avatarStyle}>
@@ -138,7 +139,7 @@ const LoginUser = ({ handleChange }) => {
             </Avatar>
             <h2>Sign In</h2>
           </Grid>
-  
+
           <TextField
             label={t('mobile_no')}
             placeholder={t('mobile_no_placeholder')}
@@ -158,7 +159,24 @@ const LoginUser = ({ handleChange }) => {
                 .slice(0, 10)
             }}
           />
-  
+
+          <Grid container>
+            <Grid item xs>
+              <Buttons text={t('get_otp')} disabled={disableGetOtp} onClick={generateOTP} />
+            </Grid>
+            <Grid item >
+              <Buttons text={t('resend_otp')} disabled={true} onClick={generateOTP} />
+            </Grid>
+          </Grid>
+
+          <DateOfBirthBox
+            name="dob"
+            variant='standard'
+            label='Date Of Birth'
+            fullWidth='fullWidth'
+            onChange={(e) => handleDob(e)}
+            inputProps={{ min: "1970-01-01", max: "2004-01-01" }}
+          />
           <TextField
             label={t('otp')}
             placeholder={t('otp_placeholder')}
@@ -178,42 +196,29 @@ const LoginUser = ({ handleChange }) => {
                 .slice(0, 6)
             }}
           />
+
           &nbsp;&nbsp;
-          <Grid container>
-            <Grid item xs>
-              <Buttons text={t('get_otp')} disabled={disableGetOtp} onClick={generateOTP} />
-            </Grid>
-            <Grid item >
-              <Buttons text={t('resend_otp')} disabled={true} onClick={generateOTP} />
-            </Grid>
-          </Grid>
-  
-            <Buttons
-              sx={{ mt: '30px', mb: '30px' }}
-              text={t('verify_otp')}
-              variant='contained'
-              disabled={disableVerifyOtp}
-              // color={(!disableGetOtp) ? 'gray' : 'gray'}
-              onClick={verifyOTP}
-              fullWidth='fullWidth'
-            />
-          {/* </Link> */}
-  
-          {/* <Typography>
-            <Link href="#">Forgot password ?</Link>
-        </Typography>*/}
-          
+          <Buttons
+            sx={{ mt: '30px', mb: '30px' }}
+            text={t('verify_otp')}
+            variant='contained'
+            // disabled={disableVerifyOtp}
+            disabled={dob.length == "" ? true : otp.length < 6 ? true : false}
+
+            onClick={verifyOTP}
+            fullWidth='fullWidth'
+          />
           <Typography>
             Do you have an account?
             <Link to='#' onClick={() => handleChange('event', 1)}>
               Sign Up
             </Link>
           </Typography>
-          
+
         </Paper>
         <div id="recaptcha"></div>
       </Grid>
-   </>
+    </>
   )
 }
 

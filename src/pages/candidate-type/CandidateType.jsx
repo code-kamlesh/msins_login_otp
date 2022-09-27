@@ -3,25 +3,18 @@ import CommonData from './CommonData'
 import { useNavigate } from 'react-router-dom'
 import { useLocation } from "react-router-dom";
 const selectEntrepreneurQualificationOptions = ['ITI']
-const selectCollegeOptions = []
-const selectInnovatorQualificationOptions = [
-  'ITI',
-  'Graduation',
-  'Post Graduation',
-]
-
+const selectInnovatorQualificationOptions = [ 'ITI','Graduation','Post Graduation',]
 const collegeNameList = [
   { label: 'College 1' },
   { label: 'College 2' },
   { label: 'College 3' },
-  { label: 'sagar' },
-  { label: 'kamlesh' },
+  { label: 'College 4' },
+  { label: 'College 5' },
 ]
 
 function Innovator(props) {
   const history = useNavigate();
   useEffect(() => {
-    console.log(window)
     if (window.jwtTokenResult == "") {
       history('/', { replace: true })
     }
@@ -39,7 +32,6 @@ function Innovator(props) {
 function Entreprenuer(props) {
   const history = useNavigate();
   useEffect(() => {
-    console.log(window)
     if (window.jwtTokenResult == "") {
       history('/', { replace: true })
     }

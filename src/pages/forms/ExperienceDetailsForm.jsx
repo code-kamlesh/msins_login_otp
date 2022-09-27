@@ -7,7 +7,7 @@ import TextFields from "../../components/shared/TextFields";
 import DateOfBirthBox from "../../components/shared/DateOfBirthBox";
 import { saveExpDetails,fetchExperienceDetails } from "./../../utility/Api";
 import { Button } from "@mui/material";
-import {validateTextInput1 } from "./../../utility/Validation"
+import {validateTextInput1,validateDateDiff } from "./../../utility/Validation"
 import useStyles  from '../../components/layout'
 import {useNavigate } from 'react-router-dom'
 import Container from "@mui/material/Container";
@@ -23,7 +23,7 @@ export default function ExperienceDetails() {
                                                           "isActive":"Y","createdBy":window.userId, "updatedBy":window.userId});
   const [errors,setErrors]= useState({})  
   useEffect(() => {
-    if (window.jwtTokenResult == "") {
+    if (window.jwtTokenResult === "") {
       history('/', { replace: true })
     }
     else if (window.loginType === "SignIn") {
@@ -36,9 +36,9 @@ export default function ExperienceDetails() {
       if(jsondata.appError === null && jsondata.data !== "[]"){
         setIsDataPresent("not null")
         let res = JSON.parse(jsondata.data)
-        setExperienceData(preValue =>({...preValue, ["isExperience"]: res[0].isExperience, ["experienceFrom"]:res[0].experienceFrom, ["lastDesignation"]:res[0].lastDesignation, ["natureOfExperience"]:res[0].natureOfExperience,
-        ["experienceTo"]:res[0].experienceTo,  ["employerAddress"]:res[0].employerAddress,  ["postingLocation"]:res[0].postingLocation,  ["grossSalary"]:res[0].grossSalary, ["employerName"]:res[0].employerName,
-        ["id"]:res[0].id,}))
+        setExperienceData(preValue =>({...preValue, "isExperience": res[0].isExperience, "experienceFrom":res[0].experienceFrom, "lastDesignation":res[0].lastDesignation, "natureOfExperience":res[0].natureOfExperience,
+        "experienceTo":res[0].experienceTo,  "employerAddress":res[0].employerAddress,  "postingLocation":res[0].postingLocation,  "grossSalary":res[0].grossSalary, "employerName":res[0].employerName,
+        "id":res[0].id,}))
       }
       else{
         setIsDataPresent("null")
@@ -47,6 +47,12 @@ export default function ExperienceDetails() {
   }
   const handleDate = (event)=>{
     if(event?.target?.value?.length>0){
+      if(event?.target?.name === "experienceTo"){
+        var fromDate = Date.parse(experienceData?.experienceFrom)
+        var toDate= Date.parse(event?.target?.value)
+        const error = validateDateDiff(event?.target?.name, fromDate, toDate,"lng");
+        setErrors(error)
+      }
       setExperienceData(preValue=>({...preValue, [event?.target?.name]:event?.target?.value}))
     }
   }
@@ -104,7 +110,6 @@ export default function ExperienceDetails() {
     isDataPresent == "null"  ? action = "captureExperience" : action = "updateExperience" 
     saveExpDetails(action,experienceData,window.jwtTokenResult).then((jsondata)=>{
       if(jsondata.appError==null){   
-        let jsonobjects = JSON.parse(jsondata.data); 
         alert("Data Saved Successfully")
         history('/Businessdetails' ,{replace:true})
       }
@@ -120,11 +125,9 @@ export default function ExperienceDetails() {
   }
 
   // setting radio button for experience details
-  const handleRadioButton = (event) => { 
-      setExperienceData(preValue=>({...preValue, ["isExperience"]:event?.target?.value}))
-
-      // setExperienceData({"dbUserId":window.dbUserId,"experienceFrom":'',"lastDesignation":'',"natureOfExperience":'',"employerName":'',"grossSalary":0,"postingLocation":'',"experienceTo":'',"employerAddress":'',"isExperience":"Y","createdBy":window.userId, "updatedBy":window.userId});
-    
+  const handleRadioButton = (event) => {
+      setExperienceData(preValue=>({...preValue,  "experienceFrom":"", "lastDesignation":"", "natureOfExperience":"", "employerName":"",
+      "grossSalary":0, "postingLocation":"", "experienceTo":"", "employerAddress":"","isExperience":event?.target?.value}))
   }
   return (
     <div className={classes.root} >
@@ -132,7 +135,6 @@ export default function ExperienceDetails() {
       <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
     <React.Fragment className={classes.actionsContainer}>
       {
-         isDataPresent==="null" &&
          <FormControl style={{ marginTop: '20px', marginBottom: '10px' }}>
          <FormLabel id='demo-row-radio-buttons-group-label'>
            Do You Have any Business Experience.
@@ -158,7 +160,7 @@ export default function ExperienceDetails() {
        </FormControl>
       }
         {
-        (experienceData.isExperience==="Y" || isDataPresent==="not null") &&
+        (experienceData.isExperience==="Y") &&
           <form>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6} md={6}>
@@ -170,6 +172,7 @@ export default function ExperienceDetails() {
             autoFocus={true}
             onChange={(e)=>handleDate(e)}
             value={experienceData?.experienceFrom}
+            inputProps={{ min: "2010-01-01", max: new Date().toISOString().slice(0,10) }}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={6}>
@@ -180,11 +183,13 @@ export default function ExperienceDetails() {
             fullWidth="fullWidth"
             onChange={(e)=>handleDate(e)}
             value={experienceData?.experienceTo}
+            inputProps={{ min: "2010-01-01", max: new Date().toISOString().slice(0,10) }}
           />
-         
+          {errors?.experienceTo ? (<div style={{ color: "red" }}>{errors.experienceTo}</div>) : null}
         </Grid>
         <Grid item xs={12} sm={6} md={6}>
           <TextFields
+            type = "text"
             id="employerName"
             name="employerName"
             label="Employer Name"
@@ -195,11 +200,12 @@ export default function ExperienceDetails() {
             onChange={(e)=>handleEmpName(e)}
             value={experienceData?.employerName}
           />
+           {errors?.employerName ? (<div style={{ color: "red" }}>{errors.employerName}</div>) : null}
         </Grid>
-        {errors?.employerName ? (<div style={{ color: "red" }}>{errors.employerName}</div>) : null}
+       
         <Grid item xs={12} sm={6} md={6}>
           <TextFields
-            required
+            
             id="empAddress"
             name="empAddress"
             label="Employer Address"
@@ -211,11 +217,12 @@ export default function ExperienceDetails() {
             value={experienceData?.employerAddress}
             onChange={(e)=>handleEmpAddress(e)}
           />
+          {errors?.empAddress ? (<div style={{ color: "red" }}>{errors.empAddress}</div>) : null}
         </Grid>
-        {errors?.empAddress ? (<div style={{ color: "red" }}>{errors.empAddress}</div>) : null}
+        
         <Grid item xs={12} sm={6} md={6}>
           <TextFields
-            required
+              type = "text"
             fullWidth="fullWidth"
             id="postingLocation"
             name="postingLocation"
@@ -226,11 +233,12 @@ export default function ExperienceDetails() {
             inputProps={{ maxLength: 50 }}
             onChange={(e)=>handlePostingLoaction(e)}
           />
+           {errors?.postingLocation ? (<div style={{ color: "red" }}>{errors.postingLocation}</div>) : null}
         </Grid>
-        {errors?.postingLocation ? (<div style={{ color: "red" }}>{errors.postingLocation}</div>) : null}
+       
         <Grid item xs={12} sm={6} md={6}>
           <TextFields
-            required
+              type = "text"
             fullWidth="fullWidth"
             id="lastDesignation"
             name="lastDesignation"
@@ -241,11 +249,12 @@ export default function ExperienceDetails() {
             placeholder="Enter your last designation"
             onChange={(e)=>handleLastDesignation(e)}
           />
+           {errors?.lastDesignation ? (<div style={{ color: "red" }}>{errors.lastDesignation}</div>) : null}
         </Grid>
-        {errors?.lastDesignation ? (<div style={{ color: "red" }}>{errors.lastDesignation}</div>) : null}
+       
         <Grid item xs={12} sm={6} md={6}>
           <TextFields
-            required
+            type = "text"
             id="natureOfExperience"
             name="natureOfExperience"
             label="Nature Of Experience"
@@ -256,11 +265,12 @@ export default function ExperienceDetails() {
             inputProps={{ maxLength: 50 }}
             onChange={(e)=>handleExperience(e)}
           />
+           {errors?.natureOfExperience ? (<div style={{ color: "red" }}>{errors.natureOfExperience}</div>) : null}
         </Grid>
-        {errors?.natureOfExperience ? (<div style={{ color: "red" }}>{errors.natureOfExperience}</div>) : null}
+       
         <Grid item xs={12} sm={6} md={6}>
           <TextFields
-            required
+            type = "number"
             id="grossSalary"
             name="grossSalary"
             label="Gross Salary"
@@ -271,8 +281,9 @@ export default function ExperienceDetails() {
             inputProps={{ maxLength: 8 }}
             onChange={(e)=>handleSalary(e)}
           />
+          {errors?.grossSalary ? (<div style={{ color: "red" }}>{errors.grossSalary}</div>) : null}
         </Grid>
-        {errors?.grossSalary ? (<div style={{ color: "red" }}>{errors.grossSalary}</div>) : null}
+        
       </Grid>{" "}
       <br />
       </form>
@@ -280,7 +291,7 @@ export default function ExperienceDetails() {
       <Stack direction="row" spacing={2}>
         <Button type="submit" variant="contained" color="primary" onClick={handleBack} >Back</Button>
         <Button type="submit" 
-         disabled={experienceData?.experienceTo !=="" &&experienceData?.experienceFrom !=="" &&experienceData?.lastDesignation !=="" && experienceData?.postingLocation!=="" && experienceData?.natureOfExperience!=="" && experienceData?.grossSalary!==""&&experienceData?.employerAddress!=="" && experienceData?.employerName!==""?false:true}
+         disabled={(experienceData?.experienceTo !=="" &&experienceData?.experienceFrom !=="" &&experienceData?.lastDesignation !=="" && experienceData?.postingLocation!=="" && experienceData?.natureOfExperience!=="" && experienceData?.grossSalary!==""&&experienceData?.employerAddress!=="" && experienceData?.employerName!=="")||experienceData?.isExperience==="N"?false:true}
         variant="contained" color="primary" onClick={(e)=>handleExperienceData(e) }>Next </Button>
       </Stack>
       </React.Fragment>

@@ -26,11 +26,9 @@ export default function DateOfBirthBox({
   return (
     <TextField
     disabled={disabled}
-      margin={margin}
       fullWidth={fullWidth}
       name={name}
       label={label}
-      //type="date"
       value={value}
       id={id}
       error={error}
@@ -40,10 +38,6 @@ export default function DateOfBirthBox({
       autoFocus={autoFocus}
       onBlur={onBlur}
       onChange={onChange}
-      // onChange={(e) => {
-      //   if (e.target.value) setHasValue(true);
-      //   else setHasValue(false);
-      // }}
       type={hasValue || focus ? "date" : "text"}
       variant={variant}
       inputProps={inputProps}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import {Grid, Paper, Avatar,Typography,TextField,Button, Box} from '@mui/material'
+import { Grid, Paper, Avatar, Typography, TextField, Box } from '@mui/material'
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
@@ -10,20 +10,18 @@ import Checkbox from '@mui/material/Checkbox'
 import TextFields from '../../components/shared/TextFields'
 import DateOfBirthBox from '../../components/shared/DateOfBirthBox'
 import Buttons from '../../components/shared/Buttons'
-import OTP from '../../components/shared/utils/OTP'
-import { Link, useNavigate } from 'react-router-dom'
+import {useNavigate } from 'react-router-dom'
 import BasicModal from '../../components/shared/utils/BasicModal'
 import { authorization } from '../../services/firebase'
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth'
 import { useTranslation } from 'react-i18next'
-import { validateTextInput1, validateEmail, validateContact, isNotEmpty, validateAadharNumber, validatePincode, validateTextInput, validateSelectInput } from "./../../utility/Validation"
-import { login, saveBasicData, fetchStduentDataBaisedOnContactNumber, captureStudentEngagementDetails } from '../../utility/Api'
+import { validateContact, validatePincode, validateSelectInput } from "./../../utility/Validation"
+import { login, fetchStduentDataBaisedOnContactNumberandDob } from '../../utility/Api'
 
 const Register = () => {
   const paperStyle = { padding: 20, maxWidth: 350, margin: '0 auto' }
   const headerStyle = { margin: 0 }
   const avatarStyle = { backgroundColor: '#62c4e7' }
-  const marginTop = { marginTop: 5 }
   const { t } = useTranslation()
   const history = useNavigate();
   const [otp, setOtp] = useState('');
@@ -34,51 +32,58 @@ const Register = () => {
 
   const [errors, setErrors] = useState({})
 
-  const [basicData, setBasicData] = useState({ "primaryContactNumber": "", "dob": "", "studentType": "", "pincode":"" });
+  const [basicData, setBasicData] = useState({ "primaryContactNumber": "", "dob": "", "studentType": "", "pincode": "" });
 
   const submitData = (e) => {
-        setDisableVerifyOtp(true)
-        let confirmationOTP = window.confirmationResult;
-        confirmationOTP.confirm(otp).then((result) => {
-          const user = result.user;
-          window.userOTPresult = user;
-          alert('User Sucessfully logged in!')
-          // setDisableVerifyOTPButton(true)
-          login().then(async (jsondata) => {
-            console.log('jsondata ========> ', jsondata?.data)
-            window.loginType = "SignUp"
-            let dataFromSucessLogin = JSON.parse(jsondata?.data)
-            window.jwtTokenResult = dataFromSucessLogin[0]?.token;
-            window.refreshJwtToken = dataFromSucessLogin[0]?.token;
-            window.userId = dataFromSucessLogin[1]?.id
-           
-            // checking for user is already exist or not
-            await fetchStduentDataBaisedOnContactNumber(basicData.primaryContactNumber, window.refreshJwtToken).then(async (jsondata) => {
-              let result = (jsondata.data)
-              if (result.length <= 2) {
-                history('/eligibilityTest',{ state:basicData });
-              }
-              else {
-                alert("User Already Exist! Please Sign in.")
-              }
-            })
-          }).catch((error) => {
-            console.log("error========>", error)
-          })
-        }).catch((error) => {
-          // User couldn't sign in (bad verification code?)
-          setDisableVerifyOtp(false)
-          console.log(error)
-        });
+    setDisableVerifyOtp(true)
+    let confirmationOTP = window.confirmationResult;
+    confirmationOTP.confirm(otp).then((result) => {
+      const user = result.user;
+      window.userOTPresult = user;
+      // setDisableVerifyOTPButton(true)
+      login().then(async (jsondata) => {
+        window.loginType = "SignUp"
+        let dataFromSucessLogin = JSON.parse(jsondata?.data)
+        window.jwtTokenResult = dataFromSucessLogin[0]?.token
+        window.refreshJwtToken = dataFromSucessLogin[0]?.token
+        window.userId = dataFromSucessLogin[1]?.id
+        window.secretKey = "strive";
+        var jwtTimeOut=new Date();
+        jwtTimeOut.setMinutes( jwtTimeOut.getMinutes() + 15);
+        window.jwtTimeOut = jwtTimeOut;
+        window.sessionTime="";
+        var sessionTimeOut=new Date();
+        sessionTimeOut.setMinutes( sessionTimeOut.getMinutes() + 15);    
+        window.sessionTime=sessionTimeOut;
+        window.userid = dataFromSucessLogin[1]?.id
+        // checking for user is already exist or not
+        await fetchStduentDataBaisedOnContactNumberandDob(basicData.primaryContactNumber,basicData.dob, window.refreshJwtToken).then(async (jsondata) => {
+          let result = (jsondata.data)
+          if (result.length <= 2) {
+            history('/eligibilityTest', { state: basicData });
+          }
+          else {
+            alert("User Already Exist! Please Sign in.")
+            history('/');
+          }
+        })
+      }).catch((error) => {
+        console.log("error========>", error)
+      })
+    }).catch((error) => {
+      // User couldn't sign in (bad verification code?)
+      setDisableVerifyOtp(false)
+      console.log(error)
+    });
   }
 
 
 
   const handleMobileNoInput = (event) => {
-      const errors = validateContact("mobile", event?.target?.value)
-      setErrors(errors);
-      setBasicData(preValue => ({ ...preValue, ["primaryContactNumber"]: event?.target?.value }))
-      window.primaryContactNumber= event?.target?.value
+    const errors = validateContact("mobile", event?.target?.value)
+    setErrors(errors);
+    setBasicData(preValue => ({ ...preValue, "primaryContactNumber": event?.target?.value }))
+    window.primaryContactNumber = event?.target?.value
   };
 
   const generateOTP = () => {
@@ -111,7 +116,8 @@ const Register = () => {
     if (event?.target?.value || event?.length === 0) {
       const errors = validateSelectInput("dob", event?.target?.value)
       setErrors(errors);
-      setBasicData(preValue => ({ ...preValue, ["dob"]: event?.target?.value }))
+      setBasicData(preValue => ({ ...preValue, "dob": event?.target?.value }))
+      window.dob =  event?.target?.value  // setting value as globally
     }
   }
   // Handle pincode
@@ -119,7 +125,7 @@ const Register = () => {
     if (event || event?.target?.length === 0) {
       const error = validatePincode("pincode", event?.target?.value, "lng");
       setErrors(error)
-      setBasicData(preValue => ({ ...preValue, ["pincode"]: event?.target?.value }))
+      setBasicData(preValue => ({ ...preValue, "pincode": event?.target?.value }))
     }
   }
   // handle otp
@@ -140,7 +146,7 @@ const Register = () => {
   }
   const handleRadioButton = (e) => {
     window.studentType = (e.target.value) // set globally 
-    setBasicData(preValue => ({ ...preValue, ["studentType"]: e?.target?.value }))
+    setBasicData(preValue => ({ ...preValue,"studentType": e?.target?.value }))
   }
   return (
     <Grid>
@@ -176,6 +182,14 @@ const Register = () => {
             }}
           />
           {errors?.mobile ? (<div style={{ color: "red" }}>{errors.mobile}</div>) : null}
+          <Grid container>
+            <Grid item xs>
+              <Buttons text='GET OTP' disabled={disableGetOtp} onClick={generateOTP} />
+            </Grid>
+            <Grid item>
+              <Buttons text='RESEND OTP' disabled={true} onClick={generateOTP} />
+            </Grid>
+          </Grid>
           <Box>
             <DateOfBirthBox
               name="dob"
@@ -183,6 +197,7 @@ const Register = () => {
               label='Date Of Birth'
               fullWidth='fullWidth'
               onChange={(e) => handleDob(e)}
+              inputProps={{ min: "1970-01-01", max: "2004-01-01" }}
             />
             {errors?.dob ? (<div style={{ color: "red" }}>{errors.dob}</div>) : null}
           </Box>
@@ -220,7 +235,6 @@ const Register = () => {
               helperText=''
               autoFocus={false}
               onChange={handleOtpInput}
-              // inputProps={{ maxLength: 5 }}
               onInput={(e) => {
                 e.target.value = Math.max(0, parseInt(e.target.value))
                   .toString()
@@ -229,16 +243,9 @@ const Register = () => {
             />
             {errors?.otp ? (<div style={{ color: "red" }}>{errors?.otp}</div>) : null}
           </Box>
-          <Grid container>
-            <Grid item xs>
-              <Buttons text='GET OTP' disabled={disableGetOtp} onClick={generateOTP} />
-            </Grid>
-            <Grid item>
-              <Buttons text='RESEND OTP' disabled={true} onClick={generateOTP} />
-            </Grid>
-          </Grid>
+
           <FormControl style={{ marginTop: '20px', marginBottom: '10px' }}>
-            <FormLabel id='demo-row-radio-buttons-group-label'>
+            <FormLabel id='demo-row-radio-buttons-group-label' style={{fontWeight:"bold"}}>
               I am applying for
             </FormLabel>
             <RadioGroup
@@ -263,7 +270,7 @@ const Register = () => {
 
           <Box style={{ display: 'flex' }}>
             <Box style={{ display: 'inline' }}>
-             
+
               <FormControlLabel
                 control={<Checkbox name='tnc1' id="myCheck1"
                 // checked={(checkBox1 == "Y" || dataValue.isActive == 'Y') ? true : false}
@@ -301,14 +308,14 @@ const Register = () => {
               />
             </Box>
           </Box>
-            <Buttons
-              sx={{ mt: '30px', mb: '30px' }}
-              text={t('verify_otp')}
-              variant='contained'
-              disabled={basicData.dob === ""? true: basicData?.primaryContactNumber.length!==10? true:otp.length !== 6 ? true :basicData?.pincode.length !== 6 ? true : basicData.studentType === '' ? true : (checkBox1 == true) && (checkBox2 == true) ? false : true}
-              onClick={(e) => submitData(e)}
-              fullWidth='fullWidth'
-            />
+          <Buttons
+            sx={{ mt: '30px', mb: '30px' }}
+            text={t('verify_otp')}
+            variant='contained'
+            disabled={basicData.dob === "" ? true : basicData?.primaryContactNumber.length !== 10 ? true : otp.length !== 6 ? true : basicData?.pincode.length !== 6 ? true : basicData.studentType === '' ? true : (checkBox1 === true) && (checkBox2 === true) ? false : true}
+            onClick={(e) => submitData(e)}
+            fullWidth='fullWidth'
+          />
         </form>
       </Paper>
       <div id="recaptcha"></div>

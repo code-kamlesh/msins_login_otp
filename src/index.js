@@ -12,7 +12,8 @@ import App from "./App";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "flag-icon-css/css/flag-icons.min.css";
 window.userId=""
-window.studentType = "Entepreneur"; // Entepreneur  Innovator
+window.userid = ""
+window.studentType = "";
 window.jwtTokenResult = "";
 window.refreshJwtToken = "";
 window.dbUserId=
@@ -21,6 +22,9 @@ window.dob=""
 window.pincode=""
 window.primaryContactNumber=""
 window.loginType=""
+window.secretKey=""
+window.jwtTimeOut=""
+window.sessionTime=""
 i18next
   .use(HttpApi)
   .use(LanguageDetector)

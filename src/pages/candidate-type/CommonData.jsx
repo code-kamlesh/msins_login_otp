@@ -2,8 +2,6 @@ import React ,{useState}from 'react'
 import SelectOption from '../../components/shared/SelectOption'
 
 import {Grid, Box, Paper, Avatar,Typography,} from '@mui/material'
-import { Link } from 'react-router-dom'
-
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
@@ -25,6 +23,11 @@ const paperStyle = {
 const headerStyle = { margin: 0 }
 const avatarStyle = { backgroundColor: '#62c4e7' }
 const marginTop = { marginTop: 5 }
+const tradeList = [{value:"Electrical", label:"Electrical"},
+                    {value:"Fitter", label:"Fitter"},
+                    {value:"Welder", label:"Welder"},
+                    {value:"Mechanical", label:"Mechanical"},
+                    {value:"Other", label:"Other"}]
 
 const collegeNameList = [{value:'College 1' , label:'College 1'},
                           {value:'College 2' , label:'College 2'},
@@ -33,15 +36,14 @@ const collegeNameList = [{value:'College 1' , label:'College 1'},
 export default function CommonData(props) {
   var data = props.value.value;
   const [qualificationStatus,setQualificationStatus] = useState("")
-  const [basicData, setBasicData] = useState({ "primaryContactNumber": data?.primaryContactNumber, "dob": data?.dob, "passingYear":"","highestQualification":"" ,"collegeName":"","createdBy": window?.userId, "updatedBy": window?.userId});
+  const [basicData, setBasicData] = useState({ "primaryContactNumber": data?.primaryContactNumber, "dob": data?.dob, "passingYear":"","highestQualification":"" ,"collegeName":"","itiTrade":"","createdBy": window.userid, "updatedBy":window.userid});
   const history = useNavigate();
   const[errors,setErrors] = useState({})
   // handle Qualification
   const handleQualification = (event)=>{
     if(event?.length !==0){
+      setBasicData(preValue => ({ ...preValue, ["itiTrade"]: "" }))
       setBasicData(preValue => ({ ...preValue, ["highestQualification"]: event }))
-      console.log(basicData.highestQualification)
-      console.log(basicData.highestQualification.length)
     }
   }
 
@@ -55,28 +57,27 @@ export default function CommonData(props) {
 
   // handle Passing year
   const handlePassingYear = (event)=>{
-    console.log(event?.target.value)
       const error = validatePassingYear("passingYear",event.target.value,"lng" )
       setErrors(error)
       setBasicData(preValue => ({ ...preValue, ["passingYear"]: event?.target?.value }))
-      console.log(event?.target.value.length)
   }
-
+// handlimg trade
+  const handleDomain = (event)=>{
+    setBasicData(preValue => ({ ...preValue, ["itiTrade"]: event}))
+  }
   // save data
   const handleSubmitData =async (e)=>{
     e.preventDefault();
-    console.log(basicData)
     try{
       if(basicData?.passingYear>2018){
-        window.pincode = data?.pincode   // set pincode as global variable
-      // history('/basicdetails',{ replace: true });
+        window.pincode = data?.pincode   // set pincode as global variabl
         const action = "captureBeneficiaryDetails"
       await saveBasicData(action, basicData,  window.refreshJwtToken).then(async(jsondata) => {
         let result = JSON.parse(jsondata.data);
         let dbUserId = result[0].dbUserId
         window.dbUserId = dbUserId  // setting global variable
         // capturing engagement details
-         await captureStudentEngagementDetails(dbUserId, 20, window.userId, window.studentType, window.refreshJwtToken).then(async(jsondata) => {
+         await captureStudentEngagementDetails(dbUserId, 0, window.userid, window.studentType, window.refreshJwtToken).then(async(jsondata) => {
           let json = JSON.parse(jsondata.data);
           window.engagementId = json[0].engagementId //setting engagementid 
         })
@@ -84,7 +85,6 @@ export default function CommonData(props) {
       })
     }
     else{
-      console.log(basicData)
       history('/eligibilityTest/userIsNotEligible',{ replace: true });
     }
     }
@@ -124,7 +124,19 @@ export default function CommonData(props) {
                 onChange={handleQualification}
               />
             </Box>
-
+            {basicData?.highestQualification === "ITI"&&
+              <Box>
+              <SelectOption
+                label='Domain'
+                name='itiTrade'
+                fullWidth='fullWidth'
+                options={tradeList}
+                required='required'
+                variant='standard'
+                onChange={handleDomain}
+              />
+            </Box>
+            }
             <Box>
               <FormControl style={{ marginTop: '20px' }}>
                 <FormLabel id='demo-row-radio-buttons-group-label'>

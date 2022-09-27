@@ -20,21 +20,15 @@ import useStyles from '../../components/layout'
 import {uploadDocument,fetchUserDocumentsByEngagementId,deleteDocumentById} from "./../../utility/Api";
 import { serviceEndPoint } from './../../utility/ServiceEndPoint';
 
-
-const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJrYW1sZXNoX3NpbmdoIiwiaWF0IjoxNjYzMDY3NjcxLCJleHAiOjE2NjMxNTQwNzF9.AM_ivWrc3tamo-fkSU7Sn3BvSgUNIUWK-hApOqfPCaRciYWS5-5Z_3KFcQuMbeWVSA5OfEZb5UAUKoEF1sMiaw"
-
 export default function UploadDocuments() {
   useEffect(() => {
-    console.log(window)
-    // if (window.jwtTokenResult == "") {
-    //   history('/', { replace: true })
-    // }
-     if (window.loginType === "SignIn") {
-      // getStudentData();
-      // getAddressData();
-      getSubmittedDocument(window.engagementId);
+   
+    if (window.jwtTokenResult == "") {
+      history('/', { replace: true })
     }
+     
     else{
+     getSubmittedDocument(window.engagementId);
      getSubmittedDocument(window.engagementId);
     }
  },[]);
@@ -66,9 +60,7 @@ export default function UploadDocuments() {
   }
   const handleDocument = (event)=>{
     event.preventDefault();
-    console.log(documentName)
-    console.log(documnetType)
-    console.log(file)
+   
     if(file.length === 0){
       alert("Please Select File.")
     }
@@ -84,16 +76,16 @@ export default function UploadDocuments() {
   const UploadFile = async(doc)=>{
     try{
       // dbUserId,engagementId,documentType,typeOfDocument,documentName,document,createdBy,updatedBy) {
-       uploadDocument(window.dbUserId,window.engagementId,documnetType,"G",documentName,doc,window.userId,window.userId)
+       uploadDocument(window.dbUserId,window.engagementId,documnetType,"G",documentName,doc,window.userid,window.userid,window.refreshJwtToken)
        .then((jsondata) => {
         let res = JSON.parse(jsondata.data)
-        console.log(res)
+      
          if(res[0]!== null){
            alert("Data Saved Suucessfully")
           //  document.getElementsByName("demo-row-radio-buttons-group-label").click()
            setDocumentName("")
            setDocumnetType("")
-           getSubmittedDocument(res[0].engagementId);
+           getSubmittedDocument(res[0]?.engagementId);
          }
        })
     }catch(err){
@@ -102,7 +94,7 @@ export default function UploadDocuments() {
   }
   // fetching User Document List
   const getSubmittedDocument = (engagementId)=>{
-    fetchUserDocumentsByEngagementId(engagementId).then((jsondata) => {   
+    fetchUserDocumentsByEngagementId(engagementId,window.refreshJwtToken).then((jsondata) => {   
       let jsonobjects = JSON.parse(jsondata.data); 
       setDocumentList(jsonobjects)
     })
@@ -134,21 +126,20 @@ export default function UploadDocuments() {
   fetch(serviceEndPoint.documentServiceEndPoint, {
       method: 'post',
       headers: {
-        'Authorization': 'Bearer '+token
+        'Authorization': 'Bearer '+window.refreshJwtToken
     }, 
       body: formData
   }).then(response => response.json()).then((jsondata)=>{
     let jsonobjects = JSON.parse(jsondata.data);
-    // console.log("response>>>",jsonobjects)
-    console.log(jsonobjects[0].documentPath)
+   
     var url=serviceEndPoint.downloadDocument+jsonobjects[0].documentPath+""; 
 
     window.open(url, "_blank");
   });
-    console.log(basicDocId)
+   
   }
   const deleteDocument =async (basicDocId)=>{
-    await deleteDocumentById(basicDocId).then((jsondata) => {
+    await deleteDocumentById(basicDocId,window.refreshJwtToken).then((jsondata) => {
 
       getSubmittedDocument(window.dbUserId)
     });
@@ -158,7 +149,11 @@ export default function UploadDocuments() {
     window.studentType === "Innovator" ? history('/Businessdetails' ,{replace:true}) : history('/entrepreneurbusinessform' ,{replace:true}) 
   }
 const finalSubmission = (event)=>{
-  
+  history('/status' ,{replace:true})
+}
+
+const draftSubmit = (event)=>{
+  history('/status' ,{replace:true})
 }
 
   return (
@@ -271,7 +266,8 @@ const finalSubmission = (event)=>{
        <br/>
       <Stack direction="row" spacing={2}>
         <Button  variant="contained"  onClick={handleBack} style={{color:"white" , background:"blue"}}>Back</Button>
-        <Button type="submit" variant="contained" style={{color:"white" , background:"blue"}} onClick={(e)=>finalSubmission(e)}>Save</Button>
+        <Button type="submit" variant="contained" style={{color:"white" , background:"blue"}} onClick={(e)=>draftSubmit(e)}>Save as Draft</Button>
+        <Button type="submit" variant="contained" style={{color:"white" , background:"blue"}} onClick={(e)=>finalSubmission(e)}>Final Submit</Button>
       </Stack>
       </Container>
     </div>

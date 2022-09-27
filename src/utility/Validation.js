@@ -1,4 +1,4 @@
-
+import {serviceEndPoint} from './ServiceEndPoint'
 let REQUIRED = "* Mandatory Field";
 // if(lang === "bg") 
 // REQUIRED = "* বাধ্যতামূলক" 
@@ -123,19 +123,19 @@ export function validatePassingYear(value,pincode, lng) {
 
 export function isNotEmpty(value){
     if(value==="" || value === null){value="";}
-  return  value.length == 0 ? 'Please fill out this field!' : '';
+  return  value.length === 0 ? 'Please fill out this field!' : '';
 }
 
 export function isNotEmptyTest(name,value){
     if(value==null || value===""){value="";}
-    errors[name] =  value.length == 0 ? 'Please fill out this field!' : '';
+    errors[name] =  value.length === 0 ? 'Please fill out this field!' : '';
     return errors;
 }
 // validate contact number
 export function validateContact(name , contact) {
     console.log(name)
     
-    if((name == "secondaryContactNo" ||name === "primaryContactNo" ) && contact == "")
+    if((name === "secondaryContactNo" ||name === "primaryContactNo" ) && contact === "")
     {
          errors[name]="";
          return errors;
@@ -158,7 +158,7 @@ export function validateContact(name , contact) {
 
 export function validateEmail(name , email) {
 
-    if(name == "secondaryEmailId" && email == "")
+    if(name === "secondaryEmailId" && email === "")
     {
          errors[name]= "";
          return errors;
@@ -174,4 +174,41 @@ export function validateEmail(name , email) {
      return errors;
     }
 
+}
+
+// regenrate token
+export function regenerateToken()
+{
+    let formData = new FormData();
+        formData.append('data', '{"token" : "1234", "action" : "reactivate", "data" : [{"refreshToken":"'+window.refreshJwtToken+'","secret":"'+window.secretKey+'"}]}');
+          return fetch(serviceEndPoint.loginService, {
+            method: "POST",
+            body: formData
+            }).then(response => response.json()).then((jsondata)=>{
+                if(jsondata.appError[0]==null){      
+                    let jsonobjects = JSON.parse(jsondata.data);
+                    window.userId = jsonobjects[0]?.id;
+                    window.jwtTokenResult = jsonobjects[0]?.token;
+                    window.refreshJwtToken = jsonobjects[0]?.token;
+                    window.userId = jsonobjects[0]?.id; 
+                    window.jwtTokenResult = jsonobjects[0].token;   
+                    //window.refreshToken = jsonobjects[0].refreshToken;
+                    var jwtTimeOut=new Date();
+                    jwtTimeOut.setMinutes( jwtTimeOut.getMinutes() + 15);
+                    window.jwtTimeOut = jwtTimeOut;
+                } 
+             })
+}
+
+
+// validate date differnece
+
+export function validateDateDiff(key,value1,value2,lng){
+    if(value1 > value2){
+        errors[key] = "Date Should not be less than ExperienceFrom"
+    }
+    else{
+        errors[key] = ""  
+    }
+    return errors
 }
