@@ -14,13 +14,16 @@ import Stack from '@mui/material/Stack';
 import underscore from 'underscore';
 import  TextField  from '@mui/material/TextField';
 import { validateTextInput1,validatePincode, validateSelectInput } from "./../../utility/Validation"
-import {fetchAllQestionSet,saveMsinsBusinessData,updateMsinsBuisnessDetails,fetchSavedQuestionAnswer, fetchExistingAddress, submitAddressData,fetchAddressDetailsBasedOnPincode } from "./../../utility/Api";
+import {fetchAllQestionSetforInnovator,saveMsinsBusinessData,updateMsinsBuisnessDetails,fetchSavedQuestionAnswer, fetchExistingAddress, submitAddressData,fetchAddressDetailsBasedOnPincode } from "./../../utility/Api";
 
 
 export default function BusinessCaseEntrepreneurForm() {
   const history = useNavigate();
   const classes = useStyles();
   const [answerFromDb,setAnswerFromDb] = useState([])
+  const domainexperienceList = ["Yes, I have an existing business associated with the domain","Yes, I have worked/apprenticed with an employer operating in same domain",
+                    "Yes, I have received education associated with the domain","No, I have a business partner with relevant domain experience",
+                    "No, but my family has an existing business in relevant domain","No, I have no experience in the domain"]
   const domainList = ["Electrical", "Mechanical", "Fitter", "Welder", "Farm"];
   const [questionlist, setQuestionlist] = useState([]);
   const [selectVillageNameOptions, setSelectVillageNameOptions] = useState([]);
@@ -37,6 +40,7 @@ export default function BusinessCaseEntrepreneurForm() {
   const [questionAnswer7 , setQuestionAnswer7] = useState({"id":"","questionId":"", "answer":"", "dbUserId":window.dbUserId,"businessType":"BCB","createdBy":window.userid,"updatedBy":window.userid});
   const [questionAnswer8 , setQuestionAnswer8] = useState({"id":"","questionId":"", "answer":"", "dbUserId":window.dbUserId,"businessType":"BCB","createdBy":window.userid,"updatedBy":window.userid});
   const [questionAnswer9 , setQuestionAnswer9] = useState({"id":"","questionId":"19", "answer":"", "dbUserId":window.dbUserId,"businessType":"BCB","createdBy":window.userid,"updatedBy":window.userid});
+  const [questionAnswer10 , setQuestionAnswer10] = useState({"id":"","questionId":"40", "answer":"", "dbUserId":window.dbUserId,"businessType":"BCB","createdBy":window.userid,"updatedBy":window.userid});
   const [businessAddressDetails, setBusinessAddressDetails] = useState({
     "entityId": window.dbUserId, "entityType": "EB", "pincode": "", "district": "",
     "cityName": "", "villageName": "", "state": "Maharashtra", "isActive": "Y", "createdBy": window?.userid, "updatedBy": window?.userid
@@ -95,6 +99,10 @@ export default function BusinessCaseEntrepreneurForm() {
           questionAnswer9.answer = res[i]?.answer
           questionAnswer9.id = res[i]?.id
           }
+          else if(res[i]?.questionId === "40"){
+            questionAnswer10.answer = res[i]?.answer
+            questionAnswer10.id = res[i]?.id
+            }
       }
     })
   }
@@ -114,7 +122,8 @@ export default function BusinessCaseEntrepreneurForm() {
   const fetchQuestionSet = () => {
     try{
       let arr = [];
-      fetchAllQestionSet("all", window.refreshJwtToken).then((jsondata) => {
+      // fetchAllQestionSet("all", window.refreshJwtToken).then((jsondata) => {
+        fetchAllQestionSetforInnovator("Y", "BCB", "T", "E", window.refreshJwtToken).then((jsondata) => {
         for (var i = 0; i < jsondata.length; i++) {
           if (jsondata[i].businessType === "BCB" && jsondata[i].isActive === "Y") {
             arr[i] = (jsondata[i])
@@ -207,6 +216,9 @@ export default function BusinessCaseEntrepreneurForm() {
   const handleDomain = (event)=>{
     setQuestionAnswer9(preValue=>({...preValue,["answer"]: event}))
   }
+  const handleDomainExperience = (event)=>{
+    setQuestionAnswer10(preValue=>({...preValue,["answer"]: event}))
+  }
   const submitData = ()=>{
     var bsuinesscasebriefdata= []
     bsuinesscasebriefdata.push(questionAnswer1)
@@ -218,7 +230,7 @@ export default function BusinessCaseEntrepreneurForm() {
     bsuinesscasebriefdata.push(questionAnswer7)
     bsuinesscasebriefdata.push(questionAnswer8)
     bsuinesscasebriefdata.push(questionAnswer9)
-
+    bsuinesscasebriefdata.push(questionAnswer10)
     try{
         bsuinesscasebriefdata.map((item,key)=>{
           if(item.id ===""){
@@ -404,6 +416,20 @@ export default function BusinessCaseEntrepreneurForm() {
               //minWidth= "10"
               />
             </Grid>
+            <br/> <br/>
+            <Grid item xs={12} sm={6} md={6}>
+              <p><sup><font color="red" size="4px">*</font></sup> Do you have experience/knowledge of the domain in which you want to setup your business?</p>
+              <SelectOption
+                id="domainexperience"
+                name="domain experience"
+                value={questionAnswer10.answer || ""}
+                options={domainexperienceList}
+                fullWidth="fullWidth"
+                variant="standard"
+                onChange={(e)=>handleDomainExperience(e)}
+              //minWidth= "10"
+              />
+            </Grid>
       </Grid>
       <br/>
 
@@ -417,11 +443,9 @@ export default function BusinessCaseEntrepreneurForm() {
                       <TextareaAutosize aria-label="empty textarea" style={{ width: "100%", height: "100px" }}
                         name={row.id} id={row.id}
                         value={getBusinessCaseAnswer(row.id)}
-                        // 
                         onChange={handleInputChange}
                         required
-                        maxLength="100"
-                        // readOnly={UserContext.roleid == 3 ? true : false}
+                        maxLength="1000"
                       />
                       <div name={"leftCharacters" + row.id} id={"leftCharacters" + row.id} >Number of characters left 1000</div>
                     </TableCell>

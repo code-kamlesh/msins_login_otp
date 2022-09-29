@@ -59,7 +59,7 @@ export default function BusinessCaseInnovator() {
     const fetchExistingData = () => {
         fetchSavedQuestionAnswer(window.dbUserId, window.refreshJwtToken).then((jsondata) => {
             let res = jsondata
-            setAnswerFromDb(res)
+           
             for (var i = 0; i < res.length; i++) {
                 if (res[i]?.questionId === "24") {
                     questionAnswer1.answer = res[i]?.answer
