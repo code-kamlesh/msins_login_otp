@@ -10,7 +10,7 @@ import Checkbox from '@mui/material/Checkbox'
 import TextFields from '../../components/shared/TextFields'
 import DateOfBirthBox from '../../components/shared/DateOfBirthBox'
 import Buttons from '../../components/shared/Buttons'
-import {useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import BasicModal from '../../components/shared/utils/BasicModal'
 import { authorization } from '../../services/firebase'
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth'
@@ -48,16 +48,16 @@ const Register = () => {
         window.refreshJwtToken = dataFromSucessLogin[0]?.token
         window.userId = dataFromSucessLogin[1]?.id
         window.secretKey = "strive";
-        var jwtTimeOut=new Date();
-        jwtTimeOut.setMinutes( jwtTimeOut.getMinutes() + 15);
+        var jwtTimeOut = new Date();
+        jwtTimeOut.setMinutes(jwtTimeOut.getMinutes() + 15);
         window.jwtTimeOut = jwtTimeOut;
-        window.sessionTime="";
-        var sessionTimeOut=new Date();
-        sessionTimeOut.setMinutes( sessionTimeOut.getMinutes() + 15);    
-        window.sessionTime=sessionTimeOut;
+        window.sessionTime = "";
+        var sessionTimeOut = new Date();
+        sessionTimeOut.setMinutes(sessionTimeOut.getMinutes() + 15);
+        window.sessionTime = sessionTimeOut;
         window.userid = dataFromSucessLogin[1]?.id
         // checking for user is already exist or not
-        await fetchStduentDataBaisedOnContactNumberandDob(basicData.primaryContactNumber,basicData.dob, window.refreshJwtToken).then(async (jsondata) => {
+        await fetchStduentDataBaisedOnContactNumberandDob(basicData.primaryContactNumber, basicData.dob, window.refreshJwtToken).then(async (jsondata) => {
           let result = (jsondata.data)
           if (result.length <= 2) {
             history('/eligibilityTest', { state: basicData });
@@ -106,8 +106,6 @@ const Register = () => {
     window.recaptchaVerifier = new RecaptchaVerifier('recaptcha', {
       'size': 'invisible',
       'callback': (response) => {
-        // reCAPTCHA solved, allow signInWithPhoneNumber.
-        // onSignInSubmit();
       }
     }, authorization);
   };
@@ -117,7 +115,7 @@ const Register = () => {
       const errors = validateSelectInput("dob", event?.target?.value)
       setErrors(errors);
       setBasicData(preValue => ({ ...preValue, "dob": event?.target?.value }))
-      window.dob =  event?.target?.value  // setting value as globally
+      window.dob = event?.target?.value  // setting value as globally
     }
   }
   // Handle pincode
@@ -146,7 +144,7 @@ const Register = () => {
   }
   const handleRadioButton = (e) => {
     window.studentType = (e.target.value) // set globally 
-    setBasicData(preValue => ({ ...preValue,"studentType": e?.target?.value }))
+    setBasicData(preValue => ({ ...preValue, "studentType": e?.target?.value }))
   }
   return (
     <Grid>
@@ -182,14 +180,6 @@ const Register = () => {
             }}
           />
           {errors?.mobile ? (<div style={{ color: "red" }}>{errors.mobile}</div>) : null}
-          <Grid container>
-            <Grid item xs>
-              <Buttons text='GET OTP' disabled={disableGetOtp} onClick={generateOTP} />
-            </Grid>
-            <Grid item>
-              <Buttons text='RESEND OTP' disabled={true} onClick={generateOTP} />
-            </Grid>
-          </Grid>
           <Box>
             <DateOfBirthBox
               name="dob"
@@ -218,10 +208,18 @@ const Register = () => {
                   .toString()
                   .slice(0, 6)
               }}
-
             />
             {errors?.pincode ? (<div style={{ color: "red" }}>{errors.pincode}</div>) : null}
           </Box>
+          <br />
+          <Grid container>
+            <Grid item xs>
+              <Buttons text='GET OTP' disabled={disableGetOtp} onClick={generateOTP} />
+            </Grid>
+            <Grid item>
+              <Buttons text='RESEND OTP' disabled={true} onClick={generateOTP} />
+            </Grid>
+          </Grid>
           <Box>
             <TextField
               label={t('otp')}
@@ -245,7 +243,7 @@ const Register = () => {
           </Box>
 
           <FormControl style={{ marginTop: '20px', marginBottom: '10px' }}>
-            <FormLabel id='demo-row-radio-buttons-group-label' style={{fontWeight:"bold"}}>
+            <FormLabel id='demo-row-radio-buttons-group-label' style={{ fontWeight: "bold" }}>
               I am applying for
             </FormLabel>
             <RadioGroup

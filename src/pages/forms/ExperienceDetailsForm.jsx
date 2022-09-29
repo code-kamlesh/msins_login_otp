@@ -145,12 +145,14 @@ export default function ExperienceDetails() {
              name='row-radio-buttons-group'
            >
              <FormControlLabel
+              checked={experienceData?.isExperience=="Y" || ''}
                value='Y'
                control={<Radio />}
                label='Yes'
                onChange={handleRadioButton}
              />
              <FormControlLabel
+             checked={experienceData?.isExperience=="N" || ''}
                value='N'
                control={<Radio />}
                label='No'

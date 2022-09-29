@@ -137,11 +137,11 @@ const hanldeUnitOfNumber = (event)=>{
       <Box mt={4}>
         <Grid container spacing={1.5}>
         <Grid item xs={12} md={4}>
-            <p>Do You have any physically Challenged?</p>
+            <p>Are you Divyayang?</p>
           </Grid>
           <Grid item xs={12} md={2} mb={2}>
           <SelectOption
-            // label="Physical Challenged"
+            // onClick={{e}=>handlePhysicallltchanges(e)}
             name="physicallyChallenged"
             options={selectPhysicalChallengedButton}
             variant="standard"

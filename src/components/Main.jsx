@@ -4,7 +4,6 @@ import {Box,createTheme,ThemeProvider,StyledEngineProvider,
 import { useState } from 'react'
 import Footer from './Footer'
 import Container from '@mui/material/Container'
-
 import UploadDocuments from './upload-documents/UploadDocuments'
 import Home from './../pages/Home'
 import EducationDetails from '../pages/education-details/EducationDetails'
@@ -15,8 +14,7 @@ import Header from './Header'
 import ExperienceDetails from '../pages/forms/ExperienceDetailsForm'
 import ExistingBusinessDetails from '../pages/forms/ExistingBusinessDetails'
 import SocioEconimoicDetails from "../pages/forms/SocioEconomicDetails"
-import BusinessCaseEntrepreneurForm from "../pages/forms/BusinessCaseEntrepreneurForm"
-import ProtectedRoutes from "./RoutesProtector"
+import BusinessCaseBrief from "../pages/forms/BusinessCase"
 // import SocioEconomicInnovatorForm from '../pages/forms/ExistingBusinessInnovatorForm'
 // import ExistingBusinessEnterpreneurForm from '../pages/forms/ExistingBusinessEnterpreneurForm'
 import EligibilityTest, {
@@ -53,16 +51,9 @@ const Main = () => {
                 <Route path='/socioeconomicdetails' element={<SocioEconimoicDetails />} />
                 <Route path='/experiencedetails' element={< ExperienceDetails/>} />
                 <Route path='/Businessdetails' element={<ExistingBusinessDetails/>} />
-                <Route path='/entrepreneurbusinessform' element={<BusinessCaseEntrepreneurForm/>} />
+                <Route path='/businesscasebrief' element={<BusinessCaseBrief/>} />
                 <Route path='/uploadDocuments' element={<UploadDocuments />}/>
-                {/* <Route path='/eligibilityTest'  element ={}  /> */}
                 <Route path='/status' element={<Status />} />
-              {/* <Routes>
-                <Route path='/socioenterpreneur' element={< SocioEconomicEntepreneurForm/>} />
-              </Routes> */}
-              {/* <Routes>
-                <Route path='/eligibilityTest' element={<EligibilityTest />} />
-              </Routes> */} 
                </Routes>{' '}
               <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
                 <Routes>

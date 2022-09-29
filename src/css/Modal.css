@@ -1,0 +1,12 @@
+
+.titleCloseBtn {
+  color: red;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  display: flex;
+  justify-content: flex-end;
+  border-radius: 50%;
+}
+

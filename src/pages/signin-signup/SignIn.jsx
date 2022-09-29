@@ -160,15 +160,6 @@ const LoginUser = ({ handleChange }) => {
             }}
           />
 
-          <Grid container>
-            <Grid item xs>
-              <Buttons text={t('get_otp')} disabled={disableGetOtp} onClick={generateOTP} />
-            </Grid>
-            <Grid item >
-              <Buttons text={t('resend_otp')} disabled={true} onClick={generateOTP} />
-            </Grid>
-          </Grid>
-
           <DateOfBirthBox
             name="dob"
             variant='standard'
@@ -177,6 +168,15 @@ const LoginUser = ({ handleChange }) => {
             onChange={(e) => handleDob(e)}
             inputProps={{ min: "1970-01-01", max: "2004-01-01" }}
           />
+          <br/><br/>
+           <Grid container>
+            <Grid item xs>
+              <Buttons text={t('get_otp')} disabled={disableGetOtp} onClick={generateOTP} />
+            </Grid>
+            <Grid item >
+              <Buttons text={t('resend_otp')} disabled={true} onClick={generateOTP} />
+            </Grid>
+          </Grid>
           <TextField
             label={t('otp')}
             placeholder={t('otp_placeholder')}

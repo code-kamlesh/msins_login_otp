@@ -16,8 +16,13 @@ import { useNavigate } from 'react-router-dom'
 import { DropzoneArea } from 'material-ui-dropzone';
 import { Button } from "@mui/material";
 import Stack from '@mui/material/Stack';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import useStyles from '../../components/layout'
-import {uploadDocument,fetchUserDocumentsByEngagementId,deleteDocumentById} from "./../../utility/Api";
+import {uploadDocument,fetchUserDocumentsByEngagementId,deleteDocumentById,changeStudentStatus} from "./../../utility/Api";
 import { serviceEndPoint } from './../../utility/ServiceEndPoint';
 
 export default function UploadDocuments() {
@@ -32,17 +37,17 @@ export default function UploadDocuments() {
      getSubmittedDocument(window.engagementId);
     }
  },[]);
-  var x = 0;
   const classes = useStyles();
   const history = useNavigate();
   const[DocumentList,setDocumentList] = useState([])
-  const selectGenderOptions = ['Aadhar Card', 'Pan Card', 'Driving License']
   const [file,setFile] = useState(null)
+  const [open, setOpen] = React.useState(false);
   const [documentName,setDocumentName] = useState("")
   const [documnetType,setDocumnetType]  = useState("")
   const typeOfDocument = [{  value: "Address Proof", name: "Address Proof" },
                           {  value: "Identity Proof", name: "Identity Proof" },
-                          {  value: "Education Proof", name: "Education Proof" },]
+                          {  value: "Education Proof", name: "Education Proof" },
+                          {  value: "Business Document", name: "Business Document" },]
   const typeOfProofs = [
     {id:"Address Proof",  value: "Aadhar Card", name: "Aadhar Card" },
     { id:"Address Proof", value: "Voting Card", name: "Voting Card" },
@@ -52,8 +57,10 @@ export default function UploadDocuments() {
     { id:"Identity Proof",value: "Passport", name: "Passport" },
     {id:"Education Proof", value: "10th Certificate", name: "10th Certificate" },
     {id:"Education Proof", value: "12th Certificate", name: "12th Certificate" },
-    {id:"Education Proof", value: "Degree", name: "Degree" },
-    {id:10, value: "", name: "" },
+    {id:"Business Document", value: "Udyog aadhar certificate", name: "Udyog aadhar certificate" },
+    {id:"Business Document", value: "DIPP Proof", name: "DIPP Proof" },
+    {id:"Business Document", value: "Gst Registration", name: "Gst Registration" },
+    {id:"Business Document", value: "Udyog aadhar", name: "Udyog aadhar" },
   ];
   const handleFileChange =(event)=>{
     setFile(event)
@@ -75,14 +82,12 @@ export default function UploadDocuments() {
   }
   const UploadFile = async(doc)=>{
     try{
-      // dbUserId,engagementId,documentType,typeOfDocument,documentName,document,createdBy,updatedBy) {
        uploadDocument(window.dbUserId,window.engagementId,documnetType,"G",documentName,doc,window.userid,window.userid,window.refreshJwtToken)
        .then((jsondata) => {
         let res = JSON.parse(jsondata.data)
       
          if(res[0]!== null){
            alert("Data Saved Suucessfully")
-          //  document.getElementsByName("demo-row-radio-buttons-group-label").click()
            setDocumentName("")
            setDocumnetType("")
            getSubmittedDocument(res[0]?.engagementId);
@@ -111,7 +116,6 @@ export default function UploadDocuments() {
     }catch(err){
       alert(err.message)
     }
-   
   }
   const handleRadioButtonDocument =(event)=>{
     setDocumnetType(event?.target?.value)
@@ -141,21 +145,73 @@ export default function UploadDocuments() {
   const deleteDocument =async (basicDocId)=>{
     await deleteDocumentById(basicDocId,window.refreshJwtToken).then((jsondata) => {
 
-      getSubmittedDocument(window.dbUserId)
+      getSubmittedDocument(window.engagementId)
     });
     
   }
   const handleBack = ()=>{
-    window.studentType === "Innovator" ? history('/Businessdetails' ,{replace:true}) : history('/entrepreneurbusinessform' ,{replace:true}) 
+    history('/businesscasebrief' ,{replace:true}) 
+    // window.studentType === "Innovator" ? history('/Businessdetails' ,{replace:true}) : history('/entrepreneurbusinessform' ,{replace:true}) 
   }
 const finalSubmission = (event)=>{
-  history('/status' ,{replace:true})
+  setOpen(true);
 }
-
+const saveddocument = ()=>{
+  setOpen(false);
+  if(checkedAlldocument()){
+    let statusChangeData = '"engagementId":' + window.engagementId + ',"status":"Mobilised", "updatedBy":' + window.userid + '';
+    changeStudentStatus(statusChangeData,window.jwtTokenResult).then((jsondata) => {
+      let resultStatus = jsondata.status
+      if (resultStatus === "success") {
+        alert("Successfully Mobilized")
+        history('/status' ,{replace:true})
+      }
+      })
+   
+  }
+  else{
+    alert("Please upload atleast one document of each type.")
+  }
+}
+// checking for all type of document are there or not
+const checkedAlldocument =()=>{
+  var addressproof = false;
+  var identityproof = false;
+  var educationproof = false;
+  var businessproof = false;
+  console.log(DocumentList)
+  DocumentList.map((item,id)=>{
+   if(item.documentType==="Address Proof" && item.isActive === "Y" ){
+    addressproof = true
+   }
+   else if(item.documentType==="Identity Proof" && item.isActive === "Y"){
+    identityproof = true
+   }
+   else if(item.documentType==="Education Proof" && item.isActive === "Y"){
+    educationproof = true
+  }
+  else if(item.documentType==="Business Document" && item.isActive === "Y"){
+    businessproof = true
+  }
+  })
+  if(addressproof && identityproof &&educationproof &&businessproof )
+    return true
+    else
+    return false;
+}
 const draftSubmit = (event)=>{
-  history('/status' ,{replace:true})
+  if(checkedAlldocument()){
+    history('/status' ,{replace:true})
+  }
+  else{
+    alert("Please upload atleast one document of each type.")
+  }
+ 
 }
 
+const handleClose = () => {
+  setOpen(false);
+};
   return (
     <div className={classes.root} >
       <h3 style={{ textAlign: "center" }}>Upload Documents</h3>
@@ -270,6 +326,26 @@ const draftSubmit = (event)=>{
         <Button type="submit" variant="contained" style={{color:"white" , background:"blue"}} onClick={(e)=>finalSubmission(e)}>Final Submit</Button>
       </Stack>
       </Container>
+{/* alert message on final submit */}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Alert!"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" style={{fontWeight:"bold"}}>
+           After Submitting you are not able to Edit.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={saveddocument} autoFocus>Submit</Button>
+        </DialogActions>
+      </Dialog>
     </div>
     
   )

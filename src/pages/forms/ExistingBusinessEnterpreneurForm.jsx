@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import TextFields from "../../components/shared/TextFields";
 import useStyles from '../../components/layout'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import Slider from '@mui/material/Slider';
 import Container from "@mui/material/Container";
 import SelectOption from "../../components/shared/SelectOption";
-import { Box } from "@mui/material";
+import AadharModal from "../../components/shared/AddharDailog";
 import { Button } from "@mui/material";
 import Stack from '@mui/material/Stack';
 import {validateTextInput1 } from "./../../utility/Validation"
@@ -27,14 +28,17 @@ const selectBorrowedMoneyOptions = ["Yes", "No"];
 const selectDepositMoneyOptions = ["Yes", "No"];
 const selectudhyogAadharRegistrationOptions = ["Yes", "No"];
 const selectgstRegistrationOptions = ["Yes", "No", "Don't know"];
+
+
 export default function ExistingBusinessEntrepreneurshipForm() {
   const history = useNavigate();
   const classes = useStyles();
   const [errors,setErrors] = useState({})
   var businessData= [];
+  const [modalOpen, setModalOpen] = useState(false); // dialog box for aadhar udyog
 
-  const [questionAnswer1 , setQuestionAnswer1] = useState({"id":"","questionId":"1", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userid,"updatedBy":window.userid});
-  const [questionAnswer2 , setQuestionAnswer2] = useState({"id":"","questionId":"2", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userid,"updatedBy":window.userid});
+  // const [questionAnswer1 , setQuestionAnswer1] = useState({"id":"","questionId":"1", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userid,"updatedBy":window.userid});
+  // const [questionAnswer2 , setQuestionAnswer2] = useState({"id":"","questionId":"2", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userid,"updatedBy":window.userid});
   const [questionAnswer3 , setQuestionAnswer3] = useState({"id":"","questionId":"3", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userid,"updatedBy":window.userid});
   const [questionAnswer4 , setQuestionAnswer4] = useState({"id":"","questionId":"4", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userid,"updatedBy":window.userid});
   const [questionAnswer5 , setQuestionAnswer5] = useState({"id":"","questionId":"5", "answer":"", "dbUserId":window.dbUserId,"businessType":"EB","createdBy":window.userid,"updatedBy":window.userid});
@@ -60,15 +64,15 @@ export default function ExistingBusinessEntrepreneurshipForm() {
     fetchSavedQuestionAnswer(window.dbUserId,window.refreshJwtToken).then((jsondata)=>{
       let res = jsondata
       for(var i=0;i<res.length;i++){
-        if(res[i].questionId === "1"){
-        questionAnswer1.answer = res[i]?.answer
-        questionAnswer1.id = res[i]?.id
-        }
-        else if(res[i].questionId === "2"){
-          questionAnswer2.answer = res[i]?.answer
-          questionAnswer2.id = res[i]?.id
-        }
-        else if(res[i].questionId === "3"){
+        // if(res[i].questionId === "1"){
+        // questionAnswer1.answer = res[i]?.answer
+        // questionAnswer1.id = res[i]?.id
+        // }
+        // else if(res[i].questionId === "2"){
+        //   questionAnswer2.answer = res[i]?.answer
+        //   questionAnswer2.id = res[i]?.id
+        // }
+         if(res[i].questionId === "3"){
           questionAnswer3.answer = res[i]?.answer
           questionAnswer3.id = res[i]?.id
         // setQuestionAnswer3(preValue=>({...preValue,["answer"]: res[i]?.answer, ["id"]:res[i]?.id}))
@@ -120,14 +124,15 @@ export default function ExistingBusinessEntrepreneurshipForm() {
     }
   }
   const submitData = async() => {
-    businessData.push(questionAnswer1)
-    businessData.push(questionAnswer2)
+    // businessData.push(questionAnswer1)
+    // businessData.push(questionAnswer2)
     businessData.push(questionAnswer3)
     businessData.push(questionAnswer4)
     businessData.push(questionAnswer5)
     businessData.push(questionAnswer6)
     businessData.push(questionAnswer7)
     businessData.push(questionAnswer8)
+    console.log(businessData)
     try{
       for(var i=0; i<businessData.length;i++){
         if(businessData[i].id ===""){
@@ -141,28 +146,26 @@ export default function ExistingBusinessEntrepreneurshipForm() {
       }
       alert("Data Saved Successfully")
       businessData = []
-      history('/entrepreneurbusinessform', { replace: true })
+      history('/businesscasebrief', { replace: true })
     }
     catch(err){
       alert(err.message)
     }
      
   }
-  const handleLevel = (event) => {
-    setQuestionAnswer1(preValue=>({...preValue,["answer"]: event}))
-  }
+  // const handleLevel = (event) => {
+  //   setQuestionAnswer1(preValue=>({...preValue,["answer"]: event}))
+  // }
 
-  const handleExistingBuisness = (event) => {
-    setQuestionAnswer2(preValue=>({...preValue,["answer"]: event}))
-  }
+  // const handleExistingBuisness = (event) => {
+  //   setQuestionAnswer2(preValue=>({...preValue,["answer"]: event}))
+  // }
 
   const handleDepositeMoney = (event) => {
     setQuestionAnswer3(preValue=>({...preValue,"answer": event}))
   }
 
   const handleLoanAmountDuration = (event) => {
-    const error = validateTextInput1("durationAmount", event?.target?.value,"lng")
-      setErrors(error)
     setQuestionAnswer4(preValue=>({...preValue,"answer": event?.target?.value}))
   }
 
@@ -195,7 +198,7 @@ export default function ExistingBusinessEntrepreneurshipForm() {
         <React.Fragment className={classes.actionsContainer}>
           <br/>
           <Grid container spacing={6}>
-            <Grid item xs={12} sm={6} md={6}>
+            {/* <Grid item xs={12} sm={6} md={6}>
               <p><sup><font color="red" size="4px">*</font></sup> Select your level</p>
               <SelectOption
                 // label="Select Level"
@@ -207,8 +210,8 @@ export default function ExistingBusinessEntrepreneurshipForm() {
                 fullWidth="fullWidth"
                 autoFocus={true}
               />
-            </Grid>
-            <Grid item xs={12} sm={6} md={6}>
+            </Grid> */}
+            {/* <Grid item xs={12} sm={6} md={6}>
              <p> <sup><font color="red" size="4px">*</font></sup> Do you have an existing business?</p>
               <Grid item>
                 <SelectOption
@@ -221,8 +224,8 @@ export default function ExistingBusinessEntrepreneurshipForm() {
                   fullWidth="fullWidth"
                   onChange={(e) => { handleExistingBuisness(e) }}
                 />
-              </Grid>
-            </Grid>
+              </Grid> */}
+            {/* </Grid> */}
             <Grid item xs={12} sm={6} md={6}>
               <p><sup><font color="red" size="4px">*</font></sup> Did you ever deposit your money in a bank or savings group??</p>
               <SelectOption
@@ -243,23 +246,17 @@ export default function ExistingBusinessEntrepreneurshipForm() {
                 month, how confident are you of being able to arrange such a loan?
               </p>
               <Grid item xs={12} sm={6} md={6}>
-                {/* <Box mt={2.5}> */}
-                  <TextFields
-                    id="4"
-                    name="durationAmount"
-                    type="number"
-                    fullWidth="fullWidth"
-                    placeholder="e.g 1 to 10 months"
-                    variant="standard"
-                    value={questionAnswer4?.answer || ""}
-                    autoFocus={false}
-                    onChange={(e) => { handleLoanAmountDuration(e) }}
-                    onInput={(e) => {
-                      e.target.value = Math.max(0, parseInt(e.target.value))
-                        .toString()
-                        .slice(0, 2);
-                    }}
-                  />
+                        <Slider
+                            aria-label="Temperature"
+                            valueLabelDisplay="auto"
+                            step={1}
+                            value = {questionAnswer4?.answer }
+                            
+                            marks
+                            min={1}
+                            max={10}
+                            onChange={(e) => { handleLoanAmountDuration(e) }}
+                          />
                    {errors?.durationAmount ? (<div style={{ color: "red" }}>{errors.durationAmount}</div>) : null}
                 {/* </Box> */}
               </Grid>
@@ -301,7 +298,17 @@ export default function ExistingBusinessEntrepreneurshipForm() {
             </Grid>
            
             <Grid item xs={12} sm={6} md={6}>
-              <p><sup><font color="red" size="4px">*</font></sup> Do you have Udyog Aadhar registration?</p>
+            <Grid container>
+                <Grid item>
+                <p><sup><font color="red" size="4px">*</font></sup> Do you have Udyog Aadhar registration?</p>
+                </Grid>
+                <Grid item alignItems="stretch" style={{ display: "flex" }}>
+                <Button color="primary" onClick={() => { setModalOpen(true) }} ><h3>🤔</h3></Button>
+                </Grid>
+               </Grid>
+                <Grid>
+              </Grid>
+              {modalOpen && <AadharModal setOpenModal={setModalOpen}  />}
               <SelectOption
                 //label="Do you have an existing business"
                 id="7"
@@ -335,7 +342,8 @@ export default function ExistingBusinessEntrepreneurshipForm() {
           <Stack direction="row" spacing={2}>
             <Button type="submit" variant="contained" color="primary" onClick={handleBack} >Back</Button>
             <Button
-            disabled={questionAnswer1?.answer!=="" && questionAnswer2?.answer!=="" && questionAnswer3?.answer!=="" &&questionAnswer4?.answer!=="" &&questionAnswer5?.answer!=="" 
+            // questionAnswer1?.answer!=="" && questionAnswer2?.answer!=="" && 
+            disabled={questionAnswer3?.answer!=="" &&questionAnswer4?.answer!=="" &&questionAnswer5?.answer!=="" 
             &&questionAnswer6?.answer!=="" &&questionAnswer7?.answer!=="" &&questionAnswer8?.answer!==""?false:true}
             type="submit" variant="contained" color="primary" onClick={submitData} >Next</Button>
           </Stack>

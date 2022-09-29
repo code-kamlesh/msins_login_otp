@@ -35,7 +35,7 @@ export default function SocioEconomicInnovatorForm() {
       console.log(jsondata)
       if(jsondata.appError === null && jsondata.data !== "[null]" ){
         let res = JSON.parse(jsondata.data)
-        setScoioEconomicData(preValue => ({ ...preValue, ["physicallyChallenged"]:res[0]?.physicallyChallenged|| "", ["maritalStatus"]: res[0]?.maritalStatus,  ["id"]:res[0].id}))
+        setScoioEconomicData(preValue => ({ ...preValue, "physicallyChallenged":res[0]?.physicallyChallenged|| "", ["maritalStatus"]: res[0]?.maritalStatus,  ["id"]:res[0].id}))
         // setScoioEconomicData(preValue => ({ ...preValue, ["aadharNo"]:res[0]?.aadharNo|| "" ,
       }
       else{
@@ -46,13 +46,13 @@ export default function SocioEconomicInnovatorForm() {
   
 const onChangePhysicalChallenged = (event)=>{
   if(event?.length!==0){
-  setScoioEconomicData(preValue=>({...preValue, ["physicallyChallenged"]:event}))
+  setScoioEconomicData(preValue=>({...preValue, "physicallyChallenged":event}))
   }
 }
 const onChangeMaritalStatus = (event)=>{
   if(event?.length!==0){
    
-    setScoioEconomicData(preValue=>({...preValue, ["maritalStatus"]:event}));
+    setScoioEconomicData(preValue=>({...preValue, "maritalStatus":event}));
   }
 }
  const handleSocioEconomicData=(event)=>{
@@ -84,7 +84,7 @@ const onChangeMaritalStatus = (event)=>{
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <SelectOption
-            label="Physical Challenged"
+            label="Divyayang"
             name="physicallyChallenged"
             options={selectPhysicalChallengedButton}
             variant="standard"

@@ -15,6 +15,8 @@ import underscore from 'underscore';
 import  TextField  from '@mui/material/TextField';
 import { validateTextInput1,validatePincode, validateSelectInput } from "./../../utility/Validation"
 import {fetchAllQestionSet,saveMsinsBusinessData,updateMsinsBuisnessDetails,fetchSavedQuestionAnswer, fetchExistingAddress, submitAddressData,fetchAddressDetailsBasedOnPincode } from "./../../utility/Api";
+
+
 export default function BusinessCaseEntrepreneurForm() {
   const history = useNavigate();
   const classes = useStyles();
@@ -99,9 +101,11 @@ export default function BusinessCaseEntrepreneurForm() {
   // show saved answer
   const getBusinessCaseAnswer = (id)=>{
     let ans = answerFromDb;
+    const totalCharacters = 1000;
     for(var i =0;i<ans.length;i++){
         var singalAnswer = ans[i];
         if(singalAnswer?.questionId == id){
+          // document.getElementById("leftCharacters" +singalAnswer?.questionId ).innerHTML = "Number of characters left " + (totalCharacters - singalAnswer?.answer?.length);
           return singalAnswer.answer
         }
     }
@@ -388,7 +392,7 @@ export default function BusinessCaseEntrepreneurForm() {
         {errors?.villageName ? (<div style={{ color: "red" }} >{errors?.villageName}</div>) : null}
       </Grid>
       <Grid item xs={12} sm={6} md={6}>
-              <p><sup><font color="red" size="4px">*</font></sup> Which Domain want to setup Business?</p>
+              <p><sup><font color="red" size="4px">*</font></sup> What is your Business Domain?</p>
               <SelectOption
                 id="domain"
                 name="domain"

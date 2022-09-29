@@ -398,3 +398,27 @@ export async function updateMsinsBuisnessDetails(data,token) {
     }
     return null;
 }
+
+// changing the status draft to mobilzed
+export async function changeStudentStatus(data,token) {
+    if(isSessionValid()){
+    try{
+    let requestFormData = new FormData();  
+    requestFormData.append('data', '{"token" : "", "action" : "updateStatus", "data" : [{'+data+'}]}');
+    if(!isTokenValid()) 
+        await regenerateToken();
+   return  fetch(serviceEndPoint.engagementServiceEndPoint,{
+     method: "POST",
+     headers: {
+        'Authorization': 'Bearer '+token
+    }, 
+     body: requestFormData,
+     }).then(response => response.json());
+    }
+    catch(e)
+    {
+        console.log(e);
+    }
+}
+return null;
+}

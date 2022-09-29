@@ -43,7 +43,6 @@ export function validateTextInput(key, value, lng) {
 // validate text Input
 
 export function validateTextInput1(key,value,lng){
-    console.log(value)
     if(value.match(/^[A-Za-z0-9\s!@#$%^&*()_+=-`~\\\]\[{}|';:/.,?><]/)){
         errors[key]=""
         return errors;
@@ -133,8 +132,7 @@ export function isNotEmptyTest(name,value){
 }
 // validate contact number
 export function validateContact(name , contact) {
-    console.log(name)
-    
+   
     if((name === "secondaryContactNo" ||name === "primaryContactNo" ) && contact === "")
     {
          errors[name]="";

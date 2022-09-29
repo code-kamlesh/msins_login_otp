@@ -619,6 +619,7 @@ export default function BasicDetailsForm() {
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
                 <TextFields
+                disabled={true}
                   id="pincode"
                   name="pincode"
                   type="number"

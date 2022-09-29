@@ -1,80 +1,63 @@
 import Grid from "@mui/material/Grid";
+import DIIPModel from "../../components/shared/DippDailog";
+// AadharModal
+import AadharModal from "../../components/shared/AddharDailog";
 import React, { useState, useEffect } from "react";
 import SelectOption from "../../components/shared/SelectOption";
-import underscore from 'underscore';
-import { validatePincode, validateSelectInput } from "./../../utility/Validation"
-import TextField from '@mui/material/TextField';
 import useStyles from '../../components/layout'
 import { useNavigate } from 'react-router-dom'
 import Container from "@mui/material/Container";
 import { Button } from "@mui/material";
 import Stack from '@mui/material/Stack';
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import { fetchAllQestionSetforInnovator, saveMsinsBusinessData, updateMsinsBuisnessDetails, fetchSavedQuestionAnswer, fetchExistingAddress, submitAddressData, fetchAddressDetailsBasedOnPincode } from "./../../utility/Api";
+import { saveMsinsBusinessData, updateMsinsBuisnessDetails, fetchSavedQuestionAnswer } from "./../../utility/Api";
 const selectExistingIdeaButton = ["Yes(Self Owned)", "Yes(Family Owned)", "No",];
 const selectRaisedMoneyButton = ["Yes", "No"];
 const selectAadharRegistrationButton = ["Yes", "No"];
 const selectGSTRegistrationButton = ["Yes", "No"];
 const domainList = ["Electrical", "Mechanical", "Fitter", "Welder", "Farm"];
 // const selectDIPPRegistrationButton = ["Yes", "No"];
-const selectDIPPRegistrationButton = [{value:"Yes", label:"Yes"},{value:"No", label:"No"}];
+const selectDIPPRegistrationButton = [{ value: "Yes", label: "Yes" }, { value: "No", label: "No" }];
+const selectLevelOptions = [
+  "Level 0: Idea - Unproven concept, no testing has been performed",
+  "Level 1: Proof Of Concept - Basic Research, technology validation done",
+  "Level 2: Minimum viable product, testing and certification done and first workable and saleable version ready",
+  "Level 3: Prototype - build in a laboratory environment and tested or experienced by user",
+  "Level 4: Full Commercial - Innovation(Product)  available for consumers",
+];
+
+
 
 export default function ExistingBusinessInnovator() {
+  const [modalOpen, setModalOpen] = useState(false); // dialog box for aadhar udyog
+  const [modalOpen1, setModalOpen1] = useState(false); // dailog box for DIPP
   const history = useNavigate();
   const classes = useStyles();
-  const [answerFromDb, setAnswerFromDb] = useState([])
-  const [questionlist, setQuestionlist] = useState([]);
-  const [selectVillageNameOptions, setSelectVillageNameOptions] = useState([]);
-  const [selectCityNameOptions, setSelectCityNameOptions] = useState([])
-  const [selectDistrictNameOptions, setSelectDistrictNameOptions] = useState([])
-  const [errors, setErrors] = useState({});
-  const [isDataPresent, setIsDataPresent] = useState()
+  const [isDataPresent, setIsDataPresent] = useState([])
   const [questionAnswer1, setQuestionAnswer1] = useState({ "id": "", "questionId": "18", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
   const [questionAnswer2, setQuestionAnswer2] = useState({ "id": "", "questionId": "20", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
   const [questionAnswer3, setQuestionAnswer3] = useState({ "id": "", "questionId": "21", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
   const [questionAnswer4, setQuestionAnswer4] = useState({ "id": "", "questionId": "22", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
   const [questionAnswer5, setQuestionAnswer5] = useState({ "id": "", "questionId": "23", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
   const [questionAnswer6, setQuestionAnswer6] = useState({ "id": "", "questionId": "19", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
-  const [questionAnswer7, setQuestionAnswer7] = useState({ "id": "", "questionId": "", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
-  const [questionAnswer8, setQuestionAnswer8] = useState({ "id": "", "questionId": "", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
-  const [questionAnswer9, setQuestionAnswer9] = useState({ "id": "", "questionId": "", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
-  const [questionAnswer10, setQuestionAnswer10] = useState({ "id": "", "questionId": "", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
-  const [questionAnswer11, setQuestionAnswer11] = useState({ "id": "", "questionId": "", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
-  const [questionAnswer12, setQuestionAnswer12] = useState({ "id": "", "questionId": "", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
-  const [questionAnswer13, setQuestionAnswer13] = useState({ "id": "", "questionId": "", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
-  const [questionAnswer14, setQuestionAnswer14] = useState({ "id": "", "questionId": "", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
-  const [questionAnswer15, setQuestionAnswer15] = useState({ "id": "", "questionId": "", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
-  const [questionAnswer16, setQuestionAnswer16] = useState({ "id": "", "questionId": "", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
-  const [questionAnswer17, setQuestionAnswer17] = useState({ "id": "", "questionId": "", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
-  const [questionAnswer18, setQuestionAnswer18] = useState({ "id": "", "questionId": "", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
+  const [questionAnswer7, setQuestionAnswer7] = useState({ "id": "", "questionId": "1", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
+
 
   useEffect(() => {
     if (window.jwtTokenResult === "") {
       history('/', { replace: true })
     }
     else {
-      getAddressData();
-      fetchQuestionSet();
       fetchExistingData();
     }
   }, []);
 
-  const [businessAddressDetails, setBusinessAddressDetails] = useState({
-    "entityId": window.dbUserId, "entityType": "EB", "pincode": "", "district": "",
-    "cityName": "", "villageName": "", "state": "Maharashtra", "isActive": "Y", "createdBy": window?.userid, "updatedBy": window?.userid
-  })
-
-
   const fetchExistingData = () => {
     fetchSavedQuestionAnswer(window.dbUserId, window.refreshJwtToken).then((jsondata) => {
       let res = jsondata
-      setAnswerFromDb(res)
+      setIsDataPresent([]); // for state updation
+      console.log(res)
       for (var i = 0; i < res.length; i++) {
-         if (res[i]?.questionId === "18") {
+        if (res[i]?.questionId === "18") {
           questionAnswer1.answer = res[i]?.answer
           questionAnswer1.id = res[i]?.id
         }
@@ -98,270 +81,39 @@ export default function ExistingBusinessInnovator() {
           questionAnswer6.answer = res[i]?.answer
           questionAnswer6.id = res[i]?.id
         }
-        else if (res[i]?.questionId === "24") {
+        else if (res[i]?.questionId === "1") {
           questionAnswer7.answer = res[i]?.answer
           questionAnswer7.id = res[i]?.id
         }
-        else if (res[i]?.questionId === "26") {
-          questionAnswer8.answer = res[i]?.answer
-          questionAnswer8.id = res[i]?.id
-        }
-        else if (res[i]?.questionId === "27") {
-          questionAnswer9.answer = res[i]?.answer
-          questionAnswer9.id = res[i]?.id
-        }
-        else if (res[i]?.questionId === "28") {
-          questionAnswer10.answer = res[i]?.answer
-          questionAnswer10.id = res[i]?.id
-        }
-        else if (res[i]?.questionId === "29") {
-          questionAnswer11.answer = res[i]?.answer
-          questionAnswer11.id = res[i]?.id
-        }
-        else if (res[i].questionId === "30") {
-          questionAnswer12.answer = res[i]?.answer
-          questionAnswer12.id = res[i]?.id
-        }
-        else if (res[i]?.questionId === "31") {
-          questionAnswer13.answer = res[i]?.answer
-          questionAnswer13.id = res[i]?.id
-        }
-        else if (res[i]?.questionId === "32") {
-          questionAnswer14.answer = res[i]?.answer
-          questionAnswer14.id = res[i]?.id
-        }
-        else if (res[i]?.questionId === "33") {
-          questionAnswer15.answer = res[i]?.answer
-          questionAnswer15.id = res[i]?.id
-        }
-        else if (res[i]?.questionId === "34") {
-          questionAnswer16.answer = res[i]?.answer
-          questionAnswer16.id = res[i]?.id
-        }
-        else if (res[i]?.questionId === "35") {
-          questionAnswer17.answer = res[i]?.answer
-          questionAnswer17.id = res[i]?.id
-        }
-        else if (res[i]?.questionId === "36") {
-          questionAnswer18.answer = res[i]?.answer
-          questionAnswer18.id = res[i]?.id
-        }
+
       }
     })
   }
-  // show saved answer
-  const getBusinessCaseAnswer = (id) => {
-    let ans = answerFromDb;
-    for (var i = 0; i < ans.length; i++) {
-      var singalAnswer = ans[i];
-      if (singalAnswer?.questionId == id) {
-        return singalAnswer.answer
-      }
-    }
+
+
+  const handleLevel = (event) => {
+    setQuestionAnswer7(preValue => ({ ...preValue, ["answer"]: event }))
   }
-  // fetching question set
-  const fetchQuestionSet = () => {
-    let questionArr = [];
-    try {
-      fetchAllQestionSetforInnovator("Y", "IEB", "T", "I", window.refreshJwtToken).then((jsondata) => {
-        for (var i = 0; i < jsondata.length; i++) {
-          questionArr[i] = (jsondata[i])
-        }
-        setQuestionlist(questionArr)
-      })
-    }
-    catch (err) {
-      alert(err.message)
-    }
+  const handleRaisedMoney = (event) => {
+    setQuestionAnswer2(preValue => ({ ...preValue, ["answer"]: event }))
+  }
+  const handleExistingIdea = (event) => {
+    setQuestionAnswer1(preValue => ({ ...preValue, ["answer"]: event }))
+  }
+  const handleUdyogAadhar = (event) => {
+    setQuestionAnswer3(preValue => ({ ...preValue, ["answer"]: event }))
+  }
+  const handleDIPPRegistration = (event) => {
+    setQuestionAnswer4(preValue => ({ ...preValue, ["answer"]: event }))
+  }
+  const handleGstRegistration = (event) => {
+    setQuestionAnswer5(preValue => ({ ...preValue, ["answer"]: event }))
+  }
+  const handleDomain = (event) => {
+    setQuestionAnswer6(preValue => ({ ...preValue, ["answer"]: event }))
   }
 
 
-  // fetching existing address details for BCB
-  const getAddressData = async () => {
-    await fetchExistingAddress(window?.dbUserId, "EB", window.jwtTokenResult).then(async (jsondata) => {
-      if (jsondata.appError === null && jsondata.data !== "[]") {
-        let res = JSON.parse(jsondata.data)
-        setBusinessAddressDetails(res[0])
-        if (res[0] !== null) {
-          setBusinessAddressDetails(preValue => ({ ...preValue, ["id"]: res[0].id }))
-          fetchCityVillegeDistrictList(res[0]?.pincode);
-        }
-        else if (jsondata.appError === null && jsondata.data === "[]") {
-          setIsDataPresent(null)
-        }
-      }
-    })
-  };
-  // fetching city villege district list
-  const fetchCityVillegeDistrictList = (value) => {
-    fetchAddressDetailsBasedOnPincode(value).then((jsondata) => {
-      let jsonObject = JSON.parse(jsondata.data)
-      let city = []
-      let villege = []
-      let district = []
-      jsonObject.map(item => { villege.push({ value: item.cityVillage, label: item.cityVillage }) })
-      villege = underscore.uniq(villege, true, "label");
-      jsonObject.map(item => { city.push({ value: item.taluk, label: (item.taluk) }) })
-      city = underscore.uniq(city, true, "label");
-      jsonObject.map(item => { district.push({ label: item.district, value: (item.district).toString() }) });
-      district = underscore.uniq(district, true, "label");
-      setSelectVillageNameOptions(villege)
-      setSelectCityNameOptions(city)
-      setSelectDistrictNameOptions(district)
-    })
-  }
-  // handle pincode
-  const handlePinCode = (event) => {
-    if (event || event?.target?.length === 0) {
-      const errors = validatePincode("pincode", event?.target?.value, "lng");
-      setErrors(errors)
-      setBusinessAddressDetails(preValue => ({ ...preValue, ["pincode"]: event?.target?.value }))
-    }
-    if (event?.target?.value.length < 6) {
-      setSelectVillageNameOptions([])
-      setSelectCityNameOptions([])
-      setSelectDistrictNameOptions([])
-      setBusinessAddressDetails(preValue => ({ ...preValue, ["cityName"]: "" }))
-      setBusinessAddressDetails(preValue => ({ ...preValue, ["villageName"]: "" }))
-      setBusinessAddressDetails(preValue => ({ ...preValue, ["district"]: "" }))
-    }
-    if (event?.target?.value.length === 6) {
-      fetchCityVillegeDistrictList(event?.target?.value);
-    }
-  }
-  const handleDistric = (event) => {
-    if (event || event?.length === 0) {
-      const errors = validateSelectInput("district", event)
-      setErrors(errors);
-      setBusinessAddressDetails(preValue => ({ ...preValue, ["district"]: event }))
-    }
-  }
-  const handleCityName = (event) => {
-    if (event || event?.length === 0) {
-      const errors = validateSelectInput("cityName", event)
-      setErrors(errors);
-      setBusinessAddressDetails(preValue => ({ ...preValue, ["cityName"]: event }))
-    }
-  }
-  const handleVillegeName = (event) => {
-    if (event || event?.length === 0) {
-      const errors = validateSelectInput("villageName", event)
-      setErrors(errors);
-      setBusinessAddressDetails(preValue => ({ ...preValue, ["villageName"]: event }))
-    }
-  }
-
-  
-  const handleRaisedMoney = (event)=>{
-    setQuestionAnswer2(preValue=>({...preValue,["answer"]: event}))
-  }
-  const handleExistingIdea = (event)=>{
-    setQuestionAnswer1(preValue=>({...preValue,["answer"]: event}))
-  } 
-  const handleUdyogAadhar = (event)=>{
-    setQuestionAnswer3(preValue=>({...preValue,["answer"]: event}))
-  } 
-  const handleDIPPRegistration = (event)=>{
-    setQuestionAnswer4(preValue=>({...preValue,["answer"]: event}))
-  } 
-  const handleGstRegistration = (event)=>{
-    setQuestionAnswer5(preValue=>({...preValue,["answer"]: event}))
-  }
-  const handleDomain = (event)=>{
-    setQuestionAnswer6(preValue=>({...preValue,["answer"]: event}))
-  }
-
-  //handle all quaetion answer
-  const handleInputChange = (event) => {
-    let useranswer = answerFromDb
-    const totalCharacters = 1000;
-    document.getElementById("leftCharacters" + event?.target?.name).innerHTML = "Number of characters left " + (totalCharacters - event?.target?.value.length);
-
-    if (event?.target?.name === "24") {
-      setQuestionAnswer7(preValue => ({ ...preValue, ["answer"]: event?.target?.value, ["questionId"]: event?.target?.name }))
-      useranswer?.map((item) => {
-        if (item.questionId == "24")
-          setAnswerFromDb(preValue => ({ ...preValue, ["answer"]: event?.target?.value }))
-      })
-    }
-    if (event?.target?.name === "26") {
-      setQuestionAnswer8(preValue => ({ ...preValue, ["answer"]: event?.target?.value, ["questionId"]: event?.target?.name }))
-      useranswer?.map((item) => {
-        if (item.questionId == "26")
-          setAnswerFromDb(preValue => ({ ...preValue, ["answer"]: event?.target?.value }))
-      })
-    }
-    if (event?.target?.name === "27") {
-      setQuestionAnswer9(preValue => ({ ...preValue, ["answer"]: event?.target?.value, ["questionId"]: event?.target?.name }))
-      useranswer?.map((item) => {
-        if (item.questionId == "27")
-          setAnswerFromDb(preValue => ({ ...preValue, ["answer"]: event?.target?.value }))
-      })
-    }
-    if (event?.target?.name === "28") {
-      setQuestionAnswer10(preValue => ({ ...preValue, ["answer"]: event?.target?.value, ["questionId"]: event?.target?.name }))
-      useranswer?.map((item) => {
-        if (item.questionId == "28")
-          setAnswerFromDb(preValue => ({ ...preValue, ["answer"]: event?.target?.value }))
-      })
-    }
-    if (event?.target?.name === "29") {
-      setQuestionAnswer11(preValue => ({ ...preValue, ["answer"]: event?.target?.value, ["questionId"]: event?.target?.name }))
-      useranswer?.map((item) => {
-        if (item.questionId == "29")
-          setAnswerFromDb(preValue => ({ ...preValue, ["answer"]: event?.target?.value }))
-      })
-    }
-    if (event?.target?.name === "30") {
-      setQuestionAnswer12(preValue => ({ ...preValue, ["answer"]: event?.target?.value, ["questionId"]: event?.target?.name }))
-      useranswer?.map((item) => {
-        if (item.questionId == "30")
-          setAnswerFromDb(preValue => ({ ...preValue, ["answer"]: event?.target?.value }))
-      })
-    }
-    if (event?.target?.name === "31") {
-      setQuestionAnswer13(preValue => ({ ...preValue, ["answer"]: event?.target?.value, ["questionId"]: event?.target?.name }))
-      useranswer?.map((item) => {
-        if (item.questionId == "31")
-          setAnswerFromDb(preValue => ({ ...preValue, ["answer"]: event?.target?.value }))
-      })
-    }
-    if (event?.target?.name === "32") {
-      setQuestionAnswer14(preValue => ({ ...preValue, ["answer"]: event?.target?.value, ["questionId"]: event?.target?.name }))
-      useranswer?.map((item) => {
-        if (item.questionId == "32")
-          setAnswerFromDb(preValue => ({ ...preValue, ["answer"]: event?.target?.value }))
-      })
-    }
-    if (event?.target?.name === "33") {
-      setQuestionAnswer15(preValue => ({ ...preValue, ["answer"]: event?.target?.value, ["questionId"]: event?.target?.name }))
-      useranswer?.map((item) => {
-        if (item.questionId == "33")
-          setAnswerFromDb(preValue => ({ ...preValue, ["answer"]: event?.target?.value }))
-      })
-    }
-    if (event?.target?.name === "34") {
-      setQuestionAnswer16(preValue => ({ ...preValue, ["answer"]: event?.target?.value, ["questionId"]: event?.target?.name }))
-      useranswer?.map((item) => {
-        if (item.questionId == "34")
-          setAnswerFromDb(preValue => ({ ...preValue, ["answer"]: event?.target?.value }))
-      })
-    }
-    if (event?.target?.name === "35") {
-      setQuestionAnswer17(preValue => ({ ...preValue, ["answer"]: event?.target?.value, ["questionId"]: event?.target?.name }))
-      useranswer?.map((item) => {
-        if (item.questionId == "35")
-          setAnswerFromDb(preValue => ({ ...preValue, ["answer"]: event?.target?.value }))
-      })
-    }
-    if (event?.target?.name === "36") {
-      setQuestionAnswer18(preValue => ({ ...preValue, ["answer"]: event?.target?.value, ["questionId"]: event?.target?.name }))
-      useranswer?.map((item) => {
-        if (item.questionId == "36")
-          setAnswerFromDb(preValue => ({ ...preValue, ["answer"]: event?.target?.value }))
-      })
-    }
-  }
   const submitData = () => {
     var bsuinesscasebriefdata = []
     bsuinesscasebriefdata.push(questionAnswer1)
@@ -371,33 +123,21 @@ export default function ExistingBusinessInnovator() {
     bsuinesscasebriefdata.push(questionAnswer5)
     bsuinesscasebriefdata.push(questionAnswer6)
     bsuinesscasebriefdata.push(questionAnswer7)
-    bsuinesscasebriefdata.push(questionAnswer8)
-    bsuinesscasebriefdata.push(questionAnswer9)
-    bsuinesscasebriefdata.push(questionAnswer10)
-    bsuinesscasebriefdata.push(questionAnswer11)
-    bsuinesscasebriefdata.push(questionAnswer12)
-    bsuinesscasebriefdata.push(questionAnswer13)
-    bsuinesscasebriefdata.push(questionAnswer14)
-    bsuinesscasebriefdata.push(questionAnswer15)
-    bsuinesscasebriefdata.push(questionAnswer16)
-    bsuinesscasebriefdata.push(questionAnswer17)
-    bsuinesscasebriefdata.push(questionAnswer18)
     try {
       bsuinesscasebriefdata.map((item, key) => {
         if (item.id == "") {
           saveMsinsBusinessData(item, window.refreshJwtToken).then((jsondata) => {
-         
           })
         }
         else {
           updateMsinsBuisnessDetails(item, window.refreshJwtToken).then((jsondata) => {
-           
+
           })
         }
       })
-      submitAddress();
       bsuinesscasebriefdata = []
-      // history('/uploadDocuments' ,{replace:true})
+      history('/businesscasebrief', { replace: true })
+      alert("Data saved Suceesfully")
     }
     catch (err) {
       alert(err.message)
@@ -407,24 +147,7 @@ export default function ExistingBusinessInnovator() {
   const handleBack = () => {
     history('/experiencedetails', { replace: true })
   }
-  // address saving
-  const submitAddress = async () => {
-    try {
-      let action = "";
-      isDataPresent === null ? action = "captureAddress" : action = "updateAddress"
-      await submitAddressData(action, businessAddressDetails, window.jwtTokenResult).then((jsondata) => {
-        if (jsondata.appError == null) {
-          alert("Data Saved Successfully")
-          history('/uploadDocuments', { replace: true })
-        } else {
-          console.log("error");
-        }
-      })
-    }
-    catch (err) {
-      alert(err.message)
-    }
-  }
+
   return (
     <div className={classes.root} >
       <h3 style={{ textAlign: "center" }}>Existing Business</h3>
@@ -433,9 +156,8 @@ export default function ExistingBusinessInnovator() {
           <Grid container spacing={6}>
             <Grid item xs={12} sm={6} md={6}>
               <p><sup><font color="red" size="4px">*</font></sup> Do you have an existing Innovative idea/ startup</p>
-              <br />
               <SelectOption
-                onChange={(e)=>handleExistingIdea(e)}
+                onChange={(e) => handleExistingIdea(e)}
                 id="existingIdea"
                 name="existingIdea"
                 options={selectExistingIdeaButton}
@@ -445,11 +167,37 @@ export default function ExistingBusinessInnovator() {
               />
             </Grid>
             <Grid item xs={12} sm={6} md={6}>
+              <p><sup><font color="red" size="4px">*</font></sup> Domain of Business?</p>
+              <SelectOption
+                id="domain"
+                name="domain"
+                value={questionAnswer6.answer || ""}
+                options={domainList}
+                fullWidth="fullWidth"
+                variant="standard"
+                onChange={(e) => handleDomain(e)}
+              //minWidth= "10"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={6}>
+              <p><sup><font color="red" size="4px">*</font></sup> Select your level</p>
+              <SelectOption
+                // label="Select Level"
+                id="1"
+                name="1"
+                options={selectLevelOptions}
+                value={questionAnswer7?.answer || ""}
+                onChange={(e) => handleLevel(e)}
+                fullWidth="fullWidth"
+                autoFocus={true}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={6}>
               <p><sup><font color="red" size="4px">*</font></sup> In the past 12 months have you raised any money from any source?
               </p>
               <Grid item>
                 <SelectOption
-                  onChange={(e)=>handleRaisedMoney(e)}
+                  onChange={(e) => handleRaisedMoney(e)}
                   id="raisedMoney"
                   name="raisedMoney"
                   options={selectRaisedMoneyButton}
@@ -460,12 +208,23 @@ export default function ExistingBusinessInnovator() {
               </Grid>
             </Grid>
             <Grid item xs={12} sm={6} md={6}>
-              <p><sup><font color="red" size="4px">*</font></sup> Do you have Udyog Aadhar registration?</p>
+              <Grid container>
+                <Grid item>
+                <p><sup><font color="red" size="4px">*</font></sup> Do you have Udyog Aadhar registration?</p>
+                </Grid>
+                <Grid item alignItems="stretch" style={{ display: "flex" }}>
+                <Button color="primary" onClick={() => { setModalOpen(true) }} ><h3>🤔</h3></Button>
+                </Grid>
+               </Grid>
+                <Grid>
+              </Grid>
+              {modalOpen && <AadharModal setOpenModal={setModalOpen}  />}
+             
               <SelectOption
                 //label="Do you have an existing business"
                 id="udhyogAadharRegistration"
                 name="udhyogAadharRegistration"
-                onChange={(e)=>handleUdyogAadhar(e)}
+                onChange={(e) => handleUdyogAadhar(e)}
                 options={selectAadharRegistrationButton}
                 fullWidth="fullWidth"
                 variant="standard"
@@ -473,12 +232,22 @@ export default function ExistingBusinessInnovator() {
               />
             </Grid>
             <Grid item xs={12} sm={6} md={6}>
-              <p><sup><font color="red" size="4px">*</font></sup> Do you have DIPP registration?</p>
+            <Grid container>
+                <Grid item>
+                <p><sup><font color="red" size="4px">*</font></sup> Do you have DIPP registration?</p>
+                </Grid>
+                <Grid item alignItems="stretch" style={{ display: "flex" }}>
+                <Button color="primary" onClick={() => { setModalOpen1(true) }} ><h3>🤔</h3></Button>
+                </Grid>
+               </Grid>
+                <Grid>
+              </Grid>
+              {modalOpen1 && <DIIPModel setOpenModal1={setModalOpen1} value={"DIPP"} />}
+
               <SelectOption
-                //label="Do you have an existing business"
                 id="dippRegistration"
                 name="dippRegistration"
-                onChange={(e)=>handleDIPPRegistration(e)}
+                onChange={(e) => handleDIPPRegistration(e)}
                 options={selectDIPPRegistrationButton}
                 fullWidth="fullWidth"
                 variant="standard"
@@ -491,120 +260,25 @@ export default function ExistingBusinessInnovator() {
                 //label="Do you have an existing business"
                 id="gstRegistration"
                 name="gstRegistration"
-                onChange={(e)=>handleGstRegistration(e)}
+                onChange={(e) => handleGstRegistration(e)}
                 options={selectGSTRegistrationButton}
                 fullWidth="fullWidth"
                 variant="standard"
                 value={questionAnswer5.answer || ""}
-              minWidth= "10"
+                minWidth="10"
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={6}>
-              <p><sup><font color="red" size="4px">*</font></sup> Which Domain want to setup Business?</p>
-              <SelectOption
-                //label="Do you have an existing business"
-                id="domain"
-                name="domain"
-                value={questionAnswer6.answer || ""}
-                options={domainList}
-                fullWidth="fullWidth"
-                variant="standard"
-                onChange={(e)=>handleDomain(e)}
-              //minWidth= "10"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <p><sup><font color="red" size="4px">*</font></sup> Where do you Intend to setup your business(include village,
-                block, district)?</p>
-            </Grid>
-            <Grid item xs={12} sm={6} md={6}>
-              <TextField
-                id="pincode"
-                name="pincode"
-                type="number"
-                label="Pincode"
-                fullWidth="fullWidth"
-                autoComplete="pincode"
-                variant="standard"
-                value={businessAddressDetails?.pincode || ""}
-                onChange={handlePinCode}
-                // autoFocus={autoFocus}
-                onInput={(e) => {
-                  e.target.value = Math.max(0, parseInt(e.target.value))
-                    .toString()
-                    .slice(0, 6);
-                }}
-              />
-              {errors?.pincode ? (<div style={{ color: "red" }}>{errors.pincode}</div>) : null}
-            </Grid>
-            <Grid item xs={12} sm={6} md={6}>
-              <SelectOption
-                label="District"
-                id="district"
-                name="district"
-                options={selectDistrictNameOptions}
-                variant="standard"
-                value={businessAddressDetails?.district || ""}
-                onChange={(e) => handleDistric(e)}
-              />
-              {/* {errors?.district ? (<div style={{ color: "red" }}>{errors.district}</div>) : null} */}
-            </Grid>
-            <Grid item xs={12} sm={6} md={6}>
-              <SelectOption
-                id="cityName"
-                name="cityName"
-                label="City"
-                fullWidth="fullWidth"
-                value={businessAddressDetails?.cityName || ""}
-                options={selectCityNameOptions}
-                onChange={(e) => handleCityName(e)}
-              />
-              {/* {errors?.cityName ? (<div style={{ color: "red" }}>{errors?.cityName}</div>) : null} */}
-            </Grid>
-            <Grid item xs={12} sm={6} md={6}>
-              <SelectOption
-                id="villageName"
-                name="villageName"
-                label="Village"
-                fullWidth="fullWidth"
-                value={businessAddressDetails?.villageName || ""}
-                options={selectVillageNameOptions}
-                onChange={(e) => handleVillegeName(e)}
-              />
-              {/* {errors?.villageName ? (<div style={{ color: "red" }} >{errors?.villageName}</div>) : null} */}
-            </Grid>
-            </Grid>
+          </Grid>
+          <br />
+          <Stack direction="row" spacing={2}>
+            <Button type="submit" variant="contained" color="primary" onClick={handleBack} >Back</Button>
+            <Button type="submit" variant="contained" color="primary" onClick={submitData} >Next</Button>
+          </Stack>
 
-
-            <Table aria-label="simple table">
-              <TableBody>
-                {questionlist?.map(row => (
-                  <TableRow key={row.id}>
-                    <TableCell component="th" scope="row" style={{ width: 100 }}>
-                      <sup><font color="red" size="4px">*</font></sup>  {row.question}
-                      <TextareaAutosize aria-label="empty textarea" style={{ width: "100%", height: "100px" }}
-                        name={row.id} id={row.id}
-                        value={getBusinessCaseAnswer(row.id)}
-                        onChange={handleInputChange}
-                        required
-                        maxLength="100"
-
-                      />
-                      <div name={"leftCharacters" + row.id} id={"leftCharacters" + row.id} >Number of characters left 1000</div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-
-            </Table>
-            <br />
-            <Stack direction="row" spacing={2}>
-              <Button type="submit" variant="contained" color="primary" onClick={handleBack} >Back</Button>
-              <Button type="submit" variant="contained" color="primary" onClick={submitData} >Next</Button>
-            </Stack>
-          
         </React.Fragment>
       </Container>
+
     </div>
+
   );
 }
