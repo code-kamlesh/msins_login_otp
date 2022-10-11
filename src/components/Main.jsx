@@ -15,12 +15,9 @@ import ExperienceDetails from '../pages/forms/ExperienceDetailsForm'
 import ExistingBusinessDetails from '../pages/forms/ExistingBusinessDetails'
 import SocioEconimoicDetails from "../pages/forms/SocioEconomicDetails"
 import BusinessCaseBrief from "../pages/forms/BusinessCase"
-// import SocioEconomicInnovatorForm from '../pages/forms/ExistingBusinessInnovatorForm'
+import Dashboard from '../pages/Dashboard'
 // import ExistingBusinessEnterpreneurForm from '../pages/forms/ExistingBusinessEnterpreneurForm'
-import EligibilityTest, {
-  UserIsEligible,
-  UserIsNotEligible,
-} from '../pages/eligible/EligibilityTest'
+import  {UserIsEligible,UserIsNotEligible,} from '../pages/eligible/EligibilityTest'
 
 
 const Main = () => {
@@ -43,7 +40,7 @@ const Main = () => {
               
               <Routes>
                 <Route path='/' element={<Home />} />
-                {/* element={<CandidateType />} */}
+                <Route path='/dashboard' element={<Dashboard />}/>
                 <Route path='/eligibilityTest' element={<CandidateType />} />
                 <Route path='/eligibilityTest/userIsEligible' element={<UserIsEligible />}  />
                 <Route path='/eligibilityTest/userIsNotEligible'  element={<UserIsNotEligible />}  />

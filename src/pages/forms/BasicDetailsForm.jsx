@@ -52,7 +52,7 @@ export default function BasicDetailsForm() {
     "cityName": "", "villageName": "", "addressLine1": "", "addressLine2": "", "state": "Maharashtra", "isActive": "Y", "createdBy": window?.userid, "updatedBy": window?.userid
   })
   useEffect(() => {
-    if (window.jwtTokenResult == "") {
+    if (window.jwtTokenResult !== "") {
       history('/', { replace: true })
     }
     else if (window.loginType === "SignIn") {

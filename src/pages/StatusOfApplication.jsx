@@ -1,7 +1,9 @@
 import React,{useState,useEffect} from "react"; 
 import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
 import '../assets/css/status.css'
+import Container from '@mui/material/Container'
 import { Button } from "@mui/material";
 import {fetchAllStudentDataByEngagementId} from './../utility/Api'
 export default function Status() {
@@ -25,6 +27,9 @@ export default function Status() {
     })
   }
 
+  const submitData = (event)=>{
+    history('/' ,{replace:true})
+  }
   const editForm = (event)=>{
     event.preventDefault();
     history('/basicdetails', { replace: true })
@@ -67,16 +72,15 @@ export default function Status() {
             <p>{studentData.status}</p>
           </Box>
           <Box className='table-cell last-cell'>
-           <Button class='btn info' onClick={(e)=>editForm(e)}>Edit</Button>
+           <Button  class='btn info' 
+           disabled={studentData.status !== "Draft"}
+           onClick={(e)=>editForm(e)}>Edit</Button>
           </Box>
         </Box>
       </Box>
+      <Grid item xs={12} style={{marginLeft:"65px"}} >
+       <Button type="submit" disabled={studentData.status === "Draft"} variant="contained"  onClick={submitData} autoFocus>Submit</Button>
+      </Grid>
     </>
   )
 }
-
-// <span class="btn success">Success</span>
-// <span class="btn info">Info</span>
-// <span class="btn warning">Warning</span>
-// <span class="btn danger">Danger</span>
-// <span class="btn default">Default</span>
