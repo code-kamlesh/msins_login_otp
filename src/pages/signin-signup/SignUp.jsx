@@ -23,6 +23,7 @@ const Register = () => {
   const headerStyle = { margin: 0 }
   const avatarStyle = { backgroundColor: '#62c4e7' }
   const { t } = useTranslation()
+  const [disableMobileNumber, setDisableMobileNumber] = useState(false)
   const history = useNavigate();
   const [otp, setOtp] = useState('');
   const [disableGetOtp, setDisableGetOtp] = useState(false);
@@ -74,6 +75,7 @@ const Register = () => {
       // User couldn't sign in (bad verification code?)
       setDisableVerifyOtp(false)
       console.log(error)
+      alert("Invalid OTP!")
     });
   }
 
@@ -83,6 +85,8 @@ const Register = () => {
     const errors = validateContact("mobile", event?.target?.value)
     setErrors(errors);
     setBasicData(preValue => ({ ...preValue, "primaryContactNumber": event?.target?.value }))
+    setDisableGetOtp(false)
+    setOtp("")
     window.primaryContactNumber = event?.target?.value
   };
 
@@ -91,6 +95,7 @@ const Register = () => {
       alert('incorrect mobile number, please try again');
     }
     else {
+      setDisableMobileNumber(true);
       generateRecaptcha();
       let appVerifire = window.recaptchaVerifier;
       signInWithPhoneNumber(authorization, '+91' + basicData.primaryContactNumber, appVerifire).then(confirmationResult => {
@@ -146,6 +151,9 @@ const Register = () => {
     window.studentType = (e.target.value) // set globally 
     setBasicData(preValue => ({ ...preValue, "studentType": e?.target?.value }))
   }
+  const resetPage = ()=>{
+    window.location.reload();
+  }
   return (
     <Grid>
       <Paper style={paperStyle}>
@@ -170,6 +178,7 @@ const Register = () => {
             fullWidth='fullWidth'
             variant='standard'
             helperText=''
+            disabled={disableMobileNumber}
             autoFocus={false}
             onChange={handleMobileNoInput}
             // inputProps={{ maxLength: 5 }}
@@ -193,7 +202,7 @@ const Register = () => {
           </Box>
 
           <Box>
-            <TextFields
+            <TextField
               label='Pincode'
               placeholder='Enter your pincode'
               required
@@ -231,6 +240,7 @@ const Register = () => {
               fullWidth='fullWidth'
               variant='standard'
               helperText=''
+              value={otp}
               autoFocus={false}
               onChange={handleOtpInput}
               onInput={(e) => {
@@ -277,6 +287,7 @@ const Register = () => {
                 onClick={handleCheckBox}
               />
             </Box>
+            
             <Box style={{ display: 'inline' }}>
               <BasicModal
                 name='Terms & Conditions'
@@ -288,7 +299,7 @@ const Register = () => {
             </Box>
           </Box>
 
-          <Box style={{ display: 'flex' }}>
+          {/* <Box style={{ display: 'flex' }}>
             <Box style={{ display: 'inline' }}>
               <FormControlLabel
                 control={<Checkbox name='tnc2' id="myCheck2" />}
@@ -305,18 +316,23 @@ const Register = () => {
                 modalDescription3='3.'
               />
             </Box>
-          </Box>
+          </Box> */}
+          <Grid container  style={{justifyContent: "end",}}>
+          <Buttons style={{ color:"red" }} text={t('Reset')} onClick={resetPage} />
+          </Grid>
           <Buttons
             sx={{ mt: '30px', mb: '30px' }}
             text={t('verify_otp')}
             variant='contained'
-            disabled={basicData.dob === "" ? true : basicData?.primaryContactNumber.length !== 10 ? true : otp.length !== 6 ? true : basicData?.pincode.length !== 6 ? true : basicData.studentType === '' ? true : (checkBox1 === true) && (checkBox2 === true) ? false : true}
+            disabled={basicData.dob === "" ? true : basicData?.primaryContactNumber.length !== 10 ? true : otp.length !== 6 ? true : basicData?.pincode.length !== 6 ? true : basicData.studentType === '' ? true : (checkBox1 === true)  ? false : true}
             onClick={(e) => submitData(e)}
             fullWidth='fullWidth'
           />
         </form>
       </Paper>
-      <div id="recaptcha"></div>
+      { basicData?.primaryContactNumber?.length === 10 && 
+      <div id="recaptcha"></div>}
+       
     </Grid>
   )
 }

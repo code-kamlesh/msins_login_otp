@@ -8,6 +8,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Buttons from '../../components/shared/Buttons'
 import { useTranslation } from 'react-i18next'
 import { login, fetchStduentDataBaisedOnContactNumberandDob, fetchStduentEngagementDataBaisedOnDBUserId } from '../../utility/Api'
+import { textAlign } from '@mui/system'
 
 // language/Language'
 
@@ -17,6 +18,7 @@ const LoginUser = ({ handleChange }) => {
   const [mobileNo, setMobileNo] = useState('');
   const [otp, setOtp] = useState('');
   const [dob, setDob] = useState("");
+  const [disableMobileNumber, setDisableMobileNumber] = useState(false)
   const [disableGetOtp, setDisableGetOtp] = useState(false);
   const [disableVerifyOtp, setDisableVerifyOtp] = useState(true);
 
@@ -30,8 +32,9 @@ const LoginUser = ({ handleChange }) => {
   const avatarStyle = { backgroundColor: '#62c4e7' }
 
   const handleMobileNoInput = (event) => {
-    // console.log("<=====EVENT VALUE=====>",event?.target?.value);
     setMobileNo(event?.target?.value);
+    // setDisableGetOtp(false)
+    // setOtp("")
   };
 
   const handleDob = (event) => {
@@ -45,6 +48,7 @@ const LoginUser = ({ handleChange }) => {
       alert('incorrect mobile number, please try again');
     }
     else {
+      setDisableMobileNumber(true);
       generateRecaptcha();
       let appVerifire = window.recaptchaVerifier;
       signInWithPhoneNumber(authorization, '+91' + mobileNo, appVerifire).then(confirmationResult => {
@@ -68,7 +72,6 @@ const LoginUser = ({ handleChange }) => {
       confirmationOTP.confirm(otp).then(async (result) => {
         const user = result.user;
         window.userOTPresult = user;
-        // setDisableVerifyOTPButton(true)
         await login().then(async (jsondata) => {
           let dataFromSucessLogin = JSON.parse(jsondata?.data)
           window.jwtTokenResult = dataFromSucessLogin[0]?.token;
@@ -128,7 +131,9 @@ const LoginUser = ({ handleChange }) => {
       }
     }, authorization);
   };
-
+const resetPage = ()=>{
+  window.location.reload();
+}
   return (
     <>
       <Grid>
@@ -152,7 +157,7 @@ const LoginUser = ({ handleChange }) => {
             helperText=''
             autoFocus={false}
             onChange={handleMobileNoInput}
-            // inputProps={{ maxLength: 5 }}
+            disabled={disableMobileNumber}
             onInput={(e) => {
               e.target.value = Math.max(0, parseInt(e.target.value))
                 .toString()
@@ -180,13 +185,13 @@ const LoginUser = ({ handleChange }) => {
           <TextField
             label={t('otp')}
             placeholder={t('otp_placeholder')}
-            // required
             type='number'
             id='mobile'
             name='mobile'
             fullWidth='fullWidth'
             variant='standard'
             helperText=''
+            value={otp}
             autoFocus={false}
             onChange={handleOtpInput}
             // inputProps={{ maxLength: 5 }}
@@ -194,15 +199,17 @@ const LoginUser = ({ handleChange }) => {
               e.target.value = Math.max(0, parseInt(e.target.value))
                 .toString()
                 .slice(0, 6)
-            }}
-          />
+            }}/>
 
-          &nbsp;&nbsp;
+          &nbsp;
+          <Grid container  style={{justifyContent: "end",}}>
+          <Buttons style={{ color:"red" }} text={t('Reset')} onClick={resetPage} />
+          </Grid>
           <Buttons
-            sx={{ mt: '30px', mb: '30px' }}
+            sx={{ mt: '20px', mb: '30px' }}
             text={t('verify_otp')}
             variant='contained'
-            // disabled={disableVerifyOtp}
+
             disabled={dob.length == "" ? true : otp.length < 6 ? true : false}
 
             onClick={verifyOTP}
@@ -216,7 +223,9 @@ const LoginUser = ({ handleChange }) => {
           </Typography>
 
         </Paper>
-        <div id="recaptcha"></div>
+        { mobileNo.length === 10 && 
+        <div id="recaptcha"></div>}
+       
       </Grid>
     </>
   )

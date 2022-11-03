@@ -25,23 +25,27 @@ export default function SocioEconomicInnovatorForm() {
     if (window.jwtTokenResult == "") {
       history('/', { replace: true })
     }
-    else if (window.loginType === "SignIn") {
+    else  {
       getSocioEconomicData();
     }
   }, []);
 
   const getSocioEconomicData = ()=>{
-    fetchSocioDetails(window.dbUserId, window.jwtTokenResult).then((jsondata)=>{
-      console.log(jsondata)
-      if(jsondata.appError === null && jsondata.data !== "[null]" ){
-        let res = JSON.parse(jsondata.data)
-        setScoioEconomicData(preValue => ({ ...preValue, "physicallyChallenged":res[0]?.physicallyChallenged|| "", ["maritalStatus"]: res[0]?.maritalStatus,  ["id"]:res[0].id}))
-        // setScoioEconomicData(preValue => ({ ...preValue, ["aadharNo"]:res[0]?.aadharNo|| "" ,
-      }
-      else{
-        setIsDataPresent(null)
-      }
-    })
+    try{
+      fetchSocioDetails(window.dbUserId, window.jwtTokenResult).then((jsondata)=>{
+        console.log(jsondata)
+        if(jsondata.appError === null && jsondata.data !== "[null]" ){
+          let res = JSON.parse(jsondata.data)
+          setScoioEconomicData(preValue => ({ ...preValue, "physicallyChallenged":res[0]?.physicallyChallenged|| "", ["maritalStatus"]: res[0]?.maritalStatus,  ["id"]:res[0].id}))
+        }
+        else{
+          setIsDataPresent(null)
+        }
+      })
+    }
+    catch(err){
+      alert(err.message)
+    }
   }
   
 const onChangePhysicalChallenged = (event)=>{
@@ -63,7 +67,7 @@ const onChangeMaritalStatus = (event)=>{
       saveSocioDetails(action,scoioEconomicData, window.jwtTokenResult).then((jsondata)=>{
         if(jsondata.appError === null){
           alert("Data Saved Successfully");
-          history('/experiencedetails' ,{replace:true})
+          history('/familydetails' ,{replace:true})
         }
       })
     }catch(err){

@@ -87,7 +87,7 @@ export function UserIsNotEligible() {
                 Please click here to read our{' '}
                 <span style={{ textAlign: 'center', color: 'blue' }}>
                   <Link
-                    to='/eligibilityCriteria'
+                    to='/eligibilityTest/eligibilityCriteria'
                     style={{ textDecoration: 'none' }}
                   >
                     Eligibility Criteria.
@@ -103,12 +103,10 @@ export function UserIsNotEligible() {
 }
 
 //call above function as per logic
-function EligibilityTest() {
+export function EligibilityTest() {
   return (
     <>
       <p>You Are Not Eligible for the Program.</p>
-      {/* <UserIsEligible />
-      <UserIsNotEligible /> */}
     </>
   )
 }

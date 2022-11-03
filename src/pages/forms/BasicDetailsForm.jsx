@@ -35,8 +35,6 @@ export default function BasicDetailsForm() {
   const history = useNavigate();
   const classes = useStyles();
   const [isDataPresent,setIsDataPresent] = useState("");
-  const[update,setUpdate] = useState("")
-  // const[advertisment,setAdvertisment] = useState("")
   const [selectVillageNameOptions, setSelectVillageNameOptions] = useState([]);
   const [selectCityNameOptions, setSelectCityNameOptions] = useState([])
   const [selectDistrictNameOptions, setSelectDistrictNameOptions] = useState([])
@@ -52,10 +50,11 @@ export default function BasicDetailsForm() {
     "cityName": "", "villageName": "", "addressLine1": "", "addressLine2": "", "state": "Maharashtra", "isActive": "Y", "createdBy": window?.userid, "updatedBy": window?.userid
   })
   useEffect(() => {
-    if (window.jwtTokenResult !== "") {
+    if (window.jwtTokenResult === ""){
       history('/', { replace: true })
     }
-    else if (window.loginType === "SignIn") {
+    else
+     if (window.loginType === "SignIn") {
       getStudentData();
       getAddressData();
     }
@@ -70,6 +69,7 @@ export default function BasicDetailsForm() {
   const getStudentData = async () => {
     await fetchStduentDataBaisedOndbUserId(window.dbUserId, window.jwtTokenResult).then(async (jsondata) => {
       let res = JSON.parse(jsondata.data)
+      console.log("data>>>",res)
       setStduentBasicData(preValue => ({ ...preValue, ["aadharNo"]:res[0]?.aadharNo|| "" , ["bplStatus"]:res[0]?.bplStatus||"",
       ["dob"]:res[0]?.dob, ["firstName"]:res[0].firstName||"",["lastName"]:res[0].lastName||"",["middleName"]:res[0]?.middleName ||"",
         ["passingYear"]:res[0].passingYear,["primaryContactNumber"]:res[0]?.primaryContactNumber||"", ["primaryEmailId"] :res[0]?.primaryEmailId|| "",
@@ -113,15 +113,21 @@ export default function BasicDetailsForm() {
   }
   const handleMiddleName = (event) => {
     if (event?.target?.value || event?.target?.value.length === 0) {
-      const errors = validateTextInput("middleName", event?.target?.value, "lng")
-      setErrors(errors)
+      if(stduentBasicData?.lastName === ""){
+        const errors = validateTextInput("middleName", event?.target?.value, "lng")
+        setErrors(errors)
+        setErrors(preValue=>({...preValue, "lastName": ""}))
+      }
       setStduentBasicData(preValue => ({ ...preValue, ["middleName"]: event?.target?.value }))
     }
   }
   const handleLastName = (event) => {
     if (event?.target?.value || event?.target?.value.length === 0) {
-      const errors = validateTextInput("lastName", event?.target?.value, "lng")
-      setErrors(errors)
+      if(stduentBasicData?.middleName === ""){
+        const errors = validateTextInput("lastName", event?.target?.value, "lng")
+        setErrors(errors)
+        setErrors(preValue=>({...preValue, "middleName": ""}))
+      }
       setStduentBasicData(preValue => ({ ...preValue, ["lastName"]: event?.target?.value }))
     }
   }
@@ -408,7 +414,7 @@ export default function BasicDetailsForm() {
                 />
                 {errors?.aadharNumber ? (<div style={{ color: "red" }}>{errors.aadharNumber}</div>) : null}
               </Grid>
-              <Grid item xs={12} sm={6} md={6}>
+              <Grid item xs={12} sm={6} md={4}>
                 <DateOfBirthBox variant="standard"
                 label={"Date of Birth"}
                   disabled={true}
@@ -418,17 +424,39 @@ export default function BasicDetailsForm() {
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
                 <TextFields
+                  disabled={true}
+                  id="primaryContact"
+                  name="primaryContact"
+                  type="number"
+                  label="Primary Contact No."
+                  fullWidth="fullWidth"
+                  value={stduentBasicData?.primaryContactNumber || ""}
+                  variant="standard"
+                  onChange={(e) => handlePrimaryContact(e)}
+                  onInput={(e) => {
+                    e.target.value = Math.max(0, parseInt(e.target.value))
+                      .toString()
+                      .slice(0, 10);
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+              <TextFields
                   id="firstName"
                   name="firstName"
                   label="First name"
-                  autoComplete="first-name"
+                  fullWidth
                   variant="standard"
                   value={stduentBasicData?.firstName}
                   onChange={(e) => { hanldeFirstName(e) }}
                   inputProps={{ maxLength: 30 }}
                 />
                 {errors?.firstName ? (<div style={{ color: "red" }}>{errors.firstName}</div>) : null}
+
               </Grid>
+              {/* <Grid item xs={12} sm={6} md={4}>
+                
+              </Grid> */}
 
               <Grid item xs={12} sm={6} md={4}>
                 <TextFields
@@ -499,7 +527,7 @@ export default function BasicDetailsForm() {
                   {stduentBasicData?.highestQualification ==="ITI" &&
                      <Grid item xs={12} sm={6} md={4}>
                      <SelectOption
-                     disabled={true}
+                      disabled={true}
                        id="itiTrade"
                        label="Domain"
                        name="Iti Trade"
@@ -559,26 +587,7 @@ export default function BasicDetailsForm() {
                 />
                 {errors?.bloodGroup ? (<div style={{ color: "red" }}>{errors.bloodGroup}</div>) : null}
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <TextFields
-                  disabled={true}
-                  id="primaryContact"
-                  name="primaryContact"
-                  type="number"
-                  label="Primary Contact No."
-                  fullWidth="fullWidth"
-                  autoComplete="contact no."
-                  value={stduentBasicData?.primaryContactNumber || ""}
-                  variant="standard"
-                  onChange={(e) => handlePrimaryContact(e)}
-                  onInput={(e) => {
-                    e.target.value = Math.max(0, parseInt(e.target.value))
-                      .toString()
-                      .slice(0, 10);
-                  }}
-                />
-                {errors?.primaryContact ? (<div style={{ color: "red" }}>{errors.primaryContact}</div>) : null}
-              </Grid>
+              
               <Grid item xs={12} sm={6} md={4}>
                 <TextFields
                   id="primaryEmailId"
@@ -590,22 +599,26 @@ export default function BasicDetailsForm() {
                   value={stduentBasicData?.primaryEmailId || ""}
                   variant="standard"
                   onChange={(e) => handleprimaryEmail(e)}
+                  inputProps={{ maxLength: 50 }}
                 />
                 {errors?.primaryEmailId ? (<div style={{ color: "red" }}>{errors.primaryEmailId}</div>) : null}
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextFields
                   id="address1"
                   name="address1"
                   label="Address line 1"
                   fullWidth
                   variant="standard"
+                  multiline
+                  maxRows={2}
                   value={basicAddressData?.addressLine1 || ""}
                   onChange={(e) => handleAddres1(e)}
+                  inputProps={{ maxLength: 100 }}
                 />
                 {errors?.address1 ? (<div style={{ color: "red" }}>{errors.address1}</div>) : null}
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextFields
                   id="address2"
                   name="address2"
@@ -613,7 +626,10 @@ export default function BasicDetailsForm() {
                   fullWidth
                   value={basicAddressData?.addressLine2 || ""}
                   variant="standard"
+                  multiline
+                  maxRows={2}
                   onChange={(e) => hanldeAddress2(e)}
+                  inputProps={{ maxLength: 100 }}
                 />
                 {errors?.address2 ? (<div style={{ color: "red" }}>{errors.address2}</div>) : null}
               </Grid>
@@ -691,7 +707,7 @@ export default function BasicDetailsForm() {
             <Grid container direction="row" justify="flex-end" alignItems="flex-end">
            {/* stduentBasicData?.advertisment?.length === 0 */}
               <Button
-               disabled={stduentBasicData?.aadharNo?.length<12 ? true:stduentBasicData?.firstName!=="" && stduentBasicData?.middleName!=="" && stduentBasicData?.lastName!==""&& stduentBasicData?.primaryEmailId !== ""&& basicAddressData?.addressLine1!== "" && basicAddressData?.pincode?.length >5 ? false:true  } 
+               disabled={stduentBasicData?.aadharNo?.length<12 ? true:stduentBasicData?.firstName!=="" && (stduentBasicData?.middleName!=="" || stduentBasicData?.lastName!=="")&& stduentBasicData?.primaryEmailId !== ""&& basicAddressData?.addressLine1!== "" && basicAddressData?.pincode?.length >5 ? false:true  } 
               type="submit" variant="contained" color="primary" >Next</Button>
             </Grid>
           </form>

@@ -59,7 +59,7 @@ export default function BusinessCaseInnovator() {
     const fetchExistingData = () => {
         fetchSavedQuestionAnswer(window.dbUserId, window.refreshJwtToken).then((jsondata) => {
             let res = jsondata
-           
+            setAnswerFromDb(res)
             for (var i = 0; i < res.length; i++) {
                 if (res[i]?.questionId === "24") {
                     questionAnswer1.answer = res[i]?.answer
@@ -133,9 +133,11 @@ export default function BusinessCaseInnovator() {
     // show saved answer
     const getBusinessCaseAnswer = (id) => {
         let ans = answerFromDb;
+        const totalCharacters = 1000;
         for (var i = 0; i < ans.length; i++) {
             var singalAnswer = ans[i];
             if (singalAnswer?.questionId == id) {
+                // document.getElementById("leftCharacters" +singalAnswer?.questionId ).innerHTML = "Number of characters left " + (totalCharacters - singalAnswer?.answer?.length)
                 return singalAnswer.answer
             }
         }
@@ -314,6 +316,7 @@ export default function BusinessCaseInnovator() {
             isDataPresent === null ? action = "captureAddress" : action = "updateAddress"
             await submitAddressData(action, businessAddressDetails, window.jwtTokenResult).then((jsondata) => {
                 if (jsondata.appError == null) {
+                    
                     history('/uploadDocuments', { replace: true })
                 } else {
                     console.log("error");

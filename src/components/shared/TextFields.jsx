@@ -21,11 +21,14 @@ export default function TextFields({
   inputProps,
   onInput,
   error,
-  value
+  value,
+  rows,
+  maxRows
 }) {
   return (
     <>
       <TextField
+        multiline
         margin={margin}
         fullWidth={fullWidth}
         id={id}
@@ -45,6 +48,8 @@ export default function TextFields({
         helperText={helperText}
         onInput={onInput}
         error={error}
+        minRows={rows}
+        maxRows={maxRows}
       >{}</TextField>
     </>
   )

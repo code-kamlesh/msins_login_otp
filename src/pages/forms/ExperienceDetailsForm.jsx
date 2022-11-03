@@ -26,9 +26,8 @@ export default function ExperienceDetails() {
     if (window.jwtTokenResult === "") {
       history('/', { replace: true })
     }
-    else if (window.loginType === "SignIn") {
+    else
       getExistingData();
-    }
   }, []);
 
   const getExistingData = ()=>{
@@ -121,7 +120,7 @@ export default function ExperienceDetails() {
   }
  
   const handleBack = ()=>{
-    history('/socioeconomicdetails' ,{replace:true})
+    history('/familydetails' ,{replace:true})
   }
 
   // setting radio button for experience details
@@ -280,7 +279,11 @@ export default function ExperienceDetails() {
             variant="standard"
             placeholder="Enter your salary details(Annual)"
             value={experienceData?.grossSalary}
-            inputProps={{ maxLength: 8 }}
+            onInput={(e) => {
+              e.target.value = Math.max(0, parseInt(e.target.value))
+                .toString()
+                .slice(0, 8);
+            }}
             onChange={(e)=>handleSalary(e)}
           />
           {errors?.grossSalary ? (<div style={{ color: "red" }}>{errors.grossSalary}</div>) : null}

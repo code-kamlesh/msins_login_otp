@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import '../assets/css/status.css'
-import Container from '@mui/material/Container'
 import { Button } from "@mui/material";
 import {fetchAllStudentDataByEngagementId} from './../utility/Api'
+import { Logout } from "@mui/icons-material";
+
 export default function Status() {
   const history = useNavigate();
   const[ studentData, setStudentData] = useState([])
@@ -34,8 +35,14 @@ export default function Status() {
     event.preventDefault();
     history('/basicdetails', { replace: true })
   }
+  const logout = ()=>{
+    history('/', { replace: true })
+  }
   return (
     <>
+          <Grid container  style={{justifyContent: "end", mr:"20px", mt:"20px"}}>
+          <Button  variant='contained' onClick={ ()=>logout()}>Exit</Button>
+          </Grid>
       <h2 style={{ textAlign: 'center', marginTop: '50px', color: '#8665f7' }}>
         Status of your Application
       </h2>

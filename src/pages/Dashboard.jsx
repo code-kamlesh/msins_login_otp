@@ -6,7 +6,9 @@ import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import List from "@material-ui/core/List";
+import { useNavigate } from 'react-router-dom'
 import CssBaseline from "@material-ui/core/CssBaseline";
+import { Routes, Route } from 'react-router-dom'
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
@@ -21,6 +23,11 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import BasicDetailsForm from '../pages/forms/BasicDetailsForm'
 import Header from './../components/Header'
+import ExperienceDetails from '../pages/forms/ExperienceDetailsForm'
+import ExistingBusinessDetails from '../pages/forms/ExistingBusinessDetails'
+import SocioEconimoicDetails from "../pages/forms/SocioEconomicDetails"
+import BusinessCaseBrief from "../pages/forms/BusinessCase"
+import UploadDocuments from './../components/upload-documents/UploadDocuments'
 const drawerWidth = 220;
 
 const styles = theme => ({
@@ -32,7 +39,7 @@ const styles = theme => ({
   },
   appBarShift: {
     marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
+    // width: `calc(100% - ${drawerWidth}px)`,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen
@@ -100,9 +107,10 @@ const styles = theme => ({
 });
 
 class MiniDrawer extends React.Component {
-  state = {
+  state = {     
     open: false,
-    anchorEl: null
+    anchorEl: null,
+    component: "Basic Details",
   };
 
   handleDrawerOpen = () => {
@@ -119,16 +127,20 @@ class MiniDrawer extends React.Component {
   handleClose = () => {
     this.setState({ anchorEl: null });
   };
-
+    hanldeData=(text)=>{
+        // alert("heloo")
+        console.log(text)
+        this.setState({component:text})
+    }
   render() {
     const { classes, theme } = this.props;
     const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
     return (
       <div className={classes.root}>
-        {/* <CssBaseline /> */}
+        <CssBaseline />
         <AppBar
-        //   position="fixed"
+          position="fixed"
           className={classes.appBar}
           fooJon={classNames(classes.appBar, {
             [classes.appBarShift]: this.state.open
@@ -169,48 +181,29 @@ class MiniDrawer extends React.Component {
         >
           <div className={classes.toolbar} />
           <List>
-            {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>
+            {["Basic Details", "Basic Details","Socio Economic", "Experience", "Existing Business","Upload Document"].map((text, index) => (
+              <ListItem button key={text}  onClick={(e)=>{this.hanldeData(text)}}>
+                {/* <ListItemIcon>
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
+                </ListItemIcon> */}
                 <ListItemText primary={text} />
               </ListItem>
             ))}
           </List>
-          <Divider />
-          {/* <List>
-            {["All mail", "Trash", "Spam"].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List> */}
+
         </Drawer>
         <main className={classes.content}>
         <div className={classes.toolbar} />
-
-                <></>
-                <BasicDetailsForm/>
-          {/* <Typography paragraph>
-            Consequat mauris nunc congue nisi vitae suscipit. Fringilla est
-            ullamcorper eget nulla facilisi etiam dignissim diam. Pulvinar
-            elementum integer enim neque volutpat ac tincidunt. Ornare
-            suspendisse sed nisi lacus sed viverra tellus. Purus sit amet
-            volutpat consequat mauris. Elementum eu facilisis sed odio morbi.
-            Euismod lacinia at quis risus sed vulputate odio. Morbi tincidunt
-            ornare massa eget egestas purus viverra accumsan in. In hendrerit
-            gravida rutrum quisque non tellus orci ac. Pellentesque nec nam
-            aliquam sem et tortor. Habitant morbi tristique senectus et.
-            Adipiscing elit duis tristique sollicitudin nibh sit. Ornare aenean
-            euismod elementum nisi quis eleifend. Commodo viverra maecenas
-            accumsan lacus vel facilisis. Nulla posuere sollicitudin aliquam
-            ultrices sagittis orci a.
-          </Typography> */}
-          <Typography paragraph>foo</Typography>
+             {this.state.component === "Basic Details" && 
+            <BasicDetailsForm/>}
+            {this.state.component === "Socio Economic" && 
+            <ExperienceDetails/>}
+            {this.state.component === "Experience" && 
+            <BasicDetailsForm/>}
+            {this.state.component === "Existing Business" && 
+            <ExperienceDetails/>}
+            {this.state.component === "Upload Document" && 
+            <BasicDetailsForm/>}
         </main>
       </div>
     );

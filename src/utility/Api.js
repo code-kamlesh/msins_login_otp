@@ -356,7 +356,6 @@ export async function saveMsinsBusinessData(data,token) {
 }
 
 // fetchinh saved answer
-// fetching parent sme field visit data
 export async function fetchSavedQuestionAnswer(dbUserId,token) {
     if(isSessionValid()){
     if(!isTokenValid()) 
@@ -419,6 +418,42 @@ export async function changeStudentStatus(data,token) {
     {
         console.log(e);
     }
+}
+return null;
+}
+
+// fetching family details
+export async function fetchFamilyDetails(id,token)
+{
+    if(isSessionValid()){
+    let formData = new FormData();
+          formData.append('data','{"token" : "'+ "1234" +'", "action" : "'+  "viewAllFamilyDetailsForUser" +'", "data" : [{"dbUserId" : ' + id + '}]}');
+          if(!isTokenValid()) 
+        await regenerateToken();
+          return fetch(serviceEndPoint.familyServiceEndPoint, {
+          method: "POST",
+          headers: {
+            'Authorization': 'Bearer '+token
+        }, 
+          body: formData 
+          }).then(response => response.json())
+}
+return null;
+}
+// Saving family details
+export async function saveFamilyDetails(action, data,token)
+{if(isSessionValid()){
+    let formData = new FormData();
+    formData.append('data','{"token" : "'+ "1234" +'", "action" : "'+  action +'", "data" : [' + JSON.stringify(data) + ']}');
+    if(!isTokenValid()) 
+        await regenerateToken();
+        return fetch(serviceEndPoint.familyServiceEndPoint, {
+        method: "POST",
+        headers: {
+          'Authorization': 'Bearer '+token
+      }, 
+        body: formData 
+        }).then(response => response.json())
 }
 return null;
 }

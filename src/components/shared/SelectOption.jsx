@@ -8,6 +8,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { SingleSelect } from "react-select-material-ui";
 
 export default function SelectOption({
+  key,
   name,
   label,
   options,
@@ -23,6 +24,7 @@ export default function SelectOption({
   return (
     <Box>
         <SingleSelect 
+        key={key}
           label={label}
           disabled={disabled}
           name={name}

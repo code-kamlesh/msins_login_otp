@@ -114,10 +114,9 @@ const hanldeUnitOfNumber = (event)=>{
     isDataPresent === null ? action = "captureSocioEconomic" : action = "updateSocioEconomic" 
     try{
       saveSocioDetails(action,scoioEconomicData,window.jwtTokenResult).then((jsondata)=>{
-        
         if(jsondata.appError === null){
           alert("Data Saved Successfully");
-          history('/experiencedetails' ,{replace:true})
+          history('/familydetails' ,{replace:true})
         }
       })
     }catch(err){
