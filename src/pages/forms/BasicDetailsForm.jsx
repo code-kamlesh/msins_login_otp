@@ -29,7 +29,7 @@ const selectReligionOptions = ["Hindu", "Muslim", "Sikh", "Others"];
 const selectCategoryOptions = ["General", "O.B.C", "S.C", "Others"];
 const selectIncomeStatusOptions = ["BPL", "APL", "Antyodaya"];
 const selectBloodGroupOptions = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-", "Other"];
-const selectGenderOptions = ["Male", "Female", "Other"];
+const selectGenderOptions = ["Male", "Female", "Transgender","Lesbian","Gay","Bisexual","Prefer not to Say"];
 
 export default function BasicDetailsForm() {
   const history = useNavigate();
@@ -43,7 +43,7 @@ export default function BasicDetailsForm() {
 
   const [stduentBasicData, setStduentBasicData] = useState({
     "dbUserId": window.dbUserId, "aadharNo": "", "dob": "", "firstName": "", "lastName": "", "middleName": "", "advertisment": "", "gender": "", "highestQualification": "", "religion": "", "category": "", "bplStatus": "", "bloodGroup": "",
-    "mobilizationChannel":"","passingYear":"", "primaryContactNumber": "", "primaryEmailId": "", "secondaryContactNo": "", "createdBy": window?.userid, "updatedBy": window?.userid});
+    "itiTrade":"","mobilizationChannel":"","passingYear":"", "primaryContactNumber": "", "primaryEmailId": "", "secondaryContactNo": "", "createdBy": window?.userid, "updatedBy": window?.userid});
     // "id": "",
   const [basicAddressData, setBasicAddressData] = useState({
     "entityId": "", "entityType": "S", "pincode": "", "district": "",
@@ -69,7 +69,6 @@ export default function BasicDetailsForm() {
   const getStudentData = async () => {
     await fetchStduentDataBaisedOndbUserId(window.dbUserId, window.jwtTokenResult).then(async (jsondata) => {
       let res = JSON.parse(jsondata.data)
-      console.log("data>>>",res)
       setStduentBasicData(preValue => ({ ...preValue, ["aadharNo"]:res[0]?.aadharNo|| "" , ["bplStatus"]:res[0]?.bplStatus||"",
       ["dob"]:res[0]?.dob, ["firstName"]:res[0].firstName||"",["lastName"]:res[0].lastName||"",["middleName"]:res[0]?.middleName ||"",
         ["passingYear"]:res[0].passingYear,["primaryContactNumber"]:res[0]?.primaryContactNumber||"", ["primaryEmailId"] :res[0]?.primaryEmailId|| "",
@@ -101,6 +100,7 @@ export default function BasicDetailsForm() {
     if (event?.target?.value || event?.target?.value?.length === 0) {
       const errors = validateAadharNumber(event?.target?.value, "lng")
       setErrors(errors)
+      setErrors(preValue=>({...preValue,errors, "lastName":"", "middleName":"" })) // setting both error blank
       setStduentBasicData(preValue => ({ ...preValue, ["aadharNo"]: event?.target?.value }))
     }
   }
@@ -108,10 +108,12 @@ export default function BasicDetailsForm() {
     if (event?.target?.value || event?.target?.value.length === 0) {
       const errors = validateTextInput("firstName", event?.target?.value, "lng")
       setErrors(errors)
+      setErrors(preValue=>({...preValue,errors, "lastName":"" , "middleName":"" }))
       setStduentBasicData(preValue => ({ ...preValue, ["firstName"]: event?.target?.value }))
     }
   }
   const handleMiddleName = (event) => {
+   
     if (event?.target?.value || event?.target?.value.length === 0) {
       if(stduentBasicData?.lastName === ""){
         const errors = validateTextInput("middleName", event?.target?.value, "lng")
@@ -122,6 +124,7 @@ export default function BasicDetailsForm() {
     }
   }
   const handleLastName = (event) => {
+    setErrors(preValue=>({...preValue, "lastName": "",}))
     if (event?.target?.value || event?.target?.value.length === 0) {
       if(stduentBasicData?.middleName === ""){
         const errors = validateTextInput("lastName", event?.target?.value, "lng")
@@ -134,28 +137,30 @@ export default function BasicDetailsForm() {
   const handleDob = (event) => {
     if (event?.target?.value || event?.length === 0) {
       const errors = validateSelectInput("dob", event?.target?.value)
-      setErrors(errors);
+      // setErrors(errors);
+      setErrors(preValue=>({...preValue, errors}))
       setStduentBasicData(preValue => ({ ...preValue, ["dob"]: event?.target?.value }))
     }
   }
   const hanldeGender = (event) => {
     if (event || event?.length === 0) {
       const errors = validateSelectInput("gender", event?.target?.value)
-      setErrors(errors);
+      setErrors(preValue=>({...preValue, errors}))
       setStduentBasicData(preValue => ({ ...preValue, ["gender"]: event }))
     }
+    console.log("eror>>>",errors)
    }
   const handleAdvertisment = (event) => {
       if (event || event?.length === 0) {
       const errors = validateSelectInput("advertisment", event)
-      setErrors(errors);
+      setErrors(preValue=>({...preValue, errors}))
       setStduentBasicData(preValue => ({ ...preValue, ["mobilizationChannel"]: event }))
     }
   }
   const hanldeQualification = (event) => {
     if (event || event?.length === 0) {
       const errors = validateSelectInput("highestQualification", event)
-      setErrors(errors);
+      setErrors(preValue=>({...preValue, errors}))
       setStduentBasicData(preValue => ({ ...preValue, ["highestQualification"]: event }))
     }
   }
@@ -163,7 +168,7 @@ export default function BasicDetailsForm() {
   const hanldeReligion = (event) => {
     if (event || event?.length === 0) {
       const errors = validateSelectInput("religion", event)
-      setErrors(errors);
+      setErrors(preValue=>({...preValue, errors}))
       setStduentBasicData(preValue => ({ ...preValue, ["religion"]: event }))
     }
 
@@ -172,28 +177,28 @@ export default function BasicDetailsForm() {
   const hanldeCategory = (event) => {
     if (event || event?.length === 0) {
       const errors = validateSelectInput("category", event)
-      setErrors(errors);
+      setErrors(preValue=>({...preValue, errors}))
       setStduentBasicData(preValue => ({ ...preValue, ["category"]: event }))
     }
   }
   const handleIncomeStatus = (event) => {
     if (event || event?.length === 0) {
       const errors = validateSelectInput("incomeStatus", event)
-      setErrors(errors);
+      setErrors(preValue=>({...preValue, errors}))
       setStduentBasicData(preValue => ({ ...preValue, ["bplStatus"]: event }))
     }
   }
   const hanldeBloodGroup = (event) => {
     if (event || event?.length === 0) {
       const errors = validateSelectInput("bloodGroup", event)
-      setErrors(errors);
+      setErrors(preValue=>({...preValue, errors}))
       setStduentBasicData(preValue => ({ ...preValue, ["bloodGroup"]: event }))
     }
   }
   const handlePrimaryContact = (event) => {
     if (event?.target?.value || event?.target?.value?.length === 0) {
       const errors = validateContact(event?.target?.name, event?.target?.value)
-      setErrors(errors)
+      setErrors(preValue=>({...preValue, errors}))
       setStduentBasicData(preValue => ({ ...preValue, ["primaryContactNumber"]: event?.target?.value }))
     }
   }
@@ -201,14 +206,14 @@ export default function BasicDetailsForm() {
   const handleprimaryEmail = (event) => {
     if (event?.target?.value || event?.target?.value?.length === 0) {
       const errors = validateEmail(event?.target?.name, event?.target?.value)
-      setErrors(errors)
+      setErrors(preValue=>({...preValue, errors}))
       setStduentBasicData(preValue => ({ ...preValue, ["primaryEmailId"]: event?.target?.value }))
     }
   }
   const hanldePinCode = (event) => {
     if (event || event?.target?.length === 0) {
       const errors = validatePincode("pincode",event?.target?.value, "lng");
-      setErrors(errors)
+      setErrors(preValue=>({...preValue, errors}))
       setBasicAddressData(preValue => ({ ...preValue, ["pincode"]: event?.target?.value }))
     }
     if (event?.target?.value.length < 6) {
@@ -245,21 +250,21 @@ export default function BasicDetailsForm() {
   const handleDistric = (event) => {
     if (event || event?.length === 0) {
       const errors = validateSelectInput("district", event)
-      setErrors(errors);
+      setErrors(preValue=>({...preValue, errors}))
       setBasicAddressData(preValue => ({ ...preValue, ["district"]: event }))
     }
   }
   const handleCityName = (event) => {
     if (event || event?.length === 0) {
       const errors = validateSelectInput("cityName", event)
-      setErrors(errors);
+      setErrors(preValue=>({...preValue, errors}))
       setBasicAddressData(preValue => ({ ...preValue, ["cityName"]: event }))
     }
   }
   const handleVillegeName = (event) => {
     if (event || event?.length === 0) {
       const errors = validateSelectInput("villageName", event)
-      setErrors(errors);
+      setErrors(preValue=>({...preValue, errors}))
       setBasicAddressData(preValue => ({ ...preValue, ["villageName"]: event }))
     }
 
@@ -267,7 +272,7 @@ export default function BasicDetailsForm() {
   const handleAddres1 = (event) => {
     if (event?.target?.value || event?.target?.value.length === 0) {
       const errors = validateTextInput1(event?.target?.name, event?.target?.value, "lng")
-      setErrors(errors);
+      setErrors(preValue=>({...preValue, errors}))
       setBasicAddressData(preValue => ({ ...preValue, ["addressLine1"]: event?.target?.value }))
     }
   }
@@ -275,6 +280,10 @@ export default function BasicDetailsForm() {
     if (event?.target?.value || event?.target?.value.length === 0) {
       setBasicAddressData(preValue => ({ ...preValue, ["addressLine2"]: event?.target?.value }))
     }
+  }
+  // HandleDomain
+  const handleDomain =(event)=>{
+    setStduentBasicData(preValue => ({ ...preValue, ["itiTrade"]: event }))
   }
   const ValidateForm =  (errors) => {
     Validate("mobilizationChannel", stduentBasicData?.mobilizationChannel)
@@ -346,14 +355,6 @@ export default function BasicDetailsForm() {
             let student_db_Id = jsonObject[0].dbUserId // student db id
             // ()=>{setAddress(addressValue)}
              submitAddress(student_db_Id);
-            // capturing engagement details
-            // if (window.loginType === "SignUp") {
-            //   captureStudentEngagementDetails(student_db_Id, 20, window.userId, window.studentType, window.jwtTokenResult).then((jsondata) => {
-            //     let json = JSON.parse(jsondata.data);
-            //     let eng_id = json[0].engagementId //setting engagementid 
-            //     window.engagementId = eng_id
-            //   })
-            // }
           }
         })
       }
@@ -454,10 +455,6 @@ export default function BasicDetailsForm() {
                 {errors?.firstName ? (<div style={{ color: "red" }}>{errors.firstName}</div>) : null}
 
               </Grid>
-              {/* <Grid item xs={12} sm={6} md={4}>
-                
-              </Grid> */}
-
               <Grid item xs={12} sm={6} md={4}>
                 <TextFields
                   id="middleName"
@@ -482,6 +479,7 @@ export default function BasicDetailsForm() {
                   autoComplete="family-name"
                   variant="standard"
                   onChange={(e) => handleLastName(e)}
+                  inputProps={{ maxLength: 30 }}
                 />
                 {errors?.lastName ? (<div style={{ color: "red" }}>{errors.lastName}</div>) : null}
               </Grid>
@@ -527,11 +525,11 @@ export default function BasicDetailsForm() {
                   {stduentBasicData?.highestQualification ==="ITI" &&
                      <Grid item xs={12} sm={6} md={4}>
                      <SelectOption
-                      disabled={true}
                        id="itiTrade"
                        label="Domain"
                        name="Iti Trade"
                        options={tradeList}
+                       onChange={(e)=>handleDomain(e)}
                        value={stduentBasicData?.itiTrade || ""}
                        variant="standard"
                      />
@@ -610,8 +608,6 @@ export default function BasicDetailsForm() {
                   label="Address line 1"
                   fullWidth
                   variant="standard"
-                  multiline
-                  maxRows={2}
                   value={basicAddressData?.addressLine1 || ""}
                   onChange={(e) => handleAddres1(e)}
                   inputProps={{ maxLength: 100 }}
@@ -626,8 +622,6 @@ export default function BasicDetailsForm() {
                   fullWidth
                   value={basicAddressData?.addressLine2 || ""}
                   variant="standard"
-                  multiline
-                  maxRows={2}
                   onChange={(e) => hanldeAddress2(e)}
                   inputProps={{ maxLength: 100 }}
                 />

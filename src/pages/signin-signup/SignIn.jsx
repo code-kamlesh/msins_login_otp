@@ -8,7 +8,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Buttons from '../../components/shared/Buttons'
 import { useTranslation } from 'react-i18next'
 import { login, fetchStduentDataBaisedOnContactNumberandDob, fetchStduentEngagementDataBaisedOnDBUserId } from '../../utility/Api'
-import { textAlign } from '@mui/system'
+import { validatePincode } from "./../../utility/Validation"
 
 // language/Language'
 
@@ -18,6 +18,7 @@ const LoginUser = ({ handleChange }) => {
   const [mobileNo, setMobileNo] = useState('');
   const [otp, setOtp] = useState('');
   const [dob, setDob] = useState("");
+  const [errors, setErrors] = useState({})
   const [disableMobileNumber, setDisableMobileNumber] = useState(false)
   const [disableGetOtp, setDisableGetOtp] = useState(false);
   const [disableVerifyOtp, setDisableVerifyOtp] = useState(true);
@@ -119,6 +120,9 @@ const LoginUser = ({ handleChange }) => {
   }
 
   const handleOtpInput = (event) => {
+    // setOtp(event?.target?.value);
+    const error = validatePincode("otp", event?.target?.value, "lng");
+    setErrors(error)
     setOtp(event?.target?.value);
   };
 
@@ -155,7 +159,6 @@ const resetPage = ()=>{
             fullWidth='fullWidth'
             variant='standard'
             helperText=''
-            autoFocus={false}
             onChange={handleMobileNoInput}
             disabled={disableMobileNumber}
             onInput={(e) => {
@@ -185,22 +188,16 @@ const resetPage = ()=>{
           <TextField
             label={t('otp')}
             placeholder={t('otp_placeholder')}
-            type='number'
-            id='mobile'
-            name='mobile'
+            id='otp'
+            name='otp'
             fullWidth='fullWidth'
             variant='standard'
             helperText=''
             value={otp}
-            autoFocus={false}
+            inputProps={{ inputMode: 'numeric' , maxLength:6}}
             onChange={handleOtpInput}
-            // inputProps={{ maxLength: 5 }}
-            onInput={(e) => {
-              e.target.value = Math.max(0, parseInt(e.target.value))
-                .toString()
-                .slice(0, 6)
-            }}/>
-
+            />
+           {errors?.otp ? (<div style={{ color: "red" }}>{errors?.otp}</div>) : null}
           &nbsp;
           <Grid container  style={{justifyContent: "end",}}>
           <Buttons style={{ color:"red" }} text={t('Reset')} onClick={resetPage} />
@@ -209,9 +206,7 @@ const resetPage = ()=>{
             sx={{ mt: '20px', mb: '30px' }}
             text={t('verify_otp')}
             variant='contained'
-
-            disabled={dob.length == "" ? true : otp.length < 6 ? true : false}
-
+            disabled={dob.length == "" ? true : (otp.length < 6) ? true : false}
             onClick={verifyOTP}
             fullWidth='fullWidth'
           />

@@ -61,6 +61,7 @@ export default function UploadDocuments() {
     {id:"Business Document", value: "DIPP Proof", name: "DIPP Proof" },
     {id:"Business Document", value: "Gst Registration", name: "Gst Registration" },
     {id:"Business Document", value: "Udyog aadhar", name: "Udyog aadhar" },
+    {id:"Business Document", value: "Business Document", name: "Business Document" },
   ];
   const handleFileChange =(event)=>{
     setFile(event)
@@ -125,7 +126,8 @@ export default function UploadDocuments() {
     setDocumentName(event?.target?.value)
   }
   const downloadDocuments =(basicDocId)=>{
-    let formData = new FormData();
+    try{
+      let formData = new FormData();
   formData.append('data', '{"token" : "", "action" : "downloadDocument", "data" : [{"basicDocId":'+basicDocId+'}]}');
   fetch(serviceEndPoint.documentServiceEndPoint, {
       method: 'post',
@@ -140,7 +142,10 @@ export default function UploadDocuments() {
 
     window.open(url, "_blank");
   });
-   
+    }
+    catch(err){
+      alert(err.message)
+    }
   }
   const deleteDocument =async (basicDocId)=>{
     await deleteDocumentById(basicDocId,window.refreshJwtToken).then((jsondata) => {
@@ -158,19 +163,23 @@ const finalSubmission = (event)=>{
 }
 const saveddocument = ()=>{
   setOpen(false);
-  if(checkedAlldocument()){
-    let statusChangeData = '"engagementId":' + window.engagementId + ',"status":"Mobilised", "updatedBy":' + window.userid + '';
-    changeStudentStatus(statusChangeData,window.jwtTokenResult).then((jsondata) => {
-      let resultStatus = jsondata.status
-      if (resultStatus === "success") {
-        alert("Successfully Mobilized")
-        history('/status' ,{replace:true})
-      }
-      })
-   
+  try{
+    if(checkedAlldocument()){
+      let statusChangeData = '"engagementId":' + window.engagementId + ',"status":"Mobilised", "updatedBy":' + window.userid + '';
+      changeStudentStatus(statusChangeData,window.jwtTokenResult).then((jsondata) => {
+        let resultStatus = jsondata.status
+        if (resultStatus === "success") {
+          alert("Successfully Mobilized")
+          history('/status' ,{replace:true})
+        }
+        })
+    }
+    else{
+      alert("Please upload atleast one document of each type.")
+    }
   }
-  else{
-    alert("Please upload atleast one document of each type.")
+  catch(err){
+    alert(err.message)
   }
 }
 // checking for all type of document are there or not
@@ -179,7 +188,6 @@ const checkedAlldocument =()=>{
   var identityproof = false;
   var educationproof = false;
   var businessproof = false;
-  console.log(DocumentList)
   DocumentList.map((item,id)=>{
    if(item.documentType==="Address Proof" && item.isActive === "Y" ){
     addressproof = true
@@ -338,7 +346,7 @@ const handleClose = () => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description" style={{fontWeight:"bold"}}>
-           After Submitting you are not able to Edit.
+          Hope You Filled All Data. Once Submmited You are Not Able to Edit.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

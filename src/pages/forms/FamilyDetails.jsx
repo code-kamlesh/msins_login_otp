@@ -145,7 +145,6 @@ const fetchExistingData = ()=>{
     try{
       fetchFamilyDetails(window.dbUserId, window.jwtTokenResult).then((jsondata)=>{
         let  familyDetails = JSON.parse(jsondata.data);
-        console.log(familyDetails)
         for(var i=0;i<familyDetails.length;i++){
             var details = {
             'name':  familyDetails[i].name,
@@ -181,7 +180,7 @@ const fetchExistingData = ()=>{
         event.preventDefault();
          let action="captureAllFamilyDetails"
         // CHecking for dbuserId for saving data
-        familydetails?.id == ""  ? action = "captureAllFamilyDetails" : action = "updateAllFamilyDetails"
+        familydetails?.id == ""  || familydetails?.id == undefined? action = "captureAllFamilyDetails" : action = "updateAllFamilyDetails"
         // If id is blank then deleting from data 
         if( familydetails?.id == "" ){
           delete familydetails?.id
@@ -195,7 +194,7 @@ const fetchExistingData = ()=>{
           // If no duplicate entry found save the data
           savingFamilyDetails(action)
         };
-        }
+      }
     }
   // Saving family details data
   const savingFamilyDetails = (action)=>{

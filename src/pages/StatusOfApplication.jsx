@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid'
 import '../assets/css/status.css'
 import { Button } from "@mui/material";
 import {fetchAllStudentDataByEngagementId} from './../utility/Api'
-import { Logout } from "@mui/icons-material";
+import {changeStudentStatus} from "./../utility/Api";
 
 export default function Status() {
   const history = useNavigate();
@@ -29,7 +29,19 @@ export default function Status() {
   }
 
   const submitData = (event)=>{
-    history('/' ,{replace:true})
+    if(studentData.status === "Draft"){
+    let statusChangeData = '"engagementId":' + window.engagementId + ',"status":"Mobilised", "updatedBy":' + window.userid + '';
+    changeStudentStatus(statusChangeData,window.jwtTokenResult).then((jsondata) => {
+      let resultStatus = jsondata.status
+      if (resultStatus === "success") {
+        alert("Successfully Mobilized")
+        history('/' ,{replace:true})
+      }
+      })
+    }
+    else{
+      history('/' ,{replace:true})
+    }
   }
   const editForm = (event)=>{
     event.preventDefault();
@@ -86,7 +98,7 @@ export default function Status() {
         </Box>
       </Box>
       <Grid item xs={12} style={{marginLeft:"65px"}} >
-       <Button type="submit" disabled={studentData.status === "Draft"} variant="contained"  onClick={submitData} autoFocus>Submit</Button>
+       <Button type="submit" disabled={studentData.status !== "Draft"} variant="contained"  onClick={submitData} autoFocus>Submit</Button>
       </Grid>
     </>
   )

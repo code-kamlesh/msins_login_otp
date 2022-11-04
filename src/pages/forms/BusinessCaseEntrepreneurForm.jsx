@@ -41,6 +41,7 @@ export default function BusinessCaseEntrepreneurForm() {
   const [questionAnswer8 , setQuestionAnswer8] = useState({"id":"","questionId":"", "answer":"", "dbUserId":window.dbUserId,"businessType":"BCB","createdBy":window.userid,"updatedBy":window.userid});
   const [questionAnswer9 , setQuestionAnswer9] = useState({"id":"","questionId":"19", "answer":"", "dbUserId":window.dbUserId,"businessType":"BCB","createdBy":window.userid,"updatedBy":window.userid});
   const [questionAnswer10 , setQuestionAnswer10] = useState({"id":"","questionId":"40", "answer":"", "dbUserId":window.dbUserId,"businessType":"BCB","createdBy":window.userid,"updatedBy":window.userid});
+  const [questionAnswer11 , setQuestionAnswer11] = useState({"id":"","questionId":"", "answer":"", "dbUserId":window.dbUserId,"businessType":"BCB","createdBy":window.userid,"updatedBy":window.userid});
   const [businessAddressDetails, setBusinessAddressDetails] = useState({
     "entityId": window.dbUserId, "entityType": "EB", "pincode": "", "district": "",
     "cityName": "", "villageName": "", "state": "Maharashtra", "isActive": "Y", "createdBy": window?.userid, "updatedBy": window?.userid
@@ -102,6 +103,10 @@ export default function BusinessCaseEntrepreneurForm() {
           else if(res[i]?.questionId === "40"){
             questionAnswer10.answer = res[i]?.answer
             questionAnswer10.id = res[i]?.id
+          }
+          else if(res[i]?.questionId === "43"){
+            questionAnswer11.answer = res[i]?.answer
+            questionAnswer11.id = res[i]?.id
             }
       }
     })
@@ -122,7 +127,7 @@ export default function BusinessCaseEntrepreneurForm() {
   const fetchQuestionSet = () => {
     try{
       let arr = [];
-      // fetchAllQestionSet("all", window.refreshJwtToken).then((jsondata) => {
+      // fetching question for entreprenure and quesyion type is BCB
         fetchAllQestionSetforInnovator("Y", "BCB", "T", "E", window.refreshJwtToken).then((jsondata) => {
         for (var i = 0; i < jsondata.length; i++) {
           if (jsondata[i].businessType === "BCB" && jsondata[i].isActive === "Y") {
@@ -192,6 +197,7 @@ export default function BusinessCaseEntrepreneurForm() {
       fetchCityVillegeDistrictList(event?.target?.value);
     }
   }
+  // Handle Distric 
   const handleDistric = (event) => {
     if (event || event?.length === 0) {
       const errors = validateSelectInput("district", event)
@@ -219,6 +225,7 @@ export default function BusinessCaseEntrepreneurForm() {
   const handleDomainExperience = (event)=>{
     setQuestionAnswer10(preValue=>({...preValue,["answer"]: event}))
   }
+// Saving entreprenure data
   const submitData = ()=>{
     var bsuinesscasebriefdata= []
     bsuinesscasebriefdata.push(questionAnswer1)
@@ -231,6 +238,7 @@ export default function BusinessCaseEntrepreneurForm() {
     bsuinesscasebriefdata.push(questionAnswer8)
     bsuinesscasebriefdata.push(questionAnswer9)
     bsuinesscasebriefdata.push(questionAnswer10)
+    bsuinesscasebriefdata.push(questionAnswer11)
     try{
         bsuinesscasebriefdata.map((item,key)=>{
           if(item.id ===""){
@@ -312,6 +320,13 @@ export default function BusinessCaseEntrepreneurForm() {
       setQuestionAnswer8(preValue=>({...preValue,["answer"]: event?.target?.value,["questionId"]: event?.target?.name}))
       useranswer?.map((item)=>{
         if(item.questionId == "17")
+         setAnswerFromDb(preValue=>({...preValue,["answer"]: event?.target?.value}))
+       })
+    }
+    if(event?.target?.name === "43"){
+      setQuestionAnswer11(preValue=>({...preValue,["answer"]: event?.target?.value,["questionId"]: event?.target?.name}))
+      useranswer?.map((item)=>{
+        if(item.questionId == "43")
          setAnswerFromDb(preValue=>({...preValue,["answer"]: event?.target?.value}))
        })
     }

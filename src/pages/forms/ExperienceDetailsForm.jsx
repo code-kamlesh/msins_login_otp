@@ -6,6 +6,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import TextFields from "../../components/shared/TextFields";
 import DateOfBirthBox from "../../components/shared/DateOfBirthBox";
 import { saveExpDetails,fetchExperienceDetails } from "./../../utility/Api";
+import SelectOption from "../../components/shared/SelectOption";
 import { Button } from "@mui/material";
 import {validateTextInput1,validateDateDiff } from "./../../utility/Validation"
 import useStyles  from '../../components/layout'
@@ -15,12 +16,18 @@ import Stack from '@mui/material/Stack';
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 
+const tradeList= [{value:"Electrical", label:"Electrical"},
+                  {value:"Fitter", label:"Fitter"},
+                  {value:"Welder", label:"Welder"},
+                  {value:"Mechanical", label:"Mechanical"},
+                  {value:"Other", label:"Other"}];
+
 export default function ExperienceDetails() {
   const history = useNavigate();
   const classes = useStyles();
   const [isDataPresent , setIsDataPresent] = useState("null")
   const [experienceData,setExperienceData] = useState({"dbUserId":window.dbUserId,"experienceFrom":'',"lastDesignation":'',"natureOfExperience":'',"employerName":'',"grossSalary":''|| 0,"postingLocation":'',"experienceTo":'',"employerAddress":'',"isExperience":"",
-                                                          "isActive":"Y","createdBy":window.userId, "updatedBy":window.userId});
+                                                         "experienceInDomain":"", "isActive":"Y","createdBy":window.userId, "updatedBy":window.userId});
   const [errors,setErrors]= useState({})  
   useEffect(() => {
     if (window.jwtTokenResult === "") {
@@ -37,7 +44,7 @@ export default function ExperienceDetails() {
         let res = JSON.parse(jsondata.data)
         setExperienceData(preValue =>({...preValue, "isExperience": res[0].isExperience, "experienceFrom":res[0].experienceFrom, "lastDesignation":res[0].lastDesignation, "natureOfExperience":res[0].natureOfExperience,
         "experienceTo":res[0].experienceTo,  "employerAddress":res[0].employerAddress,  "postingLocation":res[0].postingLocation,  "grossSalary":res[0].grossSalary, "employerName":res[0].employerName,
-        "id":res[0].id,}))
+        "experienceInDomain": res[0].experienceInDomain,"id":res[0].id,}))
       }
       else{
         setIsDataPresent("null")
@@ -89,7 +96,6 @@ export default function ExperienceDetails() {
   const handlePostingLoaction = (event)=>{
     if (event?.target?.value || event?.target?.value.length === 0) {
       const error = validateTextInput1(event?.target.name, event?.target?.value,"lng")
-      
       setErrors(error)
       setExperienceData(preValue=>({...preValue, "postingLocation":event?.target?.value}))
     }
@@ -101,7 +107,12 @@ export default function ExperienceDetails() {
       setExperienceData(preValue=>({...preValue, "lastDesignation":event?.target?.value}))
     }
   }
-  
+  // handle domain experience
+  const handleDomainExperience = (event)=>{
+    if (event || event?.length === 0) {
+      setExperienceData(preValue=>({...preValue, "experienceInDomain":event}))
+    }
+  }
   const  handleExperienceData = (event)=>{
     try{
     event.preventDefault();
@@ -197,7 +208,7 @@ export default function ExperienceDetails() {
             fullWidth="fullWidth"
             placeholder="Enter your employer's name"
             variant="standard"
-            inputProps={{ maxLength: 50 }}
+            inputProps={{ maxLength: 40 }}
             onChange={(e)=>handleEmpName(e)}
             value={experienceData?.employerName}
           />
@@ -214,7 +225,7 @@ export default function ExperienceDetails() {
             autoComplete="employer-address"
             variant="standard"
             placeholder="Enter your employer's address"
-            inputProps={{ maxLength: 50 }}
+            inputProps={{ maxLength: 40 }}
             value={experienceData?.employerAddress}
             onChange={(e)=>handleEmpAddress(e)}
           />
@@ -231,7 +242,7 @@ export default function ExperienceDetails() {
             placeholder="Enter your job location"
             variant="standard"
             value={experienceData?.postingLocation}
-            inputProps={{ maxLength: 50 }}
+            inputProps={{ maxLength: 40 }}
             onChange={(e)=>handlePostingLoaction(e)}
           />
            {errors?.postingLocation ? (<div style={{ color: "red" }}>{errors.postingLocation}</div>) : null}
@@ -263,12 +274,24 @@ export default function ExperienceDetails() {
             placeholder="Enter your job experience"
             variant="standard"
             value={experienceData?.natureOfExperience}
-            inputProps={{ maxLength: 50 }}
+            inputProps={{ maxLength: 60 }}
             onChange={(e)=>handleExperience(e)}
           />
            {errors?.natureOfExperience ? (<div style={{ color: "red" }}>{errors.natureOfExperience}</div>) : null}
         </Grid>
-       
+        <Grid item xs={12} sm={6} md={6}>
+                <SelectOption
+                  style={{ borderColor: "red" }}
+                  label="Experience in Domain"
+                  id="experienceInDomain  "
+                  name="experienceInDomain"
+                  options={tradeList}
+                  variant="standard"
+                  onChange={(e)=>handleDomainExperience(e)}
+                  value={experienceData?.experienceInDomain}
+                />
+            </Grid>
+
         <Grid item xs={12} sm={6} md={6}>
           <TextFields
             type = "number"

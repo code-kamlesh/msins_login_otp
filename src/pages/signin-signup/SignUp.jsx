@@ -7,7 +7,6 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import Checkbox from '@mui/material/Checkbox'
-import TextFields from '../../components/shared/TextFields'
 import DateOfBirthBox from '../../components/shared/DateOfBirthBox'
 import Buttons from '../../components/shared/Buttons'
 import { useNavigate } from 'react-router-dom'
@@ -233,8 +232,6 @@ const Register = () => {
             <TextField
               label={t('otp')}
               placeholder={t('otp_placeholder')}
-              // required
-              type='number'
               id='otp'
               name='otp'
               fullWidth='fullWidth'
@@ -243,11 +240,12 @@ const Register = () => {
               value={otp}
               autoFocus={false}
               onChange={handleOtpInput}
-              onInput={(e) => {
-                e.target.value = Math.max(0, parseInt(e.target.value))
-                  .toString()
-                  .slice(0, 6)
-              }}
+              inputProps={{ maxLength:6}}
+              // onInput={(e) => {
+              //   e.target.value = Math.max(0, parseInt(e.target.value))
+              //     .toString()
+              //     .slice(0, 6)
+              // }}
             />
             {errors?.otp ? (<div style={{ color: "red" }}>{errors?.otp}</div>) : null}
           </Box>

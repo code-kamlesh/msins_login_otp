@@ -51,6 +51,7 @@ export default function BusinessCaseInnovator() {
     const [questionAnswer10, setQuestionAnswer10] = useState({ "id": "", "questionId": "", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
     const [questionAnswer11, setQuestionAnswer11] = useState({ "id": "", "questionId": "", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
     const [questionAnswer12, setQuestionAnswer12] = useState({ "id": "", "questionId": "", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
+    const [questionAnswer13, setQuestionAnswer13] = useState({ "id": "", "questionId": "", "answer": "", "dbUserId": window.dbUserId, "businessType": "EB", "createdBy": window.userid, "updatedBy": window.userid });
     const [businessAddressDetails, setBusinessAddressDetails] = useState({
         "entityId": window.dbUserId, "entityType": "EB", "pincode": "", "district": "",
         "cityName": "", "villageName": "", "state": "Maharashtra", "isActive": "Y", "createdBy": window?.userid, "updatedBy": window?.userid
@@ -108,6 +109,10 @@ export default function BusinessCaseInnovator() {
                 else if (res[i]?.questionId === "36") {
                     questionAnswer12.answer = res[i]?.answer
                     questionAnswer12.id = res[i]?.id
+                }
+                else if (res[i]?.questionId === "42") {
+                    questionAnswer13.answer = res[i]?.answer
+                    questionAnswer13.id = res[i]?.id
                 }
             }
         })
@@ -267,6 +272,13 @@ export default function BusinessCaseInnovator() {
           setAnswerFromDb(preValue => ({ ...preValue, ["answer"]: event?.target?.value }))
       })
     }
+    if (event?.target?.name === "42") {
+        setQuestionAnswer13(preValue => ({ ...preValue, ["answer"]: event?.target?.value, ["questionId"]: event?.target?.name }))
+        useranswer?.map((item) => {
+          if (item.questionId == "42")
+            setAnswerFromDb(preValue => ({ ...preValue, ["answer"]: event?.target?.value }))
+        })
+      }
   }
     // handle pincode
     const handlePinCode = (event) => {
@@ -342,6 +354,7 @@ export default function BusinessCaseInnovator() {
     bsuinesscasebriefdata.push(questionAnswer10)
     bsuinesscasebriefdata.push(questionAnswer11)
     bsuinesscasebriefdata.push(questionAnswer12)
+    bsuinesscasebriefdata.push(questionAnswer13)
     try {
       bsuinesscasebriefdata.map((item, key) => {
         if (item.id == "") {
