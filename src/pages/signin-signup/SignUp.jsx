@@ -3,6 +3,8 @@ import { Grid, Paper, Avatar, Typography, TextField, Box } from '@mui/material'
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
@@ -25,6 +27,7 @@ const Register = () => {
   const [disableMobileNumber, setDisableMobileNumber] = useState(false)
   const history = useNavigate();
   const [otp, setOtp] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [disableGetOtp, setDisableGetOtp] = useState(false);
   const [disableVerifyOtp, setDisableVerifyOtp] = useState(true);
   const [checkBox1, setCheckBox1] = useState(false)
@@ -38,6 +41,7 @@ const Register = () => {
     setDisableVerifyOtp(true)
     let confirmationOTP = window.confirmationResult;
     confirmationOTP.confirm(otp).then((result) => {
+      setIsLoading(true) // activationg loading spinner
       const user = result.user;
       window.userOTPresult = user;
       // setDisableVerifyOTPButton(true)
@@ -60,6 +64,7 @@ const Register = () => {
         await fetchStduentDataBaisedOnContactNumberandDob(basicData.primaryContactNumber, basicData.dob, window.refreshJwtToken).then(async (jsondata) => {
           let result = (jsondata.data)
           if (result.length <= 2) {
+            setIsLoading(false)
             history('/eligibilityTest', { state: basicData });
           }
           else {
@@ -331,6 +336,10 @@ const Register = () => {
       { basicData?.primaryContactNumber?.length === 10 && 
       <div id="recaptcha"></div>}
        
+       <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Grid>
   )
 }

@@ -7,6 +7,8 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Buttons from '../../components/shared/Buttons'
 import { useTranslation } from 'react-i18next'
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 import { login, fetchStduentDataBaisedOnContactNumberandDob, fetchStduentEngagementDataBaisedOnDBUserId } from '../../utility/Api'
 import { validatePincode } from "./../../utility/Validation"
 
@@ -18,6 +20,7 @@ const LoginUser = ({ handleChange }) => {
   const [mobileNo, setMobileNo] = useState('');
   const [otp, setOtp] = useState('');
   const [dob, setDob] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({})
   const [disableMobileNumber, setDisableMobileNumber] = useState(false)
   const [disableGetOtp, setDisableGetOtp] = useState(false);
@@ -44,6 +47,7 @@ const LoginUser = ({ handleChange }) => {
       window.dob = event?.target?.value  // setting value as globally
     }
   }
+  // Genratinh otp 
   const generateOTP = () => {
     if (mobileNo?.length < 10) {
       alert('incorrect mobile number, please try again');
@@ -61,14 +65,14 @@ const LoginUser = ({ handleChange }) => {
       })
     }
   };
-
+// login user function
   const verifyOTP = async () => {
     if (mobileNo?.length < 10 || otp?.length < 6) {
       alert('please click get OTP to reciev the otp')
     }
     else {
+      setIsLoading(true) // activation loading spinner
       setDisableVerifyOtp(true)
-
       let confirmationOTP = window.confirmationResult;
       confirmationOTP.confirm(otp).then(async (result) => {
         const user = result.user;
@@ -87,7 +91,6 @@ const LoginUser = ({ handleChange }) => {
           sessionTimeOut.setMinutes(sessionTimeOut.getMinutes() + 15);
           window.sessionTime = sessionTimeOut;
           window.loginType = "SignIn"
-
           await fetchStduentDataBaisedOnContactNumberandDob(mobileNo, dob, dataFromSucessLogin[0]?.token).then(async (jsondata) => {
             let result = (jsondata.data)
             if (result.length > 2) {
@@ -100,6 +103,7 @@ const LoginUser = ({ handleChange }) => {
                 let res = JSON.parse(jsondata.data)
                 window.engagementId = res[0]?.engagementId
                 window.studentType = res[0]?.ideaType
+                setIsLoading(false) // settig spinner as false
               })
               history('/status', { replace: true });
             }
@@ -222,6 +226,10 @@ const resetPage = ()=>{
         <div id="recaptcha"></div>}
        
       </Grid>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>
   )
 }

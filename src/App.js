@@ -9,7 +9,6 @@ export default function App() {
     <>
       <CssBaseline>
         <ScrollToTop />
-        
         <Main />
       </CssBaseline>
     </>

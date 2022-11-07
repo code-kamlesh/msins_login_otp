@@ -16,13 +16,14 @@ import ExistingBusinessDetails from '../pages/forms/ExistingBusinessDetails'
 import SocioEconimoicDetails from "../pages/forms/SocioEconomicDetails"
 import BusinessCaseBrief from "../pages/forms/BusinessCase"
 import Dashboard from '../pages/Dashboard'
+import ProgressBar from 'react-bootstrap/ProgressBar';
 import FamilyDetails from '../pages/forms/FamilyDetails'
 // import ExistingBusinessEnterpreneurForm from '../pages/forms/ExistingBusinessEnterpreneurForm'
 import  {UserIsEligible,UserIsNotEligible,EligibilityTest} from '../pages/eligible/EligibilityTest'
 
-
 const Main = () => {
   const [mode, setMode] = useState('light')
+  const [progress,setProgress] = useState(0);
   //  const mylocation = location.pathname;
 
   const darkTheme = createTheme({
@@ -30,6 +31,10 @@ const Main = () => {
       mode: mode,
     },
   })
+  const handleClick = num => {
+    // 👇️ take parameter passed from Child component
+    setProgress(current => current + num);
+  };
   return (
     <>
         
@@ -38,7 +43,9 @@ const Main = () => {
             <Box
             >
               <Header />
-              
+              <br/>
+              {progress !== 0 && 
+              <ProgressBar now={progress} label={`${progress}%`} handleClick={()=>handleClick()}/>}
               <Routes>
                 <Route path='/' element={<Home />} />
                 {/* <Route path='/dashboard' element={<Dashboard />}/> */}
