@@ -1,4 +1,4 @@
-import React ,{useState}from 'react'
+import React ,{useState,useEffect}from 'react'
 import SelectOption from '../../components/shared/SelectOption'
 
 import {Grid, Box, Paper, Avatar,Typography,} from '@mui/material'
@@ -11,7 +11,7 @@ import FormLabel from '@mui/material/FormLabel'
 import TextFields from '../../components/shared/TextFields'
 import { useNavigate } from 'react-router-dom'
 import Buttons from '../../components/shared/Buttons'
-import { saveBasicData, captureStudentEngagementDetails } from '../../utility/Api'
+import { saveBasicData, captureStudentEngagementDetails,fetchActiveCycle } from '../../utility/Api'
 
 import { validatePassingYear} from "./../../utility/Validation"
 const paperStyle = {
@@ -33,12 +33,40 @@ const collegeNameList = [{value:'College 1' , label:'College 1'},
                           {value:'College 2' , label:'College 2'},
                           {value:'College 3' , label:'College 3'},
                           {value:'College 4' , label:'College 4'},]
+
 export default function CommonData(props) {
   var data = props.value.value;
+  const history = useNavigate();
+  useEffect(() => {
+   checkForAvailabityOfCycle();
+  }, []);
   const [qualificationStatus,setQualificationStatus] = useState("")
   const [basicData, setBasicData] = useState({ "primaryContactNumber": data?.primaryContactNumber, "dob": data?.dob, "passingYear":"","highestQualification":"" ,"collegeName":"","itiTrade":"","createdBy": window.userid, "updatedBy":window.userid});
-  const history = useNavigate();
   const[errors,setErrors] = useState({})
+  const[msinsCycle, setMsinsCycle]  = useState("");
+  // Checking for Active cycle 
+  const checkForAvailabityOfCycle = () =>{
+    try{
+      fetchActiveCycle("Y",window.refreshJwtToken).then((jsondata)=>{
+        let res =(jsondata)
+        if(res?.data !== null &&  res?.eligible === false ){
+          alert("Window is Closed! Please try in Next Window.")
+          history('/',{ replace: true });
+        }
+        else if(res?.data === null){
+          alert("Applications is Closed! Please try in Next Window.")
+          history('/',{ replace: true });
+        }
+        else{
+          setMsinsCycle(res?.data?.remarks)
+        }
+      })
+    }
+    catch(err){
+      alert(err.message)
+    }
+  }
+
   // handle Qualification
   const handleQualification = (event)=>{
     if(event?.length !==0){
@@ -77,7 +105,7 @@ export default function CommonData(props) {
         let dbUserId = result[0].dbUserId
         window.dbUserId = dbUserId  // setting global variable
         // capturing engagement details
-         await captureStudentEngagementDetails(dbUserId, 0, window.userid, window.studentType, window.refreshJwtToken).then(async(jsondata) => {
+         await captureStudentEngagementDetails(dbUserId, 0, window.userid, window.studentType,msinsCycle, window.refreshJwtToken).then(async(jsondata) => {
           let json = JSON.parse(jsondata.data);
           window.engagementId = json[0].engagementId //setting engagementid 
         })

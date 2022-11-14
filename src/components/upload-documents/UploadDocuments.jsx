@@ -22,7 +22,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useStyles from '../../components/layout'
-import {uploadDocument,fetchUserDocumentsByEngagementId,deleteDocumentById,changeStudentStatus} from "./../../utility/Api";
+import {uploadDocument,fetchUserDocumentsByDbuserId,deleteDocumentById,changeStudentStatus} from "./../../utility/Api";
 import { serviceEndPoint } from './../../utility/ServiceEndPoint';
 
 export default function UploadDocuments() {
@@ -33,8 +33,7 @@ export default function UploadDocuments() {
     }
      
     else{
-     getSubmittedDocument(window.engagementId);
-     getSubmittedDocument(window.engagementId);
+     getSubmittedDocument(window.dbUserId);
     }
  },[]);
   const classes = useStyles();
@@ -91,7 +90,7 @@ export default function UploadDocuments() {
            alert("Data Saved Suucessfully")
            setDocumentName("")
            setDocumnetType("")
-           getSubmittedDocument(res[0]?.engagementId);
+           getSubmittedDocument(res[0]?.dbUserId);
          }
        })
     }catch(err){
@@ -99,8 +98,8 @@ export default function UploadDocuments() {
     }
   }
   // fetching User Document List
-  const getSubmittedDocument = (engagementId)=>{
-    fetchUserDocumentsByEngagementId(engagementId,window.refreshJwtToken).then((jsondata) => {   
+  const getSubmittedDocument = (dbUserId)=>{
+    fetchUserDocumentsByDbuserId(dbUserId,window.refreshJwtToken).then((jsondata) => {   
       let jsonobjects = JSON.parse(jsondata.data); 
       setDocumentList(jsonobjects)
     })
@@ -150,7 +149,7 @@ export default function UploadDocuments() {
   const deleteDocument =async (basicDocId)=>{
     await deleteDocumentById(basicDocId,window.refreshJwtToken).then((jsondata) => {
 
-      getSubmittedDocument(window.engagementId)
+      getSubmittedDocument(window.dbUserId)
     });
     
   }

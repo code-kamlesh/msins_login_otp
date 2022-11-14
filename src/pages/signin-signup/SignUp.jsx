@@ -69,6 +69,7 @@ const Register = () => {
           }
           else {
             alert("User Already Exist! Please Sign in.")
+            setIsLoading(false)
             history('/');
           }
         })

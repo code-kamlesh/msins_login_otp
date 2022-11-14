@@ -59,10 +59,10 @@ export async function submitAddressData(action,data,token)
 }
 return null;
 }
-    export async function captureStudentEngagementDetails(dbUserId,centerId,userId, studentType,token) {
+    export async function captureStudentEngagementDetails(dbUserId,centerId,userId, studentType,msinsCycle,token) {
     if(isSessionValid()){
     let requestFormData = new FormData();  
-    requestFormData.append('data','{"token" : "'+ "1234" +'", "action" : "captureStudentEngagement", "data" :[{"dbUserId"  : ' + dbUserId + ' , "centerId" : ' + centerId + ', "createdBy" : ' + userId + ', "ideaType": "'+studentType+'", "remarks" : "","status" : "Draft"}]}');
+    requestFormData.append('data','{"token" : "'+ "1234" +'", "action" : "captureStudentEngagement", "data" :[{"dbUserId"  : ' + dbUserId + ' , "centerId" : ' + centerId + ', "createdBy" : ' + userId + ', "ideaType": "'+studentType+'","msinsCycle": "'+msinsCycle+'", "remarks" : "MIG","status" : "Draft"}]}');
     
     if(!isTokenValid()) 
         await regenerateToken();
@@ -203,10 +203,10 @@ export async function deleteDocumentById(basicDocId,token) {
 }
 return null;
 }
-export async function fetchUserDocumentsByEngagementId(engagementId,token) {
+export async function fetchUserDocumentsByDbuserId(dbUserId,token) {
     if(isSessionValid()){
     let requestFormData = new FormData();
-    requestFormData.append('data', '{"token" : "", "action" : "fetchDocumentDetailsByEngagementId", "data" : [{"engagementId":'+engagementId+'}]}');
+    requestFormData.append('data', '{"token" : "", "action" : "fetchDocumentDetailsByUserId", "data" : [{"dbUserId":'+dbUserId+'}]}');
     if(!isTokenValid()) 
         await regenerateToken();
   return fetch(serviceEndPoint.documentServiceEndPoint, {
@@ -297,7 +297,6 @@ export async function fetchAllStudentDataByEngagementId(engagementId,token) {
 }
 
 //fetching Question set 
-
 export async function fetchAllQestionSet(all,token) {
     if(isSessionValid()){
     if(!isTokenValid()) 
@@ -456,4 +455,20 @@ export async function saveFamilyDetails(action, data,token)
         }).then(response => response.json())
 }
 return null;
+}
+
+// Fetching active cycle for MSINS program
+export async function fetchActiveCycle(isActive,token) {
+    if(isSessionValid()){
+    if(!isTokenValid()) 
+        await regenerateToken();  
+        var url= serviceEndPoint.MsinsCycleServiceEndPoint+"/"+isActive                                                                
+    return await fetch(url,{
+        headers: {
+            'Authorization': 'Bearer '+token
+        },
+        }).then(response => response.text()) // json.parse doesn't hanlde the null value
+        .then((text)=>text.length?JSON.parse(text):{});
+    }
+    return null;
 }

@@ -101,14 +101,17 @@ const LoginUser = ({ handleChange }) => {
               // Getting the enagagment ID baised on dbuserId
               await fetchStduentEngagementDataBaisedOnDBUserId(result[0].dbUserId, dataFromSucessLogin[0]?.token).then((jsondata) => {
                 let res = JSON.parse(jsondata.data)
-                window.engagementId = res[0]?.engagementId
-                window.studentType = res[0]?.ideaType
+               // taking latest engagment id of user
+                window.engagementId = res[res.length-1]?.engagementId
+                window.studentType = res[res.length-1]?.ideaType
                 setIsLoading(false) // settig spinner as false
               })
               history('/status', { replace: true });
             }
             else {
+              setIsLoading(false)
               alert("User Not Found! Please Sign Up.")
+               
             }
           })
 
